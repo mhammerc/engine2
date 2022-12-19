@@ -3,17 +3,17 @@
 #include <GLFW/glfw3.h>
 
 struct Camera {
-  [[nodiscard]] glm::mat4 getMatrix() const;
+  [[nodiscard]] auto getMatrix() const -> glm::mat4;
 
-  glm::vec3 pos = glm::vec3(0.0f, 0.0f, 3.0f);
-  glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f);
-  glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+  glm::vec3 pos = glm::vec3(0.0F, 0.0F, 3.0F);
+  glm::vec3 front = glm::vec3(0.0F, 0.0F, -1.0F);
+  glm::vec3 up = glm::vec3(0.0F, 1.0F, 0.0F);
 
-  float yaw = -90.f;
-  float pitch = 0.f;
+  float yaw = -90.F;
+  float pitch = 0.F;
   glm::vec2 previous_cursor_position;
 
-  void computeFront();
+  auto computeFront() -> void;
 
   explicit Camera(GLFWwindow *window);
 };

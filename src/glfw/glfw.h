@@ -4,8 +4,8 @@
 #include "../camera/camera.h"
 #include <GLFW/glfw3.h>
 
-GLFWwindow *init_glfw_and_opengl();
+auto init_glfw_and_opengl() -> GLFWwindow *;
 
-void processInputs(float delta_time, GLFWwindow *window, Camera &camera);
+auto processInputs(float delta_time, GLFWwindow *window, Camera &camera) -> void;
 
-void terminate_glfw(GLFWwindow *window);
+auto terminate_glfw(GLFWwindow *window) -> void;

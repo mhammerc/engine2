@@ -9,11 +9,11 @@ void game_loop(GLFWwindow *window, const std::function<void(float, bool &)> &loo
 
   bool should_quit = false;
 
-  while (!glfwWindowShouldClose(window) && !should_quit) {
+  while (glfwWindowShouldClose(window) == 0 && !should_quit) {
 
 	auto current_iteration = steady_clock::now();
 
-	std::chrono::duration<float> delta_time = current_iteration - last_iteration;
+	std::chrono::duration<float> const delta_time = current_iteration - last_iteration;
 
 	last_iteration = current_iteration;
 

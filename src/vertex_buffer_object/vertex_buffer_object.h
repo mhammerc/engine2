@@ -4,14 +4,14 @@
 
 class VertexBufferObject {
  public:
-  static VertexBufferObject from_cube();
+  static auto from_cube() -> VertexBufferObject;
 
-  void define_attribute(size_t index, size_t size, size_t offset);
+  auto define_attribute(size_t index, size_t size, size_t offset) -> void;
 
-  void bind();
-  void unbind();
+  auto bind() -> void;
+  auto unbind() -> void;
 
-  void draw();
+  auto draw() -> void;
 
   ~VertexBufferObject() noexcept;
   VertexBufferObject(const VertexBufferObject &) = delete;

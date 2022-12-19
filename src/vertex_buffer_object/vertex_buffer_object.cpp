@@ -8,7 +8,7 @@ void VertexBufferObject::define_attribute(size_t index, size_t size, size_t offs
   bind();
 
   glVertexAttribPointer(index, static_cast<GLint>(size), GL_FLOAT, GL_FALSE,
-						static_cast<GLsizei>(stride * sizeof(float)), (void *)(offset * sizeof(float)));
+						static_cast<GLsizei>(stride * sizeof(float)), reinterpret_cast<void *>(offset * sizeof(float)));
 
   glEnableVertexAttribArray(index);
 
@@ -16,7 +16,7 @@ void VertexBufferObject::define_attribute(size_t index, size_t size, size_t offs
 }
 
 void VertexBufferObject::draw() {
-  size_t vertex_size_in_bytes = sizeof(decltype(vertices)::value_type);
+  size_t const vertex_size_in_bytes = sizeof(decltype(vertices)::value_type);
 
   glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(vertices.size() * vertex_size_in_bytes / stride));
 }
@@ -35,7 +35,7 @@ VertexBufferObject::VertexBufferObject(std::vector<float> &&_vertices, int strid
 
   bind();
 
-  size_t vertex_size_in_bytes = sizeof(decltype(vertices)::value_type);
+  size_t const vertex_size_in_bytes = sizeof(decltype(vertices)::value_type);
 
   glBufferData(GL_ARRAY_BUFFER,
 			   static_cast<GLsizeiptr>(vertices.size() * vertex_size_in_bytes),
@@ -52,10 +52,7 @@ VertexBufferObject::~VertexBufferObject() noexcept {
   }
 }
 
-VertexBufferObject::VertexBufferObject(VertexBufferObject &&from) noexcept {
-  this->handle = from.handle;
-  this->vertices = std::move(from.vertices);
-  this->stride = from.stride;
-
+VertexBufferObject::VertexBufferObject(VertexBufferObject &&from) noexcept
+	: handle(from.handle), vertices(std::move(from.vertices)), stride(from.stride) {
   from.handle = 0;
 }

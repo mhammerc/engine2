@@ -10,9 +10,9 @@
 #include "vertex_buffer_object/vertex_buffer_object.h"
 #include "engine.h"
 
-int main() {
-  auto window = init_glfw_and_opengl();
-  if (!window) {
+auto main() -> int {
+  auto *window = init_glfw_and_opengl();
+  if (window == nullptr) {
 	spdlog::critical("Could not initialize GLFW3 or OpenGL.");
 	return 1;
   }
@@ -42,32 +42,37 @@ int main() {
 
   Camera camera(window);
 
-  unsigned int VAO;
+  unsigned int VAO = 0;
   glGenVertexArrays(1, &VAO);
+
   glBindVertexArray(VAO);
 
   auto VBO = VertexBufferObject::from_cube();
-
   VBO.bind();
   glBindVertexArray(0);
   VBO.unbind();
 
-  game_loop(window, [&](float delta_time, bool &should_quit) {
+  // V-Sync
+  // Negative number = unlimited FPS on my mac
+  glfwSwapInterval(1);
+
+  game_loop(window, [&](float delta_time, bool & /*should_quit*/) {
 	gui_prepare_frame();
+	gui_show_system_window(delta_time, window);
 
 	processInputs(delta_time, window, camera);
 
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::rotate(model, glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+	glm::mat4 model = glm::mat4(1.0F);
+	model = glm::rotate(model, glm::radians(50.0F), glm::vec3(0.5F, 1.0F, 0.0F));
 
 	int width = 0;
 	int height = 0;
 	glfwGetWindowSize(window, &width, &height);
 	glm::mat4 projection;
 	projection =
-		glm::perspective(glm::radians(45.0f), static_cast<float>(width) / static_cast<float>(height), 0.1f, 100.0f);
+		glm::perspective(glm::radians(45.0F), static_cast<float>(width) / static_cast<float>(height), 0.1F, 100.0F);
 
-	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+	glClearColor(0.2F, 0.3F, 0.3F, 1.0F);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	texture1->activate_as(0);

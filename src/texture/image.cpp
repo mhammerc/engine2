@@ -3,13 +3,16 @@
 
 #include <stb_image/stb_image.h>
 
-std::optional<Image> Image::from_file(const std::filesystem::path &path, std::optional<Channels> desired_channels) {
+auto Image::from_file(const std::filesystem::path &path, std::optional<Channels> desired_channels) -> std::optional<
+	Image> {
   int width = 0;
   int height = 0;
   int number_of_channels = 0;
 
   int desired_channels_numeric = 0;
-  if (desired_channels.has_value()) desired_channels_numeric = *desired_channels;
+  if (desired_channels.has_value()) {
+	desired_channels_numeric = *desired_channels;
+  }
 
   stbi_set_flip_vertically_on_load(true);
   unsigned char *data =

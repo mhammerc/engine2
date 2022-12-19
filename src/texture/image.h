@@ -18,8 +18,8 @@ class Image {
 
   const unsigned char *data;
 
-  static std::optional<Image>
-  from_file(const std::filesystem::path &path, std::optional<Channels> desired_channels);
+  static auto from_file(const std::filesystem::path &path, std::optional<Channels> desired_channels) ->
+  std::optional<Image>;
 
   ~Image() noexcept;
   Image(const Image &) = delete;

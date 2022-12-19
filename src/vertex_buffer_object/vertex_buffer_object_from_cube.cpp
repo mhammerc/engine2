@@ -3,7 +3,7 @@
 
 //static float _vertices[] = {
 static std::array<float, 180> static_vertices = {
-	-0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+	-0.5f, -0.5f, -0.5f, 0.0f, 0.0F,
 	0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
 	0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
 	0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
@@ -46,9 +46,9 @@ static std::array<float, 180> static_vertices = {
 	-0.5f, 0.5f, -0.5f, 0.0f, 1.f
 };
 
-int static_stride = 5;
+const static int static_stride = 5;
 
-VertexBufferObject VertexBufferObject::from_cube() {
+auto VertexBufferObject::from_cube() -> VertexBufferObject {
   std::vector<float> _vertices(static_vertices.begin(), static_vertices.end());
 
   auto vbo = VertexBufferObject(std::move(_vertices), static_stride);

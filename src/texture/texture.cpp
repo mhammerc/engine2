@@ -1,11 +1,13 @@
 #include "texture.h"
 
-std::optional<Texture> Texture::from_file(const std::filesystem::path &path) {
+auto Texture::from_file(const std::filesystem::path &path) -> std::optional<Texture> {
   auto image = Image::from_file(path, Image::Channels::RGB);
 
-  if (!image.has_value()) return std::nullopt;
+  if (!image.has_value()) {
+	return std::nullopt;
+  }
 
-  GLuint texture;
+  GLuint texture = 0;
   glGenTextures(1, &texture);
   glBindTexture(GL_TEXTURE_2D, texture);
 
@@ -28,12 +30,12 @@ void Texture::activate_as(int index) {
 }
 
 Texture::~Texture() noexcept {
-  if (handle) {
+  if (handle != 0U) {
 	glDeleteTextures(1, &handle);
   }
 }
 
-Texture::Texture(Texture &&from) noexcept {
+Texture::Texture(Texture &&from) noexcept: handle(0) {
   handle = from.handle;
 
   from.handle = 0;

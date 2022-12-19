@@ -8,7 +8,7 @@
 
 class Texture {
  public:
-  static std::optional<Texture> from_file(const std::filesystem::path &path);
+  static auto from_file(const std::filesystem::path &path) -> std::optional<Texture>;
 
   GLuint handle = 0;
 
