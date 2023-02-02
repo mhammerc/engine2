@@ -6,7 +6,7 @@ include(CTest)
 enable_testing()
 
 # Executable and sources
-add_executable(opengl_engine src/vertex_buffer_object/vertex_buffer_object.h src/vertex_buffer_object/vertex_buffer_object.cpp src/vertex_buffer_object/vertex_buffer_object_from_cube.cpp src/game_loop.cpp src/engine.h)
+add_executable(opengl_engine src/vertex_buffer_object/vertex_buffer_object.h src/vertex_buffer_object/vertex_buffer_object.cpp src/vertex_buffer_object/vertex_buffer_object_from_cube.cpp src/game_loop.cpp src/engine.h src/vertex_array_object/vertex_array_object.h src/vertex_array_object/vertex_array_object.cpp src/node/node.h src/node/node.cpp)
 
 set(SOURCES
         src/camera/camera.cpp

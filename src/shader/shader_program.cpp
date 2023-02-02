@@ -7,26 +7,39 @@ ShaderProgram::ShaderProgram(ShaderProgram &&from) noexcept: handle(from.handle)
   from.handle = 0;
 }
 
-ShaderProgram::~ShaderProgram() noexcept {
+auto ShaderProgram::operator=(ShaderProgram &&from) noexcept -> ShaderProgram & {
+  handle = from.handle;
+
+  from.handle = 0;
+
+  return *this;
+}
+
+auto ShaderProgram::release_handle() -> void {
   if (handle != 0) {
 	glDeleteProgram(handle);
 	handle = 0;
   }
 }
 
+ShaderProgram::~ShaderProgram() noexcept {
+  release_handle();
+}
+
 auto ShaderProgram::from_vertex_and_fragment(const std::filesystem::path &vertex_file,
-											 const std::filesystem::path &fragment_file) -> std::optional<ShaderProgram> {
+											 const std::filesystem::path &fragment_file) -> std::shared_ptr<
+	ShaderProgram> {
   auto vertex = ShaderSource::from_file(ShaderSource::VERTEX, vertex_file);
 
-  if (!vertex.has_value()) return std::nullopt;
+  if (!vertex.has_value()) return nullptr;
 
-  if (!vertex->compile()) return std::nullopt;
+  if (!vertex->compile()) return nullptr;
 
   auto fragment = ShaderSource::from_file(ShaderSource::FRAGMENT, fragment_file);
 
-  if (!fragment.has_value()) return std::nullopt;
+  if (!fragment.has_value()) return nullptr;
 
-  if (!fragment->compile()) return std::nullopt;
+  if (!fragment->compile()) return nullptr;
 
   GLuint const handle = glCreateProgram();
 
@@ -50,13 +63,13 @@ auto ShaderProgram::from_vertex_and_fragment(const std::filesystem::path &vertex
   if (success == 0) {
 	spdlog::error("Could not create or link ShaderProgram {} and {}.", vertex_file.string(), fragment_file.string());
 
-	return std::nullopt;
+	return nullptr;
   }
 
   ShaderProgram program{};
   program.handle = handle;
 
-  return program;
+  return std::make_shared<ShaderProgram>(std::move(program));
 }
 
 void ShaderProgram::setUniform(const std::string &name, int value) {
@@ -110,6 +123,23 @@ void ShaderProgram::setUniform(const std::string &name, glm::vec4 value) {
   }
 }
 
+void ShaderProgram::setUniform(const std::string &name, glm::vec3 value) {
+  int const uniformLocation = glGetUniformLocation(handle, name.c_str());
+
+  if (uniformLocation == -1) {
+	spdlog::warn("Uniform '{}' not found when trying to set it.", name);
+  }
+
+  glUseProgram(handle);
+  glUniform3f(uniformLocation, value.x, value.y, value.z);
+
+  GLenum const error = glGetError();
+
+  if (error != GL_NO_ERROR) {
+	spdlog::error("3 {}", error == GL_INVALID_OPERATION);
+  }
+}
+
 void ShaderProgram::setUniform(const std::string &name, glm::mat4 value) {
   int const uniformLocation = glGetUniformLocation(handle, name.c_str());
 
@@ -133,4 +163,12 @@ void ShaderProgram::setUniform(const std::string &name, bool value) {
   } else {
 	setUniform(name, 0);
   }
+}
+
+auto ShaderProgram::bind() -> void {
+  glUseProgram(handle);
+}
+
+auto ShaderProgram::unbind() -> void {
+  glUseProgram(0);
 }

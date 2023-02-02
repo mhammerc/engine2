@@ -1,14 +1,15 @@
+#include "camera/camera.h"
+#include "engine.h"
+#include "glfw/glfw.h"
+#include "gui/gui.h"
 #include "opengl/opengl.h"
-#include <GLFW/glfw3.h>
 #include "shader/shader_program.h"
 #include "spdlog/spdlog.h"
-#include "glfw/glfw.h"
 #include "stb_image/stb_image.h"
 #include "texture/texture.h"
-#include "camera/camera.h"
-#include "gui/gui.h"
 #include "vertex_buffer_object/vertex_buffer_object.h"
-#include "engine.h"
+#include "vertex_array_object/vertex_array_object.h"
+#include "node/node.h"
 
 auto main() -> int {
   auto *window = init_glfw_and_opengl();
@@ -34,27 +35,31 @@ auto main() -> int {
 	return 1;
   }
 
-  auto program = ShaderProgram::from_vertex_and_fragment("../shaders/vertex.vert", "../shaders/frag.frag");
-  if (!program.has_value()) {
+  auto diffuse_shader = ShaderProgram::from_vertex_and_fragment("../shaders/diffuse.vert", "../shaders/diffuse.frag");
+  if (diffuse_shader == nullptr) {
+	spdlog::critical("could not create shader program.");
+	return 1;
+  }
+
+  auto lightShader = ShaderProgram::from_vertex_and_fragment("../shaders/light.vert", "../shaders/light.frag");
+  if (lightShader == nullptr) {
 	spdlog::critical("could not create shader program.");
 	return 1;
   }
 
   Camera camera(window);
 
-  unsigned int VAO = 0;
-  glGenVertexArrays(1, &VAO);
-
-  glBindVertexArray(VAO);
-
-  auto VBO = VertexBufferObject::from_cube();
-  VBO.bind();
-  glBindVertexArray(0);
-  VBO.unbind();
+  auto vao = VertexArrayObject::from_cube();
 
   // V-Sync
-  // Negative number = unlimited FPS on my mac
+  // 0 = unlimited FPS on my Mac
   glfwSwapInterval(1);
+
+  auto node = Node(vao, diffuse_shader);
+  node.position() = glm::vec3(0.F, 0.F, 0.F);
+
+  auto light = Node(vao, lightShader);
+  light.scale() = glm::vec3(0.25F);
 
   game_loop(window, [&](float delta_time, bool & /*should_quit*/) {
 	gui_prepare_frame();
@@ -62,34 +67,26 @@ auto main() -> int {
 
 	processInputs(delta_time, window, camera);
 
-	glm::mat4 model = glm::mat4(1.0F);
-	model = glm::rotate(model, glm::radians(50.0F), glm::vec3(0.5F, 1.0F, 0.0F));
-
 	int width = 0;
 	int height = 0;
 	glfwGetWindowSize(window, &width, &height);
-	glm::mat4 projection;
-	projection =
+	const glm::mat4 projection =
 		glm::perspective(glm::radians(45.0F), static_cast<float>(width) / static_cast<float>(height), 0.1F, 100.0F);
 
 	glClearColor(0.2F, 0.3F, 0.3F, 1.0F);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	auto view = camera.getMatrix();
+
 	texture1->activate_as(0);
 	texture2->activate_as(1);
-	program->setUniform("texture1", 0);
-	program->setUniform("texture2", 1);
-	program->setUniform("model", model);
-	program->setUniform("view", camera.getMatrix());
-	program->setUniform("projection", projection);
-	glUseProgram(program->handle);
-	glBindVertexArray(VAO);
 
-	VBO.draw();
+	static float elapsed_time = 0;
+	elapsed_time += delta_time;
+	light.position() = glm::vec3(sinf(elapsed_time) * 3.F, 0.F, cosf(elapsed_time) * 3.F);
 
-	glUseProgram(0);
-	glBindVertexArray(0);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	node.draw(view, projection, light.position(), camera.pos);
+	light.draw(view, projection, light.position(), camera.pos);
 
 	gui_end_frame();
 

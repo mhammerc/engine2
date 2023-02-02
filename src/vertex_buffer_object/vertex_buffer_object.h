@@ -16,6 +16,8 @@ class VertexBufferObject {
   ~VertexBufferObject() noexcept;
   VertexBufferObject(const VertexBufferObject &) = delete;
   VertexBufferObject(VertexBufferObject &&) noexcept;
+  auto operator=(const VertexBufferObject &) -> VertexBufferObject & = delete;
+  auto operator=(VertexBufferObject &&) noexcept -> VertexBufferObject &;
 
  private:
   std::vector<float> vertices;
@@ -24,4 +26,6 @@ class VertexBufferObject {
   unsigned int handle;
 
   VertexBufferObject(std::vector<float> &&vertices, int stride);
+
+  auto deleteHandle() -> void;
 };
