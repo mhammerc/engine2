@@ -16,12 +16,12 @@ class Node {
 			const glm::vec3 &camera_position) -> void;
 
   auto position() -> glm::vec3 &;
-  auto rotation() -> glm::vec3 &;
+  auto rotation() -> float &;
   auto scale() -> glm::vec3 &;
 
  private:
   glm::vec3 _position{};
-  glm::vec3 _rotation{};
+  float _rotation{0.F};
   glm::vec3 _scale{1.F};
 
   auto getModel() -> glm::mat4;

@@ -1,6 +1,6 @@
 #include "glfw.h"
-#include "spdlog/spdlog.h"
 #include "../utils/platform_info.h"
+#include "spdlog/spdlog.h"
 
 static auto error_callback(int error, const char *description) {
   spdlog::error("GLFW3 Error ({}): {}", error, description);
@@ -125,6 +125,10 @@ auto init_glfw_and_opengl() -> GLFWwindow * {
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
   glEnable(GL_DEPTH_TEST);
+
+  // V-Sync
+  // 0 = unlimited FPS on my Mac
+  glfwSwapInterval(1);
 
   return window;
 }

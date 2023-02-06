@@ -18,6 +18,6 @@ void main()
     FragPos = vec3(model * vec4(aPos, 1.0));
     TexCoord = aTexCoord;
 
-    // Pass the normal matrix from the CPU through a uniform
+    // TODO: Pass the normal matrix from the CPU through a uniform
     Normal = mat3(transpose(inverse(model))) * aNormal;
 }

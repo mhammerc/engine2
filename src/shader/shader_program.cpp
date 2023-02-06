@@ -3,7 +3,7 @@
 #include "spdlog/spdlog.h"
 #include <array>
 
-ShaderProgram::ShaderProgram(ShaderProgram &&from) noexcept: handle(from.handle) {
+ShaderProgram::ShaderProgram(ShaderProgram &&from) noexcept : handle(from.handle) {
   from.handle = 0;
 }
 
@@ -27,8 +27,7 @@ ShaderProgram::~ShaderProgram() noexcept {
 }
 
 auto ShaderProgram::from_vertex_and_fragment(const std::filesystem::path &vertex_file,
-											 const std::filesystem::path &fragment_file) -> std::shared_ptr<
-	ShaderProgram> {
+											 const std::filesystem::path &fragment_file) -> std::shared_ptr<ShaderProgram> {
   auto vertex = ShaderSource::from_file(ShaderSource::VERTEX, vertex_file);
 
   if (!vertex.has_value()) return nullptr;
@@ -77,6 +76,7 @@ void ShaderProgram::setUniform(const std::string &name, int value) {
 
   if (uniformLocation == -1) {
 	spdlog::warn("Uniform '{}' not found when trying to set it.", name);
+	return;
   }
 
   glUseProgram(handle);
@@ -94,6 +94,7 @@ void ShaderProgram::setUniform(const std::string &name, float value) {
 
   if (uniformLocation == -1) {
 	spdlog::warn("Uniform '{}' not found when trying to set it.", name);
+	return;
   }
 
   glUseProgram(handle);
@@ -111,6 +112,7 @@ void ShaderProgram::setUniform(const std::string &name, glm::vec4 value) {
 
   if (uniformLocation == -1) {
 	spdlog::warn("Uniform '{}' not found when trying to set it.", name);
+	return;
   }
 
   glUseProgram(handle);
@@ -128,6 +130,7 @@ void ShaderProgram::setUniform(const std::string &name, glm::vec3 value) {
 
   if (uniformLocation == -1) {
 	spdlog::warn("Uniform '{}' not found when trying to set it.", name);
+	return;
   }
 
   glUseProgram(handle);
@@ -145,6 +148,7 @@ void ShaderProgram::setUniform(const std::string &name, glm::mat4 value) {
 
   if (uniformLocation == -1) {
 	spdlog::warn("Uniform '{}' not found when trying to set it.", name);
+	return;
   }
 
   glUseProgram(handle);
