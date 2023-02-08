@@ -6,18 +6,26 @@ include(CTest)
 enable_testing()
 
 # Executable and sources
-add_executable(opengl_engine src/vertex_buffer_object/vertex_buffer_object.h src/vertex_buffer_object/vertex_buffer_object.cpp src/vertex_buffer_object/vertex_buffer_object_from_cube.cpp src/game_loop.cpp src/engine.h src/vertex_array_object/vertex_array_object.h src/vertex_array_object/vertex_array_object.cpp src/node/node.h src/node/node.cpp src/scene/scene.h src/scene/scene.cpp src/scene/light.h src/scene/cube.h)
+add_executable(opengl_engine)
 
 set(SOURCES
         src/camera/camera.cpp
         src/camera/camera.h
+        src/engine.h
+        src/game_loop.cpp
         src/glfw/glfw.cpp
         src/glfw/glfw.h
         src/gui/gui.cpp
         src/gui/gui.h
         src/main.cpp
+        src/node/node.cpp
+        src/node/node.h
         src/opengl/opengl.cpp
         src/opengl/opengl.h
+        src/scene/cube.h
+        src/scene/light.h
+        src/scene/scene.cpp
+        src/scene/scene.h
         src/shader/shader_program.cpp
         src/shader/shader_program.h
         src/shader/shader_source.cpp
@@ -30,6 +38,11 @@ set(SOURCES
         src/utils/platform_info.h
         src/utils/read_file_to_string.cpp
         src/utils/read_file_to_string.h
+        src/vertex_array_object/vertex_array_object.cpp
+        src/vertex_array_object/vertex_array_object.h
+        src/vertex_buffer_object/vertex_buffer_object.cpp
+        src/vertex_buffer_object/vertex_buffer_object.h
+        src/vertex_buffer_object/vertex_buffer_object_from_cube.cpp
         )
 
 target_sources(opengl_engine PRIVATE ${SOURCES})
@@ -41,8 +54,8 @@ set_property(TARGET opengl_engine PROPERTY CXX_STANDARD 20)
 add_subdirectory(vendors/spdlog)
 target_link_libraries(opengl_engine PUBLIC spdlog)
 
-# GLFW is the only library we need to install system-wide for the moment
-find_package(glfw3 3.3 REQUIRED)
+# GLFW
+add_subdirectory(vendors/glfw)
 target_link_libraries(opengl_engine PUBLIC glfw)
 
 # GLM
