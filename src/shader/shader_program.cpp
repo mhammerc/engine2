@@ -161,6 +161,24 @@ void ShaderProgram::setUniform(const std::string &name, glm::mat4 value) {
   }
 }
 
+void ShaderProgram::setUniform(const std::string &name, glm::mat3 value) {
+  int const uniformLocation = glGetUniformLocation(handle, name.c_str());
+
+  if (uniformLocation == -1) {
+	spdlog::warn("Uniform '{}' not found when trying to set it.", name);
+	return;
+  }
+
+  glUseProgram(handle);
+  glUniformMatrix3fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(value));
+
+  GLenum const error = glGetError();
+
+  if (error != GL_NO_ERROR) {
+	spdlog::error("4 {}", error == GL_INVALID_OPERATION);
+  }
+}
+
 void ShaderProgram::setUniform(const std::string &name, bool value) {
   if (value) {
 	setUniform(name, 1);

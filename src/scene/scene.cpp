@@ -28,7 +28,8 @@ auto Scene::draw_cubes(glm::mat4 projection) -> void {
 	diffuseShader->setUniform("model", model);
 	diffuseShader->setUniform("view", camera->getMatrix());
 	diffuseShader->setUniform("projection", projection);
-	diffuseShader->setUniform("viewPos", camera->pos);
+	diffuseShader->setUniform("modelNormal", glm::mat3(glm::transpose(glm::inverse(model))));
+	diffuseShader->setUniform("cameraPosition", camera->pos);
 	diffuseShader->setUniform("material.diffuse", 0);
 	diffuseShader->setUniform("material.specular", 1);
 	diffuseShader->setUniform("material.shininess", 32.0F);
@@ -38,7 +39,7 @@ auto Scene::draw_cubes(glm::mat4 projection) -> void {
 
 	  diffuseShader->setUniform(fmt::format("lights[{}].type", i), static_cast<int>(light.type));
 	  diffuseShader->setUniform(fmt::format("lights[{}].position", i), light.position);
-	  diffuseShader->setUniform(fmt::format("lights[{}].direction", i), light.direction);
+	  diffuseShader->setUniform(fmt::format("lights[{}].direction", i), glm::normalize(light.direction));
 	  diffuseShader->setUniform(fmt::format("lights[{}].innerCutOff", i), light.innerCutOff);
 	  diffuseShader->setUniform(fmt::format("lights[{}].outerCutOff", i), light.outerCutOff);
 	  diffuseShader->setUniform(fmt::format("lights[{}].constant", i), light.constant);

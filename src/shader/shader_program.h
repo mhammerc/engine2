@@ -1,9 +1,9 @@
 #pragma once
 
-#include <string>
+#include "../opengl/opengl.h"
 #include <filesystem>
 #include <optional>
-#include "../opengl/opengl.h"
+#include <string>
 
 class ShaderProgram {
  public:
@@ -22,6 +22,7 @@ class ShaderProgram {
   void setUniform(const std::string &name, glm::vec4 value);
   void setUniform(const std::string &name, glm::vec3 value);
   void setUniform(const std::string &name, glm::mat4 value);
+  void setUniform(const std::string &name, glm::mat3 value);
 
   auto bind() -> void;
   auto unbind() -> void;
