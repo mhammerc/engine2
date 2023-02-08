@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../mesh/mesh.h"
 #include "../shader/shader_program.h"
+#include "mesh.h"
 
 #include <assimp/scene.h>
 #include <filesystem>
@@ -19,7 +19,7 @@ class Model {
   void loadModel(const std::filesystem::path &path);
 
   void processNode(aiNode *node, const aiScene *scene);
-  Mesh processMesh(aiMesh *mesh, const aiScene *scene);
+  auto processMesh(aiMesh *mesh, const aiScene *scene) -> Mesh;
 
-  std::vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType _type, Texture::Type type);
+  auto loadMaterialTextures(aiMaterial *mat, aiTextureType _type, Texture::Type type) -> std::vector<Texture>;
 };

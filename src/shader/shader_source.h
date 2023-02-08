@@ -1,9 +1,10 @@
 #pragma once
 
-#include <string>
+#include "../opengl/opengl.h"
+
 #include <filesystem>
 #include <optional>
-#include "../opengl/opengl.h"
+#include <string>
 
 struct ShaderSource {
   enum Type {
@@ -12,23 +13,32 @@ struct ShaderSource {
 	VERTEX
   };
 
-  static std::optional<ShaderSource> from_file(Type type, const std::filesystem::path &path);
+  static auto from_file(Type type, const std::filesystem::path &path) -> std::optional<ShaderSource>;
 
   ~ShaderSource() noexcept;
+
   ShaderSource(const ShaderSource &) = delete;
+  auto operator=(const ShaderSource &) -> ShaderSource & = delete;
+
   ShaderSource(ShaderSource &&) noexcept;
+  auto operator=(ShaderSource &&) noexcept -> ShaderSource &;
 
   /**
    * @return true on success, false otherwise.
    */
-  bool compile();
+  auto compile() -> bool;
 
-  Type type = Type::UNKNOWN;
-  std::string source;
-  std::filesystem::path path;
-
-  GLuint handle = 0;
+  auto type() -> Type;
+  auto source() -> const std::string &;
+  auto path() -> const std::filesystem::path &;
+  auto handle() -> GLuint;
 
  private:
   ShaderSource() = default;
+
+  Type _type = Type::UNKNOWN;
+  std::string _source;
+  std::filesystem::path _path;
+
+  GLuint _handle = 0;
 };

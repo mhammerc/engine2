@@ -19,12 +19,13 @@ Model::Model(const std::filesystem::path &path) : directory(path) {
 
 void Model::loadModel(const std::filesystem::path &path) {
   Assimp::Importer importer;
+
   const aiScene *scene = importer.ReadFile(
 	  path.c_str(),
 	  aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_SplitLargeMeshes | aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph);
 
-  if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-	spdlog::error("Model: could not load model '{}'.", path.c_str());
+  if (scene == nullptr || (scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) != 0U || scene->mRootNode == nullptr) {
+	spdlog::error("Could not load model '{}'. Error: '{}'.", path.c_str(), importer.GetErrorString());
 	return;
   }
 
@@ -33,8 +34,11 @@ void Model::loadModel(const std::filesystem::path &path) {
 
 void Model::processNode(aiNode *node, const aiScene *scene) {
   for (size_t i = 0; i < node->mNumMeshes; ++i) {
-	auto *mesh = scene->mMeshes[node->mMeshes[i]];
-	meshes.emplace_back(std::move(processMesh(mesh, scene)));
+	auto *aiMesh = scene->mMeshes[node->mMeshes[i]];
+
+	auto mesh = processMesh(aiMesh, scene);
+
+	meshes.emplace_back(std::move(mesh));
   }
 
   for (size_t i = 0; i < node->mNumChildren; ++i) {
@@ -42,13 +46,11 @@ void Model::processNode(aiNode *node, const aiScene *scene) {
   }
 }
 
-Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
-  std::vector<Vertex> vertices;
-  std::vector<unsigned int> indices;
-  std::vector<Texture> textures;
+auto Model::processMesh(aiMesh *mesh, const aiScene *scene) -> Mesh {
 
+  std::vector<Vertex> vertices(mesh->mNumVertices);
   for (size_t i = 0; i < mesh->mNumVertices; ++i) {
-	Vertex vertex;
+	Vertex vertex{};
 
 	glm::vec3 vector;
 	vector.x = mesh->mVertices[i].x;
@@ -61,8 +63,9 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
 	vector.z = mesh->mNormals[i].z;
 	vertex.normal = vector;
 
-	if (mesh->mTextureCoords[0])// does the mesh contain texture coordinates?
-	{
+	// does the mesh contain texture coordinates?
+	// We care only about texture coordinates 0.
+	if (mesh->mTextureCoords[0]) {
 	  glm::vec2 vec;
 	  vec.x = mesh->mTextureCoords[0][i].x;
 	  vec.y = mesh->mTextureCoords[0][i].y;
@@ -71,16 +74,19 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
 	  vertex.texCoords = glm::vec2(0.F, 0.F);
 	}
 
-	vertices.push_back(vertex);
+	vertices[i] = vertex;
   }
 
+  std::vector<unsigned int> indices(mesh->mNumFaces * 3);
   for (size_t i = 0; i < mesh->mNumFaces; ++i) {
 	auto face = mesh->mFaces[i];
+
 	for (size_t j = 0; j < face.mNumIndices; ++j) {
-	  indices.push_back(face.mIndices[j]);
+	  indices[i * 3 + j] = face.mIndices[j];
 	}
   }
 
+  std::vector<Texture> textures;
   if (mesh->mMaterialIndex >= 0) {
 	auto *material = scene->mMaterials[mesh->mMaterialIndex];
 
@@ -97,19 +103,23 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
 	}
   }
 
-  return Mesh(
+  return {
 	  std::move(vertices),
 	  std::move(indices),
-	  std::move(textures));
+	  std::move(textures)};
 }
 
-std::vector<Texture> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType _type, Texture::Type type) {
+auto Model::loadMaterialTextures(aiMaterial *mat, aiTextureType _type, Texture::Type type) -> std::vector<Texture> {
   std::vector<Texture> textures;
 
-  for (size_t i = 0; i < mat->GetTextureCount(_type); ++i) {
+  const auto textureCount = mat->GetTextureCount(_type);
+
+  for (size_t i = 0; i < textureCount; ++i) {
 	aiString str;
 	mat->GetTexture(_type, i, &str);
+
 	auto texture = Texture::from_file(directory / str.C_Str(), type);
+
 	textures.push_back(std::move(texture.value()));
   }
 

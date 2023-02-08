@@ -6,7 +6,7 @@ include(CTest)
 enable_testing()
 
 # Executable and sources
-add_executable(opengl_engine src/mesh/mesh.h src/mesh/mesh.cpp src/model/model.h src/model/model.cpp)
+add_executable(opengl_engine src/model/mesh.h src/model/mesh.cpp src/model/model.h src/model/model.cpp)
 
 set(SOURCES
         src/camera/camera.cpp

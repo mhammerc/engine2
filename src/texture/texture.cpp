@@ -26,29 +26,34 @@ auto Texture::from_file(const std::filesystem::path &path, Type type) -> std::op
 
 auto Texture::activate_as(int index) -> void {
   glActiveTexture(GL_TEXTURE0 + index);
-  glBindTexture(GL_TEXTURE_2D, handle);
+  glBindTexture(GL_TEXTURE_2D, _handle);
 }
 
 Texture::~Texture() noexcept {
-  if (handle != 0U) {
-	glDeleteTextures(1, &handle);
+  if (_handle != 0U) {
+	glDeleteTextures(1, &_handle);
   }
 }
 
-Texture::Texture(Texture &&from) noexcept : handle(0) {
-  handle = from.handle;
-  type = from.type;
-
-  from.handle = 0;
+Texture::Texture(Texture &&from) noexcept : _handle(from._handle), _type(from._type) {
+  from._handle = 0;
 }
 
 auto Texture::operator=(Texture &&from) noexcept -> Texture & {
-  handle = from.handle;
-  type = from.type;
+  _handle = from._handle;
+  _type = from._type;
 
-  from.handle = 0;
+  from._handle = 0;
 
   return *this;
 }
 
-Texture::Texture(GLuint handle, Type type) : handle(handle), type(type) {}
+Texture::Texture(GLuint handle, Type type) : _handle(handle), _type(type) {}
+
+auto Texture::handle() const -> GLuint {
+  return _handle;
+}
+
+auto Texture::type() const -> Type {
+  return _type;
+}

@@ -1,15 +1,5 @@
 #include "mesh.h"
 
-Mesh::Mesh(
-	std::vector<Vertex> &&vertices,
-	std::vector<unsigned int> &&indices,
-	std::vector<Texture> &&textures)
-	: vertices(std::move(vertices)),
-	  indices(std::move(indices)),
-	  textures(std::move(textures)) {
-  setupMesh();
-}
-
 void Mesh::setupMesh() {
   glGenVertexArrays(1, &VAO);
   glGenBuffers(1, &VBO);
@@ -17,7 +7,6 @@ void Mesh::setupMesh() {
 
   glBindVertexArray(VAO);
 
-  using Vertex = decltype(vertices)::value_type;
   auto const sizeOfVertex = sizeof(Vertex);
 
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -70,10 +59,10 @@ void Mesh::draw(ShaderProgram &shader) {
 	int currentIndex = 0;
 	const char *type = "";
 
-	if (texture.type == Texture::Diffuse) {
+	if (texture.type() == Texture::Diffuse) {
 	  currentIndex = diffuseIndex++;
 	  type = "diffuse";
-	} else if (texture.type == Texture::Specular) {
+	} else if (texture.type() == Texture::Specular) {
 	  currentIndex = specularIndex++;
 	  type = "specular";
 	}
@@ -92,6 +81,16 @@ void Mesh::draw(ShaderProgram &shader) {
   glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
   glBindVertexArray(0);
   shader.unbind();
+}
+
+Mesh::Mesh(
+	std::vector<Vertex> &&vertices,
+	std::vector<unsigned int> &&indices,
+	std::vector<Texture> &&textures)
+	: vertices(std::move(vertices)),
+	  indices(std::move(indices)),
+	  textures(std::move(textures)) {
+  setupMesh();
 }
 
 Mesh::Mesh(Mesh &&from) noexcept : vertices(std::move(from.vertices)),
@@ -119,4 +118,18 @@ auto Mesh::operator=(Mesh &&from) noexcept -> Mesh & {
   from.EBO = 0;
 
   return *this;
+}
+
+Mesh::~Mesh() {
+  if (VAO != 0) {
+	glDeleteVertexArrays(1, &VAO);
+  }
+
+  if (VBO != 0) {
+	glDeleteBuffers(1, &VBO);
+  }
+
+  if (EBO != 0) {
+	glDeleteBuffers(1, &EBO);
+  }
 }

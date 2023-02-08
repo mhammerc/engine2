@@ -9,12 +9,14 @@
 class ShaderProgram {
  public:
   static auto from_vertex_and_fragment(const std::filesystem::path &vertex,
-									   const std::filesystem::path &fragment) -> std::shared_ptr<ShaderProgram>;
+									   const std::filesystem::path &fragment) -> std::optional<ShaderProgram>;
 
   ~ShaderProgram() noexcept;
+
   ShaderProgram(const ShaderProgram &) = delete;
-  ShaderProgram(ShaderProgram &&) noexcept;
   auto operator=(const ShaderProgram &) -> ShaderProgram & = delete;
+
+  ShaderProgram(ShaderProgram &&) noexcept;
   auto operator=(ShaderProgram &&) noexcept -> ShaderProgram &;
 
   void setUniform(const std::string &name, float value);
@@ -32,6 +34,4 @@ class ShaderProgram {
   ShaderProgram() = default;
 
   GLuint handle = 0;
-
-  auto release_handle() -> void;
 };

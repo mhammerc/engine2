@@ -25,8 +25,11 @@ class Mesh {
 
   void draw(ShaderProgram &shader);
 
+  ~Mesh();
+
   Mesh(const Mesh &) = delete;
   auto operator=(const Mesh &) -> Mesh & = delete;
+
   Mesh(Mesh &&) noexcept;
   auto operator=(Mesh &&) noexcept -> Mesh &;
 

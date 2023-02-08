@@ -1,8 +1,11 @@
 #pragma once
+
 #include "../opengl/opengl.h"
+
 #include <GLFW/glfw3.h>
 
-struct Camera {
+class Camera {
+ public:
   [[nodiscard]] auto getMatrix() const -> glm::mat4;
 
   glm::vec3 pos = glm::vec3(0.0F, 0.0F, 3.0F);
