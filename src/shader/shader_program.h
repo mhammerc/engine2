@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../opengl/opengl.h"
+
 #include <filesystem>
 #include <optional>
 #include <string>

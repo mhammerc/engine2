@@ -1,6 +1,6 @@
 #include "texture.h"
 
-auto Texture::from_file(const std::filesystem::path &path) -> std::optional<Texture> {
+auto Texture::from_file(const std::filesystem::path &path, Type type) -> std::optional<Texture> {
   auto image = Image::from_file(path, Image::Channels::RGB);
 
   if (!image.has_value()) {
@@ -21,10 +21,10 @@ auto Texture::from_file(const std::filesystem::path &path) -> std::optional<Text
 
   glBindTexture(GL_TEXTURE_2D, 0);
 
-  return Texture(texture);
+  return Texture(texture, type);
 }
 
-void Texture::activate_as(int index) {
+auto Texture::activate_as(int index) -> void {
   glActiveTexture(GL_TEXTURE0 + index);
   glBindTexture(GL_TEXTURE_2D, handle);
 }
@@ -35,10 +35,20 @@ Texture::~Texture() noexcept {
   }
 }
 
-Texture::Texture(Texture &&from) noexcept: handle(0) {
+Texture::Texture(Texture &&from) noexcept : handle(0) {
   handle = from.handle;
+  type = from.type;
 
   from.handle = 0;
 }
 
-Texture::Texture(GLuint handle) : handle(handle) {}
+auto Texture::operator=(Texture &&from) noexcept -> Texture & {
+  handle = from.handle;
+  type = from.type;
+
+  from.handle = 0;
+
+  return *this;
+}
+
+Texture::Texture(GLuint handle, Type type) : handle(handle), type(type) {}

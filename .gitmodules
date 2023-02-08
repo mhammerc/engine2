@@ -7,3 +7,6 @@
 [submodule "vendors/glfw"]
 	path = vendors/glfw
 	url = https://github.com/glfw/glfw.git
+[submodule "vendors/assimp"]
+	path = vendors/assimp
+	url = https://github.com/assimp/assimp.git

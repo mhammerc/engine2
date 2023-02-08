@@ -6,7 +6,7 @@ include(CTest)
 enable_testing()
 
 # Executable and sources
-add_executable(opengl_engine)
+add_executable(opengl_engine src/mesh/mesh.h src/mesh/mesh.cpp src/model/model.h src/model/model.cpp)
 
 set(SOURCES
         src/camera/camera.cpp
@@ -18,8 +18,6 @@ set(SOURCES
         src/gui/gui.cpp
         src/gui/gui.h
         src/main.cpp
-        src/node/node.cpp
-        src/node/node.h
         src/opengl/opengl.cpp
         src/opengl/opengl.h
         src/scene/cube.h
@@ -57,6 +55,10 @@ target_link_libraries(opengl_engine PUBLIC spdlog)
 # GLFW
 add_subdirectory(vendors/glfw)
 target_link_libraries(opengl_engine PUBLIC glfw)
+
+# Open Asset Import Library (assimp)
+add_subdirectory(vendors/assimp)
+target_link_libraries(opengl_engine PUBLIC assimp)
 
 # GLM
 set(glm_DIR vendors/glm/cmake/glm)

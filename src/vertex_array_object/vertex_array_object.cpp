@@ -1,7 +1,8 @@
 #include "vertex_array_object.h"
 
-#include <utility>
 #include "../opengl/opengl.h"
+
+#include <utility>
 
 auto VertexArrayObject::from_cube() -> std::shared_ptr<VertexArrayObject> {
   unsigned int handle = 0;
@@ -39,15 +40,15 @@ auto VertexArrayObject::draw() -> void {
 }
 
 VertexArrayObject::VertexArrayObject(unsigned int handle, const std::shared_ptr<VertexBufferObject> &vbo) : handle(
-	handle), vbo(vbo) {
-
+	handle),
+																											vbo(vbo) {
 }
 
 VertexArrayObject::~VertexArrayObject() noexcept {
   deleteHandle();
 }
 
-VertexArrayObject::VertexArrayObject(VertexArrayObject &&from) noexcept: handle(from.handle), vbo(std::move(from.vbo)) {
+VertexArrayObject::VertexArrayObject(VertexArrayObject &&from) noexcept : handle(from.handle), vbo(std::move(from.vbo)) {
   from.handle = 0;
 }
 
@@ -58,4 +59,6 @@ auto VertexArrayObject::operator=(VertexArrayObject &&from) noexcept -> VertexAr
   vbo = std::move(from.vbo);
 
   from.handle = 0;
+
+  return *this;
 }
