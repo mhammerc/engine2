@@ -25,25 +25,25 @@ ShaderProgram::~ShaderProgram() noexcept {
 }
 
 auto ShaderProgram::from_vertex_and_fragment(const std::filesystem::path &vertex_file,
-											 const std::filesystem::path &fragment_file) -> std::optional<ShaderProgram> {
+											 const std::filesystem::path &fragment_file) -> std::shared_ptr<ShaderProgram> {
   auto vertex = ShaderSource::from_file(ShaderSource::VERTEX, vertex_file);
 
   if (!vertex.has_value()) {
-	return std::nullopt;
+	return nullptr;
   }
 
   if (!vertex->compile()) {
-	return std::nullopt;
+	return nullptr;
   }
 
   auto fragment = ShaderSource::from_file(ShaderSource::FRAGMENT, fragment_file);
 
   if (!fragment.has_value()) {
-	return std::nullopt;
+	return nullptr;
   }
 
   if (!fragment->compile()) {
-	return std::nullopt;
+	return nullptr;
   }
 
   GLuint const handle = glCreateProgram();
@@ -68,11 +68,11 @@ auto ShaderProgram::from_vertex_and_fragment(const std::filesystem::path &vertex
   if (success == 0) {
 	spdlog::error("Could not create or link ShaderProgram {} and {}.", vertex_file.string(), fragment_file.string());
 
-	return std::nullopt;
+	return nullptr;
   }
 
-  ShaderProgram program{};
-  program.handle = handle;
+  auto program = std::make_shared<ShaderProgram>(ShaderProgram{});
+  program->handle = handle;
 
   return program;
 }

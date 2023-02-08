@@ -6,7 +6,7 @@ include(CTest)
 enable_testing()
 
 # Executable and sources
-add_executable(opengl_engine src/model/mesh.h src/model/mesh.cpp src/model/model.h src/model/model.cpp)
+add_executable(opengl_engine)
 
 set(SOURCES
         src/camera/camera.cpp
@@ -18,9 +18,14 @@ set(SOURCES
         src/gui/gui.cpp
         src/gui/gui.h
         src/main.cpp
+        src/model/mesh.cpp
+        src/model/mesh.h
+        src/model/model.cpp
+        src/model/model.h
+        src/node/node.cpp
+        src/node/node.h
         src/opengl/opengl.cpp
         src/opengl/opengl.h
-        src/scene/cube.h
         src/scene/light.h
         src/scene/scene.cpp
         src/scene/scene.h
