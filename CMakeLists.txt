@@ -58,6 +58,7 @@ target_link_libraries(opengl_engine PUBLIC glfw)
 
 # Open Asset Import Library (assimp)
 add_subdirectory(vendors/assimp)
+target_compile_options(assimp PUBLIC -Wno-error)
 target_link_libraries(opengl_engine PUBLIC assimp)
 
 # GLM

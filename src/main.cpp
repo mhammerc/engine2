@@ -84,8 +84,8 @@ auto main() -> int {
 	  .position = glm::vec3(1.F, 0.F, 2.F),
 	  .linear = 0.09F,
 	  .quadratic = 0.032F,
-	  .ambient = glm::vec3(0.2F, 0.2F, 0.2F),
-	  .diffuse = glm::vec3(0.9F, 0.9F, 0.9F),
+	  .ambient = glm::vec3(0.35F, 0.35F, 0.35F),
+	  .diffuse = glm::vec3(0.8F, 0.8F, 0.8F),
 	  .specular = glm::vec3(1.F, 1.F, 1.F),
   };
   //  scene.lights.at(0) = pointLight;
@@ -118,8 +118,8 @@ auto main() -> int {
 		.type = Light::Spot,
 		.position = camera->pos,
 		.direction = camera->front,
-		.innerCutOff = glm::cos(glm::radians(12.5F)),
-		.outerCutOff = glm::cos(glm::radians(17.5F)),
+		.innerCutOff = glm::cos(glm::radians(20.F)),
+		.outerCutOff = glm::cos(glm::radians(25.F)),
 		.linear = 0.09F,
 		.quadratic = 0.032F,
 		.ambient = glm::vec3(0.2F, 0.2F, 0.2F),

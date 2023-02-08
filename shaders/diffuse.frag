@@ -3,8 +3,8 @@
 out vec4 FragColor;
 
 in vec2 TexCoord;
-in vec3 Normal; // world direction
-in vec3 FragmentPosition; // world position
+in vec3 Normal;// world direction
+in vec3 FragmentPosition;// world position
 
 // Position of the camera
 uniform vec3 cameraPosition;
@@ -34,23 +34,23 @@ uniform vec3 cameraPosition;
  * `LIGHT_TYPE_UNSET`: The light is not a light. Do nothing.
  */
 struct Light {
-    // See above for types (eg. LIGHT_TYPE_XXX)
+// See above for types (eg. LIGHT_TYPE_XXX)
     int type;
 
-    vec3 position; // point, spot
-    vec3 direction; // directional, spot. Direction where the light points.
+    vec3 position;// point, spot
+    vec3 direction;// directional, spot. Direction where the light points.
 
-    // Spot lights inner and outer cutoff for a smooth transition
-    float innerCutOff; // spot
-    float outerCutOff; // spot
+// Spot lights inner and outer cutoff for a smooth transition
+    float innerCutOff;// spot
+    float outerCutOff;// spot
 
 
-    // constant, linear and quadratic components for attenuation
-    float constant; // spot
-    float linear; // spot
-    float quadratic; // spot
+// constant, linear and quadratic components for attenuation
+    float constant;// spot
+    float linear;// spot
+    float quadratic;// spot
 
-    // What is the color of the light?
+// What is the color of the light?
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
@@ -69,7 +69,7 @@ struct Material {
 
     sampler2D specular;
 
-    // How much specular components
+// How much specular components
     float shininess;
 };
 
