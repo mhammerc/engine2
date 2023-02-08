@@ -85,7 +85,7 @@ auto main() -> int {
 	  .linear = 0.09F,
 	  .quadratic = 0.032F,
 	  .ambient = glm::vec3(0.2F, 0.2F, 0.2F),
-	  .diffuse = glm::vec3(0.5F, 0.5F, 0.5F),
+	  .diffuse = glm::vec3(0.9F, 0.9F, 0.9F),
 	  .specular = glm::vec3(1.F, 1.F, 1.F),
   };
   //  scene.lights.at(0) = pointLight;
