@@ -39,7 +39,7 @@ auto main() -> int {
   {
 	auto const pointLight = Light{
 		.type = Light::Point,
-		.position = glm::vec3(1.F, 0.F, 2.F),
+		.position = glm::vec3(0.F, 0.F, -2.F),
 		.linear = 0.09F,
 		.quadratic = 0.032F,
 		.ambient = glm::vec3(0.35F, 0.35F, 0.35F),
@@ -62,7 +62,6 @@ auto main() -> int {
 
   game_loop(window, [&](float delta_time, bool & /*should_quit*/) {
 	gui_prepare_frame();
-	gui_show_system_window(delta_time, window);
 
 	processInputs(delta_time, window, *scene.camera);
 
@@ -75,10 +74,7 @@ auto main() -> int {
 	const glm::mat4 projection =
 		glm::perspective(glm::radians(45.0F), static_cast<float>(width) / static_cast<float>(height), 0.1F, 100.0F);
 
-	static float elapsed_time = 0;
-	elapsed_time += delta_time;
-
-	scene.draw(projection);
+	scene.draw(window, delta_time, projection);
 
 	gui_end_frame();
 	glfwPollEvents();

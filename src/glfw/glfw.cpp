@@ -1,4 +1,5 @@
 #include "glfw.h"
+
 #include "../utils/platform_info.h"
 #include "spdlog/spdlog.h"
 

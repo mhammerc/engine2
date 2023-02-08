@@ -1,22 +1,22 @@
 #include "gui.h"
+
 #include "spdlog/fmt/bundled/format.h"
 
+#include <array>
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_opengl3.h>
-
-#include <array>
 #include <numeric>
 
 auto gui_init(GLFWwindow *window) -> bool {
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
   ImGuiIO &io = ImGui::GetIO();
-  io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+  io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;// Enable Keyboard Controls
 
   // Setup Dear ImGui style
   ImGui::StyleColorsDark();
-  //ImGui::StyleColorsLight();
+  //  ImGui::StyleColorsLight();
 
   // Setup Platform/Renderer backends
   ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -36,11 +36,10 @@ auto gui_end_frame() -> void {
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-auto gui_show_system_window(float delta_time, GLFWwindow *window) -> void {
-  // Create a window called "My First Tool", with a menu bar.
+auto gui_show_system_window(Scene *scene, float delta_time, GLFWwindow *window) -> void {
   ImGui::Begin("Engine");
 
-  const auto sample_size = 60;
+  const auto sample_size = 120;
   static std::array<float, sample_size> last_delta_times{};
   static size_t last_delta_times_index = 0;
 
@@ -63,6 +62,8 @@ auto gui_show_system_window(float delta_time, GLFWwindow *window) -> void {
   glfwGetFramebufferSize(window, &width, &height);
   auto rendered_resolution_text = fmt::format("Rendered Resolution: {}x{}", width, height);
   ImGui::Text(rendered_resolution_text.c_str());
+
+  ImGui::Checkbox("Flashlight", &scene->flashlight);
 
   ImGui::End();
 }

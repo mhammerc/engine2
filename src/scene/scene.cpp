@@ -1,12 +1,16 @@
 #include "scene.h"
 
+#include "../gui/gui.h"
+
 #include <spdlog/fmt/fmt.h>
 
-auto Scene::draw(glm::mat4 projection) -> void {
+auto Scene::draw(GLFWwindow *window, float delta_time, glm::mat4 projection) -> void {
+  gui_show_system_window(this, delta_time, window);
+
   camera->computeFront();
 
   lights.at(9) = Light{
-	  .type = Light::Spot,
+	  .type = flashlight ? Light::Spot : Light::Unset,
 	  .position = camera->pos,
 	  .direction = camera->front,
 	  .innerCutOff = glm::cos(glm::radians(12.5F)),
