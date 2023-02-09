@@ -10,6 +10,13 @@
 #include <memory>
 #include <vector>
 
+#define POST_PROCESS_INVERSE (1 << 0)
+#define POST_PROCESS_GRAYSCALE (1 << 1)
+#define POST_PROCESS_SEPIA (1 << 2)
+#define POST_PROCESS_BLUR (1 << 3)
+#define POST_PROCESS_SHARPEN (1 << 4)
+#define POST_PROCESS_EDGE_DETECTION (1 << 5)
+
 /**
  * A `Scene` represent the "world". Everything that currently lives into
  * the world such as objects, lights, behaviors and more.
@@ -28,6 +35,12 @@ class Scene {
 
   bool flashlight = true;
   bool outline = false;
+  bool inverse = false;
+  bool black_and_white = false;
+  bool sepia = false;
+  bool blur = false;
+  bool sharpen = false;
+  bool edge_dectection = false;
 
   std::shared_ptr<ShaderProgram> outline_shader;
 };

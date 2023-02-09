@@ -1,5 +1,6 @@
 #include "camera/camera.h"
 #include "engine.h"
+#include "framebuffer/framebuffer.h"
 #include "glfw/glfw.h"
 #include "gui/gui.h"
 #include "model/model.h"
@@ -35,6 +36,12 @@ auto main() -> int {
 
   auto outline_shader = ShaderProgram::from_vertex_and_fragment("../shaders/outline.vert", "../shaders/outline.frag");
   if (outline_shader == nullptr) {
+	spdlog::critical("could not create shader program.");
+	return 1;
+  }
+
+  auto postprocess_shader = ShaderProgram::from_vertex_and_fragment("../shaders/postprocess.vert", "../shaders/postprocess.frag");
+  if (postprocess_shader == nullptr) {
 	spdlog::critical("could not create shader program.");
 	return 1;
   }
@@ -80,6 +87,10 @@ auto main() -> int {
 	scene.nodes.push_back(node2);
   }
 
+  auto fb = FrameBuffer::create();
+
+  auto quad_vao = VertexArrayObject::from_quad();
+
   game_loop(window, [&](float delta_time, bool & /*should_quit*/) {
 	gui_prepare_frame();
 
@@ -94,7 +105,52 @@ auto main() -> int {
 	const glm::mat4 projection =
 		glm::perspective(glm::radians(45.0F), static_cast<float>(width) / static_cast<float>(height), 0.1F, 100.0F);
 
-	scene.draw(window, delta_time, projection);
+	// Render scene
+	{
+	  fb->bind();
+
+	  glClearColor(0.1F, 0.1F, 0.1F, 1.0F);
+	  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+	  scene.draw(window, delta_time, projection);
+
+	  fb->unbind();
+	}
+
+	// Render postprocess quad
+	{
+	  glDisable(GL_DEPTH_TEST);
+
+	  fb->color_texture()->activate_as(0);
+	  postprocess_shader->setUniform("screenTexture", 0);
+
+	  int post_process = 0;
+	  if (scene.inverse) {
+		post_process |= POST_PROCESS_INVERSE;
+	  }
+	  if (scene.black_and_white) {
+		post_process |= POST_PROCESS_GRAYSCALE;
+	  }
+	  if (scene.sepia) {
+		post_process |= POST_PROCESS_SEPIA;
+	  }
+	  if (scene.blur) {
+		post_process |= POST_PROCESS_BLUR;
+	  }
+	  if (scene.sharpen) {
+		post_process |= POST_PROCESS_SHARPEN;
+	  }
+	  if (scene.edge_dectection) {
+		post_process |= POST_PROCESS_EDGE_DETECTION;
+	  }
+	  postprocess_shader->setUniform("post_process", post_process);
+
+	  postprocess_shader->bind();
+	  quad_vao->draw();
+	  postprocess_shader->unbind();
+
+	  glEnable(GL_DEPTH_TEST);
+	}
 
 	gui_end_frame();
 	glfwPollEvents();

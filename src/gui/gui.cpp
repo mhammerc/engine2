@@ -47,25 +47,35 @@ auto gui_show_system_window(Scene *scene, float delta_time, GLFWwindow *window) 
 
   last_delta_times_index = (last_delta_times_index + 1) % sample_size;
 
-  auto fps_avg =
+  auto average_frame_time =
 	  std::accumulate(last_delta_times.begin(), last_delta_times.end(), 0.F) / static_cast<float>(sample_size);
 
-  auto fps_text = fmt::format("FPS: {:0>3.0f}", 1.F / fps_avg);
-  ImGui::Text(fps_text.c_str());
+  auto fps_text = fmt::format("Average Frame Time: {:.0f}ms", average_frame_time * 1000);
+  ImGui::Text("%s", fps_text.c_str());
 
   int width = 0;
   int height = 0;
   glfwGetWindowSize(window, &width, &height);
-  auto virtual_resolution_text = fmt::format("Virtual Resolution: {}x{}", width, height);
-  ImGui::Text(virtual_resolution_text.c_str());
+  ImGui::Text("Virtual Resolution: %dx%d", width, height);
 
   glfwGetFramebufferSize(window, &width, &height);
-  auto rendered_resolution_text = fmt::format("Rendered Resolution: {}x{}", width, height);
-  ImGui::Text(rendered_resolution_text.c_str());
+  ImGui::Text("Rendered Resolution: %dx%d", width, height);
 
   ImGui::Checkbox("Flashlight", &scene->flashlight);
 
   ImGui::Checkbox("Objects Outline", &scene->outline);
+
+  ImGui::Checkbox("Inverse", &scene->inverse);
+
+  ImGui::Checkbox("Grayscale", &scene->black_and_white);
+
+  ImGui::Checkbox("Sepia", &scene->sepia);
+
+  ImGui::Checkbox("Blur", &scene->blur);
+
+  ImGui::Checkbox("Sharpen", &scene->sharpen);
+
+  ImGui::Checkbox("Edge Detection", &scene->edge_dectection);
 
   ImGui::End();
 }

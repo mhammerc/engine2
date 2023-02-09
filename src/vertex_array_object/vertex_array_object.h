@@ -1,12 +1,13 @@
 #pragma once
 
-#include <memory>
-
 #include "../vertex_buffer_object/vertex_buffer_object.h"
+
+#include <memory>
 
 class VertexArrayObject {
  public:
   static auto from_cube() -> std::shared_ptr<VertexArrayObject>;
+  static auto from_quad() -> std::unique_ptr<VertexArrayObject>;
 
   auto bind() -> void;
   auto unbind() -> void;

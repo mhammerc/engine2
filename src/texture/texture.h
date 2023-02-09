@@ -4,16 +4,20 @@
 #include "image.h"
 
 #include <filesystem>
+#include <memory>
 #include <optional>
 
 class Texture {
  public:
   enum Type {
 	Diffuse,
-	Specular
+	Specular,
+	Color,
+	DepthStencil
   };
 
   static auto from_file(const std::filesystem::path &path, Type type) -> std::optional<Texture>;
+  static auto from_empty(Type type, int width, int height) -> std::unique_ptr<Texture>;
 
   auto activate_as(int index) -> void;
 

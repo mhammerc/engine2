@@ -6,7 +6,7 @@ include(CTest)
 enable_testing()
 
 # Executable and sources
-add_executable(opengl_engine)
+add_executable(opengl_engine src/framebuffer/framebuffer.h src/framebuffer/framebuffer.cpp src/vertex_buffer_object/vertex_buffer_object_from_quad.cpp)
 
 set(SOURCES
         src/camera/camera.cpp

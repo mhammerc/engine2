@@ -2,8 +2,11 @@
 
 ## TODO
 
+- Enable warnings as errors
 - Implement a texture caching
 - Implement a model caching
+- Quaternions in transforms
+- Inspector of objects which allow to view and edit transforms (with euler angles for humans)
 
 ## Build
 

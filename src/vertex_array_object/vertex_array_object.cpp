@@ -18,6 +18,20 @@ auto VertexArrayObject::from_cube() -> std::shared_ptr<VertexArrayObject> {
   return std::make_shared<VertexArrayObject>(std::move(vao));
 }
 
+auto VertexArrayObject::from_quad() -> std::unique_ptr<VertexArrayObject> {
+  GLuint handle = 0;
+  glGenVertexArrays(1, &handle);
+  glBindVertexArray(handle);
+
+  auto vbo = std::make_shared<VertexBufferObject>(VertexBufferObject::from_quad());
+
+  glBindVertexArray(0);
+
+  auto vao = VertexArrayObject(handle, vbo);
+
+  return std::make_unique<VertexArrayObject>(std::move(vao));
+}
+
 auto VertexArrayObject::bind() -> void {
   glBindVertexArray(handle);
 }

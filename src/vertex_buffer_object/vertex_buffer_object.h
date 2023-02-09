@@ -6,6 +6,7 @@
 class VertexBufferObject {
  public:
   static auto from_cube() -> VertexBufferObject;
+  static auto from_quad() -> VertexBufferObject;
 
   auto define_attribute(size_t index, size_t size, size_t offset) -> void;
 
