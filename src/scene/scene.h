@@ -18,6 +18,7 @@ class Scene {
  public:
   auto draw(GLFWwindow *window, float delta_time, glm::mat4 projection) -> void;
   auto draw_nodes(glm::mat4 projection) -> void;
+  auto draw_nodes_outline(glm::mat4 projection) -> void;
   auto draw_lights(glm::mat4 projection) -> void;
 
   std::array<Light, 10> lights{};
@@ -26,6 +27,7 @@ class Scene {
   std::shared_ptr<Camera> camera;
 
   bool flashlight = true;
+  bool outline = false;
 
-  //  std::shared_ptr<ShaderProgram> light_source_shader;
+  std::shared_ptr<ShaderProgram> outline_shader;
 };

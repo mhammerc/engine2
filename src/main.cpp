@@ -33,8 +33,15 @@ auto main() -> int {
 	return 1;
   }
 
+  auto outline_shader = ShaderProgram::from_vertex_and_fragment("../shaders/outline.vert", "../shaders/outline.frag");
+  if (outline_shader == nullptr) {
+	spdlog::critical("could not create shader program.");
+	return 1;
+  }
+
   Scene scene;
   scene.camera = std::make_shared<Camera>(window);
+  scene.outline_shader = outline_shader;
 
   {
 	auto const pointLight = Light{
@@ -52,6 +59,7 @@ auto main() -> int {
   Node node;
   {
 	auto model = std::make_shared<Model>("../assets/backpack/backpack.obj");
+	//	auto model = std::make_shared<Model>("../assets/sponza2/sponza.obj");
 
 	node.shader() = diffuse_shader;
 	node.model() = model;
@@ -60,13 +68,25 @@ auto main() -> int {
 	scene.nodes.push_back(node);
   }
 
+  Node node2;
+  {
+	auto model = std::make_shared<Model>("../assets/backpack/backpack.obj");
+	//	auto model = std::make_shared<Model>("../assets/sponza2/sponza.obj");
+
+	node2.shader() = diffuse_shader;
+	node2.model() = model;
+	node2.position() = glm::vec3(-4.F, 0.F, -5.F);
+
+	scene.nodes.push_back(node2);
+  }
+
   game_loop(window, [&](float delta_time, bool & /*should_quit*/) {
 	gui_prepare_frame();
 
 	processInputs(delta_time, window, *scene.camera);
 
 	glClearColor(0.2F, 0.3F, 0.3F, 1.0F);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	int width = 0;
 	int height = 0;

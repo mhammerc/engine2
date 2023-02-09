@@ -17,7 +17,7 @@ auto processInputs(float delta_time, GLFWwindow *window, Camera &camera) -> void
 	glfwSetWindowShouldClose(window, true);
   }
 
-  const float cameraSpeed = 3.F * delta_time;
+  const float cameraSpeed = 7.F * delta_time;
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 	camera.pos += cameraSpeed * camera.front;
   }
@@ -126,6 +126,8 @@ auto init_glfw_and_opengl() -> GLFWwindow * {
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
   glEnable(GL_DEPTH_TEST);
+
+  glEnable(GL_CULL_FACE);
 
   // V-Sync
   // 0 = unlimited FPS on my Mac

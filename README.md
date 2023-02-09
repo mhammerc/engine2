@@ -1,5 +1,10 @@
 # engine2
 
+## TODO
+
+- Implement a texture caching
+- Implement a model caching
+
 ## Build
 
 We package every dependency as git-submodules. Therefore, after a clone you must run:

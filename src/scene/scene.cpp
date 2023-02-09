@@ -21,8 +21,26 @@ auto Scene::draw(GLFWwindow *window, float delta_time, glm::mat4 projection) -> 
 	  .diffuse = glm::vec3(0.5F, 0.5F, 0.5F),
 	  .specular = glm::vec3(1.F, 1.F, 1.F)};
 
+  if (outline) {
+	glEnable(GL_STENCIL_TEST);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+	glStencilFunc(GL_ALWAYS, 1, 0xFF);
+	glStencilMask(0xFF);
+  }
+
   draw_nodes(projection);
-  draw_lights(projection);
+
+  if (outline) {
+	glStencilMask(0x00);
+	glDisable(GL_DEPTH_TEST);
+	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+
+	draw_nodes_outline(projection);
+
+	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_STENCIL_TEST);
+	glStencilMask(0xFF);
+  }
 }
 
 auto Scene::draw_nodes(glm::mat4 projection) -> void {
@@ -49,6 +67,20 @@ auto Scene::draw_nodes(glm::mat4 projection) -> void {
 	}
 
 	node.draw();
+  }
+}
+
+auto Scene::draw_nodes_outline(glm::mat4 projection) -> void {
+  for (auto &node : nodes) {
+	auto previousShader = node.shader();
+	node.shader() = outline_shader;
+
+	node.shader()->setUniform("view", camera->getMatrix());
+	node.shader()->setUniform("projection", projection);
+
+	node.draw();
+
+	node.shader() = previousShader;
   }
 }
 
