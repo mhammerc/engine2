@@ -1,7 +1,7 @@
 #include "texture.h"
 
-auto Texture::from_file(const std::filesystem::path &path, Type type) -> std::optional<Texture> {
-  auto image = Image::from_file(path, Image::Channels::RGB);
+auto Texture::from_file(const std::filesystem::path &path, Type type, bool flip) -> std::optional<Texture> {
+  auto image = Image::from_file(path, Image::Channels::RGB, flip);
 
   if (!image.has_value()) {
 	return std::nullopt;

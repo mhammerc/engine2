@@ -49,6 +49,9 @@ auto Scene::draw_nodes(glm::mat4 projection) -> void {
 	node.shader()->setUniform("projection", projection);
 	node.shader()->setUniform("cameraPosition", camera->pos);
 	node.shader()->setUniform("material.shininess", 32.0F);
+	node.shader()->setUniform("material.texture_environment", 10);
+	node.shader()->setUniform("material.reflect", mirror ? 1.F : 0.F);
+	node.shader()->setUniform("material.refract", glass ? 1.F : 0.F);
 
 	for (size_t i = 0; i < 10; ++i) {
 	  Light const &light = lights.at(i);

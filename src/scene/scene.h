@@ -34,6 +34,8 @@ class Scene {
   std::shared_ptr<Camera> camera;
 
   bool flashlight = true;
+  bool mirror = false;
+  bool glass = false;
   bool outline = false;
   bool inverse = false;
   bool black_and_white = false;

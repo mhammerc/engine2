@@ -1,9 +1,10 @@
 #include "image.h"
+
 #include "spdlog/spdlog.h"
 
 #include <stb_image/stb_image.h>
 
-auto Image::from_file(const std::filesystem::path &path, std::optional<Channels> desired_channels) -> std::optional<
+auto Image::from_file(const std::filesystem::path &path, std::optional<Channels> desired_channels, bool flip) -> std::optional<
 	Image> {
   int width = 0;
   int height = 0;
@@ -14,7 +15,7 @@ auto Image::from_file(const std::filesystem::path &path, std::optional<Channels>
 	desired_channels_numeric = *desired_channels;
   }
 
-  stbi_set_flip_vertically_on_load(true);
+  stbi_set_flip_vertically_on_load(flip);
   unsigned char *data =
 	  stbi_load(path.c_str(), &width, &height, &number_of_channels, desired_channels_numeric);
 
@@ -42,5 +43,6 @@ Image::Image(Image &&from) noexcept
 Image::~Image() noexcept {
   if (data) {
 	stbi_image_free((void *)data);
+	data = nullptr;
   }
 }

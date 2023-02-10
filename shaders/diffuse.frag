@@ -67,10 +67,12 @@ struct Material {
     sampler2D texture_specular1;
     sampler2D texture_specular2;
 
-    sampler2D specular;
+    samplerCube texture_environment;
 
 // How much specular components
     float shininess;
+    float reflect;
+    float refract;
 };
 
 uniform Material material;
@@ -89,19 +91,30 @@ void main()
 
     vec3 fragColor = vec3(0);
 
-    for (int i = 0; i < NUMBER_OF_LIGHTS; ++i) {
-        Light light = lights[i];
+    if (material.reflect != 0.) {
+        vec3 reflection = reflect(-fragmentToCameraDirection, normal);
+        fragColor += texture(material.texture_environment, reflection).xyz;
+    }
+    else if (material.refract != 0.) {
+        float ratio = 1. / 1.52;
+        vec3 refraction = refract(-fragmentToCameraDirection, normal, ratio);
+        fragColor += texture(material.texture_environment, refraction).xyz;
+    }
+    else {
+        for (int i = 0; i < NUMBER_OF_LIGHTS; ++i) {
+            Light light = lights[i];
 
-        light.direction = normalize(light.direction);
+            light.direction = normalize(light.direction);
 
-        if (lights[i].type == LIGHT_TYPE_DIRECTIONAL) {
-            fragColor += lightDirectional(light, normal, fragmentToCameraDirection);
-        }
-        else if (lights[i].type == LIGHT_TYPE_POINT) {
-            fragColor += lightPoint(light, normal, fragmentToCameraDirection);
-        }
-        else if (lights[i].type == LIGHT_TYPE_SPOT) {
-            fragColor += lightSpot(light, normal, fragmentToCameraDirection);
+            if (lights[i].type == LIGHT_TYPE_DIRECTIONAL) {
+                fragColor += lightDirectional(light, normal, fragmentToCameraDirection);
+            }
+            else if (lights[i].type == LIGHT_TYPE_POINT) {
+                fragColor += lightPoint(light, normal, fragmentToCameraDirection);
+            }
+            else if (lights[i].type == LIGHT_TYPE_SPOT) {
+                fragColor += lightSpot(light, normal, fragmentToCameraDirection);
+            }
         }
     }
 

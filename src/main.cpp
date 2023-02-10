@@ -7,6 +7,7 @@
 #include "opengl/opengl.h"
 #include "scene/scene.h"
 #include "shader/shader_program.h"
+#include "skybox/skybox.h"
 #include "spdlog/spdlog.h"
 #include "stb_image/stb_image.h"
 
@@ -22,7 +23,7 @@ auto main() -> int {
 	return 1;
   }
 
-  auto diffuse_shader = ShaderProgram::from_vertex_and_fragment("../shaders/diffuse.vert", "../shaders/diffuse.frag");
+  std::shared_ptr<ShaderProgram> diffuse_shader = std::move(ShaderProgram::from_vertex_and_fragment("../shaders/diffuse.vert", "../shaders/diffuse.frag"));
   if (diffuse_shader == nullptr) {
 	spdlog::critical("could not create shader program.");
 	return 1;
@@ -48,7 +49,7 @@ auto main() -> int {
 
   Scene scene;
   scene.camera = std::make_shared<Camera>(window);
-  scene.outline_shader = outline_shader;
+  scene.outline_shader = std::move(outline_shader);
 
   {
 	auto const pointLight = Light{
@@ -87,6 +88,16 @@ auto main() -> int {
 	scene.nodes.push_back(node2);
   }
 
+  auto skybox = Skybox::from_files(
+	  {
+		  "../assets/skybox/right.jpg",
+		  "../assets/skybox/left.jpg",
+		  "../assets/skybox/top.jpg",
+		  "../assets/skybox/bottom.jpg",
+		  "../assets/skybox/front.jpg",
+		  "../assets/skybox/back.jpg",
+	  });
+
   int width = 0;
   int height = 0;
   glfwGetFramebufferSize(window, &width, &height);
@@ -116,7 +127,10 @@ auto main() -> int {
 	  glClearColor(0.1F, 0.1F, 0.1F, 1.0F);
 	  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
+	  skybox->activate_cubemap_as(10);
 	  scene.draw(window, delta_time, projection);
+
+	  skybox->draw(projection, scene.camera->getMatrix());
 
 	  fb->unbind();
 	}

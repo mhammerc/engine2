@@ -25,7 +25,7 @@ ShaderProgram::~ShaderProgram() noexcept {
 }
 
 auto ShaderProgram::from_vertex_and_fragment(const std::filesystem::path &vertex_file,
-											 const std::filesystem::path &fragment_file) -> std::shared_ptr<ShaderProgram> {
+											 const std::filesystem::path &fragment_file) -> std::unique_ptr<ShaderProgram> {
   auto vertex = ShaderSource::from_file(ShaderSource::VERTEX, vertex_file);
 
   if (!vertex.has_value()) {
@@ -71,7 +71,7 @@ auto ShaderProgram::from_vertex_and_fragment(const std::filesystem::path &vertex
 	return nullptr;
   }
 
-  auto program = std::make_shared<ShaderProgram>(ShaderProgram{});
+  auto program = std::make_unique<ShaderProgram>(ShaderProgram{});
   program->handle = handle;
 
   return program;

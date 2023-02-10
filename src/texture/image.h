@@ -9,7 +9,7 @@ class Image {
 	RGB = 3,
 	RGBA = 4,
 	G = 1, // Gray
-	GA = 2, // Gray Alpha
+	GA = 2,// Gray Alpha
   };
 
   const int width;
@@ -18,8 +18,7 @@ class Image {
 
   const unsigned char *data;
 
-  static auto from_file(const std::filesystem::path &path, std::optional<Channels> desired_channels) ->
-  std::optional<Image>;
+  static auto from_file(const std::filesystem::path &path, std::optional<Channels> desired_channels, bool flip = true) -> std::optional<Image>;
 
   ~Image() noexcept;
   Image(const Image &) = delete;
