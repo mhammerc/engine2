@@ -87,7 +87,10 @@ auto main() -> int {
 	scene.nodes.push_back(node2);
   }
 
-  auto fb = FrameBuffer::create();
+  int width = 0;
+  int height = 0;
+  glfwGetFramebufferSize(window, &width, &height);
+  auto fb = FrameBuffer::create(width, height);
 
   auto quad_vao = VertexArrayObject::from_quad();
 
@@ -99,11 +102,12 @@ auto main() -> int {
 	glClearColor(0.2F, 0.3F, 0.3F, 1.0F);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-	int width = 0;
-	int height = 0;
-	glfwGetWindowSize(window, &width, &height);
+	glfwGetFramebufferSize(window, &width, &height);
 	const glm::mat4 projection =
 		glm::perspective(glm::radians(45.0F), static_cast<float>(width) / static_cast<float>(height), 0.1F, 100.0F);
+
+	// Resize the framebuffer as needed
+	fb->resize(width, height);
 
 	// Render scene
 	{

@@ -21,16 +21,17 @@ class FrameBuffer {
 	ColorDepthStencil
   };
 
-  static auto create() -> std::unique_ptr<FrameBuffer>;
+  static auto create(int width, int height) -> std::unique_ptr<FrameBuffer>;
 
   // Methods
-  auto resize() -> void;
+  auto resize(int width, int height) -> void;
 
   auto bind() -> void;
   auto unbind() -> void;
 
   [[nodiscard]] auto handle() const -> GLuint;
   [[nodiscard]] auto type() const -> Type;
+  [[nodiscard]] auto size() const -> glm::vec2;
   [[nodiscard]] auto color_texture() const -> Texture *;
 
  private:
@@ -38,6 +39,7 @@ class FrameBuffer {
 
   GLuint _handle = 0;
   Type _type = Type::ColorDepthStencil;
+  glm::vec2 _size;
 
   std::unique_ptr<Texture> _color;
   std::unique_ptr<Texture> _depth_stencil;

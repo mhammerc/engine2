@@ -1,8 +1,9 @@
 #include "framebuffer.h"
 
-#include "spdlog/spdlog.h"
+#include <spdlog/spdlog.h>
+#include <utility>
 
-auto FrameBuffer::create() -> std::unique_ptr<FrameBuffer> {
+auto FrameBuffer::create(int width, int height) -> std::unique_ptr<FrameBuffer> {
   GLuint handle = 0;
   glGenFramebuffers(1, &handle);
 
@@ -13,10 +14,9 @@ auto FrameBuffer::create() -> std::unique_ptr<FrameBuffer> {
   // - all buffers are complete
   // - each buffers must be of the same size as the framebuffer
 
-  auto color_buffer = Texture::from_empty(Texture::Type::Color, 2560, 1800);
-  auto depth_stencil_buffer = Texture::from_empty(Texture::Type::DepthStencil, 2560, 1800);
+  auto color_buffer = Texture::from_empty(Texture::Type::Color, width, height);
+  auto depth_stencil_buffer = Texture::from_empty(Texture::Type::DepthStencil, width, height);
 
-  color_buffer->activate_as(0);// Is this necessary?
   glFramebufferTexture2D(
 	  GL_FRAMEBUFFER,
 	  GL_COLOR_ATTACHMENT0,
@@ -24,7 +24,6 @@ auto FrameBuffer::create() -> std::unique_ptr<FrameBuffer> {
 	  color_buffer->handle(),
 	  0);
 
-  depth_stencil_buffer->activate_as(0);
   glFramebufferTexture2D(
 	  GL_FRAMEBUFFER,
 	  GL_DEPTH_STENCIL_ATTACHMENT,
@@ -42,14 +41,22 @@ auto FrameBuffer::create() -> std::unique_ptr<FrameBuffer> {
   auto frame_buffer = std::make_unique<FrameBuffer>(std::move(FrameBuffer()));
   frame_buffer->_handle = handle;
   frame_buffer->_type = Type::ColorDepthStencil;
+  frame_buffer->_size = glm::vec2(width, height);
   frame_buffer->_color = std::move(color_buffer);
   frame_buffer->_depth_stencil = std::move(depth_stencil_buffer);
 
   return frame_buffer;
 }
 
-auto FrameBuffer::resize() -> void {
-  spdlog::critical("function FrameBuffer::resize not implemented");
+auto FrameBuffer::resize(int width, int height) -> void {
+  if (width == static_cast<int>(_size.x) && height == static_cast<int>(_size.y)) {
+	// Already the good size
+	return;
+  }
+
+  auto new_frame_buffer = FrameBuffer::create(width, height);
+
+  std::swap(*this, *new_frame_buffer);
 }
 
 auto FrameBuffer::bind() -> void {
@@ -68,6 +75,10 @@ auto FrameBuffer::type() const -> Type {
   return _type;
 }
 
+auto FrameBuffer::size() const -> glm::vec2 {
+  return _size;
+}
+
 auto FrameBuffer::color_texture() const -> Texture * {
   return _color.get();
 }
@@ -77,6 +88,7 @@ FrameBuffer::FrameBuffer() {
 
 FrameBuffer::FrameBuffer(FrameBuffer &&from) noexcept : _handle(from._handle),
 														_type(from._type),
+														_size(from._size),
 														_color(std::move(from._color)),
 														_depth_stencil(std::move(from._depth_stencil)) {
   from._handle = 0;
@@ -85,6 +97,7 @@ FrameBuffer::FrameBuffer(FrameBuffer &&from) noexcept : _handle(from._handle),
 auto FrameBuffer::operator=(FrameBuffer &&from) noexcept -> FrameBuffer & {
   _handle = from._handle;
   _type = from._type;
+  _size = from._size;
   _color = std::move(from._color);
   _depth_stencil = std::move(from._depth_stencil);
 
