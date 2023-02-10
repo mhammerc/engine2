@@ -2,6 +2,7 @@
 
 ## TODO
 
+- Update GLAD to OpenGL Core 4.1
 - Enable warnings as errors
 - Implement a texture caching
 - Implement a model caching

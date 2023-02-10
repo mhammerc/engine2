@@ -128,9 +128,7 @@ auto main() -> int {
 	  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	  skybox->activate_cubemap_as(10);
-	  scene.draw(window, delta_time, projection);
-
-	  skybox->draw(projection, scene.camera->getMatrix());
+	  scene.draw(window, delta_time, projection, skybox.get());
 
 	  fb->unbind();
 	}

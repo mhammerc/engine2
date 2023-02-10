@@ -63,6 +63,8 @@ auto gui_show_system_window(Scene *scene, float delta_time, GLFWwindow *window) 
 
   ImGui::Checkbox("Flashlight", &scene->flashlight);
 
+  ImGui::Checkbox("Wireframe", &scene->wireframe);
+
   ImGui::Checkbox("Mirror", &scene->mirror);
 
   ImGui::Checkbox("Glass", &scene->glass);

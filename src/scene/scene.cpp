@@ -4,7 +4,7 @@
 
 #include <spdlog/fmt/fmt.h>
 
-auto Scene::draw(GLFWwindow *window, float delta_time, glm::mat4 projection) -> void {
+auto Scene::draw(GLFWwindow *window, float delta_time, glm::mat4 projection, Skybox *skybox) -> void {
   gui_show_system_window(this, delta_time, window);
 
   camera->computeFront();
@@ -28,9 +28,18 @@ auto Scene::draw(GLFWwindow *window, float delta_time, glm::mat4 projection) -> 
 	glStencilMask(0xFF);
   }
 
+  if (wireframe) {
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  }
   draw_nodes(projection);
 
+  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+  glDisable(GL_STENCIL_TEST);
+  skybox->draw(projection, camera->getMatrix());
+
   if (outline) {
+	glEnable(GL_STENCIL_TEST);
 	glStencilMask(0x00);
 	glDisable(GL_DEPTH_TEST);
 	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
