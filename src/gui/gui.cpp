@@ -61,27 +61,38 @@ auto gui_show_system_window(Scene *scene, float delta_time, GLFWwindow *window) 
   glfwGetFramebufferSize(window, &width, &height);
   ImGui::Text("Rendered Resolution: %dx%d", width, height);
 
-  ImGui::Checkbox("Flashlight", &scene->flashlight);
+  if (ImGui::CollapsingHeader("Lighting")) {
+	ImGui::Checkbox("Flashlight", &scene->flashlight);
+  }
 
-  ImGui::Checkbox("Wireframe", &scene->wireframe);
+  if (ImGui::CollapsingHeader("Shaders")) {
 
-  ImGui::Checkbox("Mirror", &scene->mirror);
+	ImGui::Checkbox("Wireframe", &scene->wireframe);
 
-  ImGui::Checkbox("Glass", &scene->glass);
+	ImGui::Checkbox("Mirror", &scene->mirror);
 
-  ImGui::Checkbox("Objects Outline", &scene->outline);
+	ImGui::Checkbox("Glass", &scene->glass);
 
-  ImGui::Checkbox("Inverse", &scene->inverse);
+	ImGui::Checkbox("Objects Outline", &scene->outline);
 
-  ImGui::Checkbox("Grayscale", &scene->black_and_white);
+	ImGui::Checkbox("Show Normals", &scene->show_normals);
 
-  ImGui::Checkbox("Sepia", &scene->sepia);
+	ImGui::SliderFloat("Explosion", &scene->explosion, 0.F, 1.F);
+  }
 
-  ImGui::Checkbox("Blur", &scene->blur);
+  if (ImGui::CollapsingHeader("Post-Processing")) {
+	ImGui::Checkbox("Inverse", &scene->inverse);
 
-  ImGui::Checkbox("Sharpen", &scene->sharpen);
+	ImGui::Checkbox("Grayscale", &scene->black_and_white);
 
-  ImGui::Checkbox("Edge Detection", &scene->edge_dectection);
+	ImGui::Checkbox("Sepia", &scene->sepia);
+
+	ImGui::Checkbox("Blur", &scene->blur);
+
+	ImGui::Checkbox("Sharpen", &scene->sharpen);
+
+	ImGui::Checkbox("Edge Detection", &scene->edge_dectection);
+  }
 
   ImGui::End();
 }

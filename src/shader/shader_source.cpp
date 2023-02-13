@@ -16,6 +16,9 @@ static auto shader_type(ShaderSource::Type type) -> GLenum {
 	case ShaderSource::VERTEX:
 	  shaderType = GL_VERTEX_SHADER;
 	  break;
+	case ShaderSource::GEOMETRY:
+	  shaderType = GL_GEOMETRY_SHADER;
+	  break;
 	default:
 	  throw std::logic_error("not implemented");
 	  break;

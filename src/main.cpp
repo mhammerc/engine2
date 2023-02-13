@@ -23,7 +23,8 @@ auto main() -> int {
 	return 1;
   }
 
-  std::shared_ptr<ShaderProgram> diffuse_shader = std::move(ShaderProgram::from_vertex_and_fragment("../shaders/diffuse.vert", "../shaders/diffuse.frag"));
+  //  std::shared_ptr<ShaderProgram> diffuse_shader = std::move(ShaderProgram::from_vertex_and_fragment("../shaders/diffuse.vert", "../shaders/diffuse.frag"));
+  std::shared_ptr<ShaderProgram> diffuse_shader = std::move(ShaderProgram::from_vertex_and_fragment_and_geometry("../shaders/diffuse.vert", "../shaders/diffuse.frag", "../shaders/diffuse.glsl"));
   if (diffuse_shader == nullptr) {
 	spdlog::critical("could not create shader program.");
 	return 1;
@@ -47,9 +48,16 @@ auto main() -> int {
 	return 1;
   }
 
+  auto normal_shader = ShaderProgram::from_vertex_and_fragment_and_geometry("../shaders/normal.vert", "../shaders/normal.frag", "../shaders/normal.geo");
+  if (normal_shader == nullptr) {
+	spdlog::critical("could not create shader program.");
+	return 1;
+  }
+
   Scene scene;
   scene.camera = std::make_shared<Camera>(window);
   scene.outline_shader = std::move(outline_shader);
+  scene.normal_shader = std::move(normal_shader);
 
   {
 	auto const pointLight = Light{

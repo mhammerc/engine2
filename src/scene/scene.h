@@ -27,6 +27,7 @@ class Scene {
   auto draw(GLFWwindow *window, float delta_time, glm::mat4 projection, Skybox *skybox) -> void;
   auto draw_nodes(glm::mat4 projection) -> void;
   auto draw_nodes_outline(glm::mat4 projection) -> void;
+  auto draw_nodes_normals(glm::mat4 projection) -> void;
   auto draw_lights(glm::mat4 projection) -> void;
 
   std::array<Light, 10> lights{};
@@ -45,6 +46,9 @@ class Scene {
   bool blur = false;
   bool sharpen = false;
   bool edge_dectection = false;
+  bool show_normals = false;
+  float explosion = 0.F;
 
   std::shared_ptr<ShaderProgram> outline_shader;
+  std::shared_ptr<ShaderProgram> normal_shader;
 };

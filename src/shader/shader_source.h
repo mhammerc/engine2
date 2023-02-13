@@ -10,7 +10,8 @@ struct ShaderSource {
   enum Type {
 	UNKNOWN,
 	FRAGMENT,
-	VERTEX
+	VERTEX,
+	GEOMETRY
   };
 
   static auto from_file(Type type, const std::filesystem::path &path) -> std::optional<ShaderSource>;

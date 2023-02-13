@@ -10,6 +10,9 @@ class ShaderProgram {
  public:
   static auto from_vertex_and_fragment(const std::filesystem::path &vertex,
 									   const std::filesystem::path &fragment) -> std::unique_ptr<ShaderProgram>;
+  static auto from_vertex_and_fragment_and_geometry(const std::filesystem::path &vertex,
+													const std::filesystem::path &fragment,
+													const std::filesystem::path &geometry) -> std::unique_ptr<ShaderProgram>;
 
   ~ShaderProgram() noexcept;
 
@@ -34,4 +37,6 @@ class ShaderProgram {
   ShaderProgram() = default;
 
   GLuint handle = 0;
+
+  auto link() -> bool;
 };

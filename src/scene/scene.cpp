@@ -31,7 +31,12 @@ auto Scene::draw(GLFWwindow *window, float delta_time, glm::mat4 projection, Sky
   if (wireframe) {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   }
+
   draw_nodes(projection);
+
+  if (show_normals) {
+	draw_nodes_normals(projection);
+  }
 
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
@@ -61,6 +66,7 @@ auto Scene::draw_nodes(glm::mat4 projection) -> void {
 	node.shader()->setUniform("material.texture_environment", 10);
 	node.shader()->setUniform("material.reflect", mirror ? 1.F : 0.F);
 	node.shader()->setUniform("material.refract", glass ? 1.F : 0.F);
+	node.shader()->setUniform("explosion", explosion);
 
 	for (size_t i = 0; i < 10; ++i) {
 	  Light const &light = lights.at(i);
@@ -86,6 +92,20 @@ auto Scene::draw_nodes_outline(glm::mat4 projection) -> void {
   for (auto &node : nodes) {
 	auto previousShader = node.shader();
 	node.shader() = outline_shader;
+
+	node.shader()->setUniform("view", camera->getMatrix());
+	node.shader()->setUniform("projection", projection);
+
+	node.draw();
+
+	node.shader() = previousShader;
+  }
+}
+
+auto Scene::draw_nodes_normals(glm::mat4 projection) -> void {
+  for (auto &node : nodes) {
+	auto previousShader = node.shader();
+	node.shader() = normal_shader;
 
 	node.shader()->setUniform("view", camera->getMatrix());
 	node.shader()->setUniform("projection", projection);

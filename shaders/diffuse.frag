@@ -2,9 +2,14 @@
 
 out vec4 FragColor;
 
-in vec2 TexCoord;
-in vec3 Normal;// world direction
-in vec3 FragmentPosition;// world position
+in GEO_OUT {
+    vec2 TexCoord;
+    vec3 Normal;// world position
+    vec3 FragmentPosition;// world position
+} vs_out;
+vec2 TexCoord = vs_out.TexCoord;
+vec3 Normal = vs_out.Normal;
+vec3 FragmentPosition = vs_out.FragmentPosition;
 
 // Position of the camera
 uniform vec3 cameraPosition;

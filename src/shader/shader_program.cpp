@@ -51,6 +51,67 @@ auto ShaderProgram::from_vertex_and_fragment(const std::filesystem::path &vertex
   glAttachShader(handle, vertex->handle());
   glAttachShader(handle, fragment->handle());
 
+  auto program = std::make_unique<ShaderProgram>(ShaderProgram{});
+  program->handle = handle;
+
+  if (!program->link()) {
+	return nullptr;
+  }
+
+  return program;
+}
+
+auto ShaderProgram::from_vertex_and_fragment_and_geometry(const std::filesystem::path &vertex_file,
+														  const std::filesystem::path &fragment_file,
+														  const std::filesystem::path &geometry_file)
+	-> std::unique_ptr<ShaderProgram> {
+  auto vertex = ShaderSource::from_file(ShaderSource::VERTEX, vertex_file);
+
+  if (!vertex.has_value()) {
+	return nullptr;
+  }
+
+  if (!vertex->compile()) {
+	return nullptr;
+  }
+
+  auto geometry = ShaderSource::from_file(ShaderSource::GEOMETRY, geometry_file);
+
+  if (!geometry.has_value()) {
+	return nullptr;
+  }
+
+  if (!geometry->compile()) {
+	return nullptr;
+  }
+
+  auto fragment = ShaderSource::from_file(ShaderSource::FRAGMENT, fragment_file);
+
+  if (!fragment.has_value()) {
+	return nullptr;
+  }
+
+  if (!fragment->compile()) {
+	return nullptr;
+  }
+
+  GLuint const handle = glCreateProgram();
+
+  glAttachShader(handle, vertex->handle());
+  glAttachShader(handle, geometry->handle());
+  glAttachShader(handle, fragment->handle());
+
+  auto program = std::make_unique<ShaderProgram>(ShaderProgram{});
+  program->handle = handle;
+
+  if (!program->link()) {
+	return nullptr;
+  }
+
+  return program;
+}
+
+auto ShaderProgram::link() -> bool {
   glLinkProgram(handle);
 
   std::array<char, 1024> log{};
@@ -59,22 +120,19 @@ auto ShaderProgram::from_vertex_and_fragment(const std::filesystem::path &vertex
 
   // Logs may contain compilation errors, warning, etc.
   if (log_size > 0) {
-	spdlog::warn("Log of ShaderProgram {} and {}:\n{}", vertex_file.string(), fragment_file.string(), log.data());
+	spdlog::warn("Log of ShaderProgram:\n{}", log.data());
   }
 
   int success = 0;
   glGetProgramiv(handle, GL_LINK_STATUS, &success);
 
   if (success == 0) {
-	spdlog::error("Could not create or link ShaderProgram {} and {}.", vertex_file.string(), fragment_file.string());
+	spdlog::error("Could not create or link ShaderProgram.");
 
-	return nullptr;
+	return false;
   }
 
-  auto program = std::make_unique<ShaderProgram>(ShaderProgram{});
-  program->handle = handle;
-
-  return program;
+  return true;
 }
 
 void ShaderProgram::setUniform(const std::string &name, int value) {
