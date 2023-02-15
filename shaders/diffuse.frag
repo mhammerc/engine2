@@ -134,8 +134,8 @@ vec3 lightDirectional(Light light, vec3 normal, vec3 fragmentToCameraDirection) 
     float diffuseIntensity = max(dot(normal, fragmentToLightDirection), 0.0);
 
     // specular shading
-    vec3 reflectDirection = reflect(-fragmentToLightDirection, normal);
-    float specularIntensity = pow(max(dot(fragmentToCameraDirection, reflectDirection), 0.0), material.shininess);
+    vec3 halfwayDirection = normalize(fragmentToLightDirection + fragmentToCameraDirection);
+    float specularIntensity = pow(max(dot(normal, halfwayDirection), 0.0), material.shininess);
 
     // combine results
     vec3 ambient = light.ambient * vec3(texture(material.texture_diffuse1, TexCoord));
@@ -154,8 +154,8 @@ vec3 lightPoint(Light light, vec3 normal, vec3 fragmentToCameraDirection) {
     float diffuseIntensity = max(dot(normal, fragmentToLightDirection), 0.0);
 
     // specular shading
-    vec3 reflectDirection = reflect(-fragmentToLightDirection, normal);
-    float specularIntensity = pow(max(dot(fragmentToCameraDirection, reflectDirection), 0.0), material.shininess);
+    vec3 halfwayDirection = normalize(fragmentToLightDirection + fragmentToCameraDirection);
+    float specularIntensity = pow(max(dot(normal, halfwayDirection), 0.0), material.shininess);
 
     // attenuation
     // It is a simple quadratic function
@@ -183,8 +183,8 @@ vec3 lightSpot(Light light, vec3 normal, vec3 fragmentToCameraDirection) {
     float diffuseIntensity = max(dot(normal, fragmentToLightDirection), 0.0);
 
     // specular shading
-    vec3 reflectDir = reflect(lightToFragmentDirection, normal);
-    float specularIntensity = pow(max(dot(fragmentToCameraDirection, reflectDir), 0.0), material.shininess);
+    vec3 halfwayDirection = normalize(fragmentToLightDirection + fragmentToCameraDirection);
+    float specularIntensity = pow(max(dot(normal, halfwayDirection), 0.0), material.shininess);
 
     // attenuation
     float distance = length(light.position - FragmentPosition);
