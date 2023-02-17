@@ -2,16 +2,18 @@ cmake_minimum_required(VERSION 3.20)
 project(opengl_engine VERSION 0.1.0)
 
 # Tests
-include(CTest)
-enable_testing()
+# include(CTest)
+# enable_testing()
 
 # Executable and sources
-add_executable(opengl_engine src/framebuffer/framebuffer.h src/framebuffer/framebuffer.cpp src/vertex_buffer_object/vertex_buffer_object_from_quad.cpp src/skybox/skybox.h src/skybox/skybox.cpp)
+add_executable(opengl_engine)
 
 set(SOURCES
         src/camera/camera.cpp
         src/camera/camera.h
         src/engine.h
+        src/framebuffer/framebuffer.cpp
+        src/framebuffer/framebuffer.h
         src/game_loop.cpp
         src/glfw/glfw.cpp
         src/glfw/glfw.h
@@ -33,6 +35,8 @@ set(SOURCES
         src/shader/shader_program.h
         src/shader/shader_source.cpp
         src/shader/shader_source.h
+        src/skybox/skybox.cpp
+        src/skybox/skybox.h
         src/texture/image.cpp
         src/texture/image.h
         src/texture/texture.cpp
@@ -46,24 +50,32 @@ set(SOURCES
         src/vertex_buffer_object/vertex_buffer_object.cpp
         src/vertex_buffer_object/vertex_buffer_object.h
         src/vertex_buffer_object/vertex_buffer_object_from_cube.cpp
+        src/vertex_buffer_object/vertex_buffer_object_from_quad.cpp
         )
 
 target_sources(opengl_engine PRIVATE ${SOURCES})
 
-# C++20
-set_property(TARGET opengl_engine PROPERTY CXX_STANDARD 20)
+# C++23
+set_property(TARGET opengl_engine PROPERTY CXX_STANDARD 23)
+
+# Enable warnings, and warnings as errors
+if(MSVC)
+  target_compile_options(opengl_engine PRIVATE /W4 /WX)
+else()
+  target_compile_options(opengl_engine BEFORE PRIVATE -Wall -Wextra -Wpedantic -Werror)
+endif()
 
 # spdlog
-add_subdirectory(vendors/spdlog)
+add_subdirectory(vendors/spdlog EXCLUDE_FROM_ALL)
 target_link_libraries(opengl_engine PUBLIC spdlog)
 
 # GLFW
-add_subdirectory(vendors/glfw)
+add_subdirectory(vendors/glfw EXCLUDE_FROM_ALL)
 target_link_libraries(opengl_engine PUBLIC glfw)
 
 # Open Asset Import Library (assimp)
-add_subdirectory(vendors/assimp)
-target_compile_options(assimp PUBLIC -Wno-error)
+add_subdirectory(vendors/assimp EXCLUDE_FROM_ALL)
+target_compile_options(assimp PRIVATE -Wno-error)
 target_link_libraries(opengl_engine PUBLIC assimp)
 
 # GLM

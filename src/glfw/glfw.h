@@ -1,11 +1,10 @@
 #pragma once
 
-#include "../opengl/opengl.h"
 #include "../camera/camera.h"
-#include <GLFW/glfw3.h>
+#include "../opengl/opengl.h"
 
-auto init_glfw_and_opengl() -> GLFWwindow *;
+auto init_glfw_and_opengl() -> GLFWwindow*;
 
-auto processInputs(float delta_time, GLFWwindow *window, Camera &camera) -> void;
+auto processInputs(float delta_time, GLFWwindow* window, Camera& camera) -> void;
 
-auto terminate_glfw(GLFWwindow *window) -> void;
+auto terminate_glfw(GLFWwindow* window) -> void;

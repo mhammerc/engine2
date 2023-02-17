@@ -4,9 +4,10 @@ out vec4 FragColor;
 
 in GEO_OUT {
     vec2 TexCoord;
-    vec3 Normal;// world position
-    vec3 FragmentPosition;// world position
-} vs_out;
+    vec3 Normal;  // world position
+    vec3 FragmentPosition;  // world position
+}
+vs_out;
 vec2 TexCoord = vs_out.TexCoord;
 vec3 Normal = vs_out.Normal;
 vec3 FragmentPosition = vs_out.FragmentPosition;
@@ -33,29 +34,28 @@ uniform vec3 cameraPosition;
  * all directions. It is affected by attenuation.
  *
  * `LIGHT_TYPE_SPOT`: Represent a light in a given position and a given
- * direction. Emits light towards the direction from the position, in a circle with a given angle.
- * See innerCutOff and outerCutOff.
+ * direction. Emits light towards the direction from the position, in a circle
+ * with a given angle. See innerCutOff and outerCutOff.
  *
  * `LIGHT_TYPE_UNSET`: The light is not a light. Do nothing.
  */
 struct Light {
-// See above for types (eg. LIGHT_TYPE_XXX)
+    // See above for types (eg. LIGHT_TYPE_XXX)
     int type;
 
-    vec3 position;// point, spot
-    vec3 direction;// directional, spot. Direction where the light points.
+    vec3 position;  // point, spot
+    vec3 direction;  // directional, spot. Direction where the light points.
 
-// Spot lights inner and outer cutoff for a smooth transition
-    float innerCutOff;// spot
-    float outerCutOff;// spot
+    // Spot lights inner and outer cutoff for a smooth transition
+    float innerCutOff;  // spot
+    float outerCutOff;  // spot
 
+    // constant, linear and quadratic components for attenuation
+    float constant;  // spot
+    float linear;  // spot
+    float quadratic;  // spot
 
-// constant, linear and quadratic components for attenuation
-    float constant;// spot
-    float linear;// spot
-    float quadratic;// spot
-
-// What is the color of the light?
+    // What is the color of the light?
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
@@ -74,7 +74,7 @@ struct Material {
 
     samplerCube texture_environment;
 
-// How much specular components
+    // How much specular components
     float shininess;
     float reflect;
     float refract;
@@ -86,8 +86,7 @@ vec3 lightDirectional(Light light, vec3 normal, vec3 fragmentToCameraDirection);
 vec3 lightPoint(Light light, vec3 normal, vec3 fragmentToCameraDirection);
 vec3 lightSpot(Light light, vec3 normal, vec3 fragmentToCameraDirection);
 
-void main()
-{
+void main() {
     // The normal vector comes from the vertex shader. Because of interpolation,
     // we must normalize it.
     vec3 normal = normalize(Normal);
@@ -99,13 +98,11 @@ void main()
     if (material.reflect != 0.) {
         vec3 reflection = reflect(-fragmentToCameraDirection, normal);
         fragColor += texture(material.texture_environment, reflection).xyz;
-    }
-    else if (material.refract != 0.) {
+    } else if (material.refract != 0.) {
         float ratio = 1. / 1.52;
         vec3 refraction = refract(-fragmentToCameraDirection, normal, ratio);
         fragColor += texture(material.texture_environment, refraction).xyz;
-    }
-    else {
+    } else {
         for (int i = 0; i < NUMBER_OF_LIGHTS; ++i) {
             Light light = lights[i];
 
@@ -113,11 +110,9 @@ void main()
 
             if (lights[i].type == LIGHT_TYPE_DIRECTIONAL) {
                 fragColor += lightDirectional(light, normal, fragmentToCameraDirection);
-            }
-            else if (lights[i].type == LIGHT_TYPE_POINT) {
+            } else if (lights[i].type == LIGHT_TYPE_POINT) {
                 fragColor += lightPoint(light, normal, fragmentToCameraDirection);
-            }
-            else if (lights[i].type == LIGHT_TYPE_SPOT) {
+            } else if (lights[i].type == LIGHT_TYPE_SPOT) {
                 fragColor += lightSpot(light, normal, fragmentToCameraDirection);
             }
         }
@@ -128,7 +123,7 @@ void main()
 
 vec3 lightDirectional(Light light, vec3 normal, vec3 fragmentToCameraDirection) {
     // Direction from fragment towards light.
-    vec3 fragmentToLightDirection = - light.direction;
+    vec3 fragmentToLightDirection = -light.direction;
 
     // diffuse shading
     float diffuseIntensity = max(dot(normal, fragmentToLightDirection), 0.0);
@@ -161,7 +156,9 @@ vec3 lightPoint(Light light, vec3 normal, vec3 fragmentToCameraDirection) {
     // It is a simple quadratic function
     // (eg. `a + bx + cxx` where x is distance between fragment and distance).
     float fragmentLightDistance = length(light.position - FragmentPosition);
-    float attenuation = 1.0 / (light.constant + light.linear * fragmentLightDistance + light.quadratic * (fragmentLightDistance * fragmentLightDistance));
+    float attenuation = 1.0
+        / (light.constant + light.linear * fragmentLightDistance
+           + light.quadratic * (fragmentLightDistance * fragmentLightDistance));
 
     // combine results
     vec3 ambient = light.ambient * vec3(texture(material.texture_diffuse1, TexCoord));
@@ -191,7 +188,7 @@ vec3 lightSpot(Light light, vec3 normal, vec3 fragmentToCameraDirection) {
     float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
 
     // spotlight intensity
-    float theta = dot(fragmentToLightDirection, normalize(- light.direction));
+    float theta = dot(fragmentToLightDirection, normalize(-light.direction));
     float epsilon = light.innerCutOff - light.outerCutOff;
     float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0, 1.0);
 

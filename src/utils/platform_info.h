@@ -2,4 +2,4 @@
 
 #include <string>
 
-std::string get_platform_info();
+auto get_platform_info() -> std::string;

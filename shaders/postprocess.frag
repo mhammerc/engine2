@@ -104,4 +104,8 @@ void main()
     else {
         FragColor = vec4(compute_pixel(FragColor.xyz), 1.);
     }
+
+    // Gamma correction
+    float gamma = 2.2;
+    FragColor.rgb = pow(FragColor.rgb, vec3(1. / gamma));
 }
