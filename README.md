@@ -2,12 +2,20 @@
 
 ## TODO
 
-- Update GLAD to OpenGL Core 4.1
-- Enable warnings as errors
 - Implement a texture caching
 - Implement a model caching
 - Quaternions in transforms
 - Inspector of objects which allow to view and edit transforms (with euler angles for humans)
+
+## Development Environment
+
+As of 2023 February, we use Visual Studio Code with the following extensions :
+
+- `C/C++ Extension Pack`
+- `clangd`
+  - Accept to disable Intellisense
+  - Run `clangd: download language server` to have a proper clangd
+- `Clang-Format`
 
 ## Build
 
@@ -35,4 +43,4 @@ pkg install wayland libxkbcommon wayland-protocols kf5-extra-cmake-modules # For
 
 ### MacOS
 
-Once XCode and proper MacOS SDK are installed (which are the default with XCode), compilation should work as-is.
+Once Xcode and proper MacOS SDK are installed (which are the default with XCode), compilation should work as-is.
