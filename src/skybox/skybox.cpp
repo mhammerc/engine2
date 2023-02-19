@@ -105,9 +105,9 @@ auto Skybox::draw(glm::mat4 projection, glm::mat4 view) -> void {
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, _texture);
-    _shader->setUniform("skybox", 0);
-    _shader->setUniform("projection", projection);
-    _shader->setUniform("view", view);
+    _shader->set_uniform("skybox", 0);
+    _shader->set_uniform("projection", projection);
+    _shader->set_uniform("view", view);
 
     _shader->bind();
     glBindVertexArray(_VAO);

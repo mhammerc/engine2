@@ -12,7 +12,7 @@ static auto framebuffer_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-auto processInputs(float delta_time, GLFWwindow* window, Camera& camera) -> void {
+auto process_inputs(float delta_time, GLFWwindow* window, Camera& camera) -> void {
     // KEYBOARD
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);

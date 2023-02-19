@@ -59,29 +59,29 @@ auto Scene::draw(GLFWwindow* window, float delta_time, glm::mat4 projection, Sky
 
 auto Scene::draw_nodes(glm::mat4 projection) -> void {
     for (auto& node : nodes) {
-        node.shader()->setUniform("view", camera->getMatrix());
-        node.shader()->setUniform("projection", projection);
-        node.shader()->setUniform("cameraPosition", camera->pos);
-        node.shader()->setUniform("material.shininess", 16.0F);
-        node.shader()->setUniform("material.texture_environment", 10);
-        node.shader()->setUniform("material.reflect", mirror ? 1.F : 0.F);
-        node.shader()->setUniform("material.refract", glass ? 1.F : 0.F);
-        node.shader()->setUniform("explosion", explosion);
+        node.shader()->set_uniform("view", camera->getMatrix());
+        node.shader()->set_uniform("projection", projection);
+        node.shader()->set_uniform("cameraPosition", camera->pos);
+        node.shader()->set_uniform("material.shininess", 256.0F);
+        node.shader()->set_uniform("material.texture_environment", 10);
+        node.shader()->set_uniform("material.reflect", mirror ? 1.F : 0.F);
+        node.shader()->set_uniform("material.refract", glass ? 1.F : 0.F);
+        node.shader()->set_uniform("explosion", explosion);
 
         for (size_t i = 0; i < 10; ++i) {
             Light const& light = lights.at(i);
 
-            node.shader()->setUniform(fmt::format("lights[{}].type", i), static_cast<int>(light.type));
-            node.shader()->setUniform(fmt::format("lights[{}].position", i), light.position);
-            node.shader()->setUniform(fmt::format("lights[{}].direction", i), glm::normalize(light.direction));
-            node.shader()->setUniform(fmt::format("lights[{}].innerCutOff", i), light.innerCutOff);
-            node.shader()->setUniform(fmt::format("lights[{}].outerCutOff", i), light.outerCutOff);
-            node.shader()->setUniform(fmt::format("lights[{}].constant", i), light.constant);
-            node.shader()->setUniform(fmt::format("lights[{}].linear", i), light.linear);
-            node.shader()->setUniform(fmt::format("lights[{}].quadratic", i), light.quadratic);
-            node.shader()->setUniform(fmt::format("lights[{}].ambient", i), light.ambient);
-            node.shader()->setUniform(fmt::format("lights[{}].diffuse", i), light.diffuse);
-            node.shader()->setUniform(fmt::format("lights[{}].specular", i), light.specular);
+            node.shader()->set_uniform(fmt::format("lights[{}].type", i), static_cast<int>(light.type));
+            node.shader()->set_uniform(fmt::format("lights[{}].position", i), light.position);
+            node.shader()->set_uniform(fmt::format("lights[{}].direction", i), glm::normalize(light.direction));
+            node.shader()->set_uniform(fmt::format("lights[{}].innerCutOff", i), light.innerCutOff);
+            node.shader()->set_uniform(fmt::format("lights[{}].outerCutOff", i), light.outerCutOff);
+            node.shader()->set_uniform(fmt::format("lights[{}].constant", i), light.constant);
+            node.shader()->set_uniform(fmt::format("lights[{}].linear", i), light.linear);
+            node.shader()->set_uniform(fmt::format("lights[{}].quadratic", i), light.quadratic);
+            node.shader()->set_uniform(fmt::format("lights[{}].ambient", i), light.ambient);
+            node.shader()->set_uniform(fmt::format("lights[{}].diffuse", i), light.diffuse);
+            node.shader()->set_uniform(fmt::format("lights[{}].specular", i), light.specular);
         }
 
         node.draw();
@@ -93,8 +93,8 @@ auto Scene::draw_nodes_outline(glm::mat4 projection) -> void {
         auto previousShader = node.shader();
         node.shader() = outline_shader;
 
-        node.shader()->setUniform("view", camera->getMatrix());
-        node.shader()->setUniform("projection", projection);
+        node.shader()->set_uniform("view", camera->getMatrix());
+        node.shader()->set_uniform("projection", projection);
 
         node.draw();
 
@@ -107,8 +107,8 @@ auto Scene::draw_nodes_normals(glm::mat4 projection) -> void {
         auto previousShader = node.shader();
         node.shader() = normal_shader;
 
-        node.shader()->setUniform("view", camera->getMatrix());
-        node.shader()->setUniform("projection", projection);
+        node.shader()->set_uniform("view", camera->getMatrix());
+        node.shader()->set_uniform("projection", projection);
 
         node.draw();
 

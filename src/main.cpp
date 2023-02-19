@@ -23,9 +23,6 @@ auto main() -> int {
         return 1;
     }
 
-    //  std::shared_ptr<ShaderProgram> diffuse_shader =
-    //  std::move(ShaderProgram::from_vertex_and_fragment("../shaders/diffuse.vert",
-    //  "../shaders/diffuse.frag"));
     std::shared_ptr<ShaderProgram> diffuse_shader = ShaderProgram::from_vertex_and_fragment_and_geometry(
         "../shaders/diffuse.vert",
         "../shaders/diffuse.frag",
@@ -120,14 +117,14 @@ auto main() -> int {
     int width = 0;
     int height = 0;
     glfwGetFramebufferSize(window, &width, &height);
-    auto fb = FrameBuffer::create(width, height);
+    auto frame_buffer = FrameBuffer::create(width, height);
 
     auto quad_vao = VertexArrayObject::from_quad();
 
     game_loop(window, [&](float delta_time, bool& /*should_quit*/) {
         gui_prepare_frame();
 
-        processInputs(delta_time, window, *scene.camera);
+        process_inputs(delta_time, window, *scene.camera);
 
         glClearColor(0.2F, 0.3F, 0.3F, 1.0F);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -137,11 +134,11 @@ auto main() -> int {
             glm::perspective(glm::radians(45.0F), static_cast<float>(width) / static_cast<float>(height), 0.1F, 100.0F);
 
         // Resize the framebuffer as needed
-        fb->resize(width, height);
+        frame_buffer->resize(width, height);
 
         // Render scene
         {
-            fb->bind();
+            frame_buffer->bind();
 
             glClearColor(0.1F, 0.1F, 0.1F, 1.0F);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -149,15 +146,15 @@ auto main() -> int {
             skybox->activate_cubemap_as(10);
             scene.draw(window, delta_time, projection, skybox.get());
 
-            fb->unbind();
+            frame_buffer->unbind();
         }
 
         // Render postprocess quad
         {
             glDisable(GL_DEPTH_TEST);
 
-            fb->color_texture()->activate_as(0);
-            postprocess_shader->setUniform("screenTexture", 0);
+            frame_buffer->color_texture()->activate_as(0);
+            postprocess_shader->set_uniform("screenTexture", 0);
 
             int post_process = 0;
             if (scene.inverse) {
@@ -178,7 +175,7 @@ auto main() -> int {
             if (scene.edge_dectection) {
                 post_process |= POST_PROCESS_EDGE_DETECTION;
             }
-            postprocess_shader->setUniform("post_process", post_process);
+            postprocess_shader->set_uniform("post_process", post_process);
 
             postprocess_shader->bind();
             quad_vao->draw();

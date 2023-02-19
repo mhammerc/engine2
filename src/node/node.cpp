@@ -29,8 +29,8 @@ auto Node::setShaderModel() -> void {
 
     const auto modelNormal = glm::mat3(glm::transpose(glm::inverse(transform)));
 
-    _shader->setUniform("model", transform);
-    _shader->setUniform("modelNormal", modelNormal);
+    _shader->set_uniform("model", transform);
+    _shader->set_uniform("modelNormal", modelNormal);
 }
 
 auto Node::model() -> std::shared_ptr<Model>& {

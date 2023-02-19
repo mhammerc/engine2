@@ -139,7 +139,7 @@ auto ShaderProgram::link() -> bool {
     return true;
 }
 
-void ShaderProgram::setUniform(const std::string& name, int value) {
+void ShaderProgram::set_uniform(const std::string& name, int value) {
     int const uniformLocation = glGetUniformLocation(handle, name.c_str());
 
     if (uniformLocation == -1) {
@@ -157,7 +157,7 @@ void ShaderProgram::setUniform(const std::string& name, int value) {
     }
 }
 
-void ShaderProgram::setUniform(const std::string& name, float value) {
+void ShaderProgram::set_uniform(const std::string& name, float value) {
     int const uniformLocation = glGetUniformLocation(handle, name.c_str());
 
     if (uniformLocation == -1) {
@@ -175,7 +175,7 @@ void ShaderProgram::setUniform(const std::string& name, float value) {
     }
 }
 
-void ShaderProgram::setUniform(const std::string& name, glm::vec4 value) {
+void ShaderProgram::set_uniform(const std::string& name, glm::vec4 value) {
     int const uniformLocation = glGetUniformLocation(handle, name.c_str());
 
     if (uniformLocation == -1) {
@@ -193,7 +193,7 @@ void ShaderProgram::setUniform(const std::string& name, glm::vec4 value) {
     }
 }
 
-void ShaderProgram::setUniform(const std::string& name, glm::vec3 value) {
+void ShaderProgram::set_uniform(const std::string& name, glm::vec3 value) {
     int const uniformLocation = glGetUniformLocation(handle, name.c_str());
 
     if (uniformLocation == -1) {
@@ -211,7 +211,7 @@ void ShaderProgram::setUniform(const std::string& name, glm::vec3 value) {
     }
 }
 
-void ShaderProgram::setUniform(const std::string& name, glm::mat4 value) {
+void ShaderProgram::set_uniform(const std::string& name, glm::mat4 value) {
     int const uniformLocation = glGetUniformLocation(handle, name.c_str());
 
     if (uniformLocation == -1) {
@@ -229,7 +229,7 @@ void ShaderProgram::setUniform(const std::string& name, glm::mat4 value) {
     }
 }
 
-void ShaderProgram::setUniform(const std::string& name, glm::mat3 value) {
+void ShaderProgram::set_uniform(const std::string& name, glm::mat3 value) {
     int const uniformLocation = glGetUniformLocation(handle, name.c_str());
 
     if (uniformLocation == -1) {
@@ -247,11 +247,11 @@ void ShaderProgram::setUniform(const std::string& name, glm::mat3 value) {
     }
 }
 
-void ShaderProgram::setUniform(const std::string& name, bool value) {
+void ShaderProgram::set_uniform(const std::string& name, bool value) {
     if (value) {
-        setUniform(name, 1);
+        set_uniform(name, 1);
     } else {
-        setUniform(name, 0);
+        set_uniform(name, 0);
     }
 }
 

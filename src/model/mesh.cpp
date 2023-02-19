@@ -64,7 +64,7 @@ void Mesh::draw(ShaderProgram& shader) {
         }
 
         auto const uniformName = std::string("material.texture_").append(type).append(std::to_string(currentIndex));
-        shader.setUniform(uniformName, static_cast<int>(i));
+        shader.set_uniform(uniformName, static_cast<int>(i));
 
         texture.activate_as(i);
     }

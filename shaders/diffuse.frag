@@ -135,7 +135,7 @@ vec3 lightDirectional(Light light, vec3 normal, vec3 fragmentToCameraDirection) 
     // combine results
     vec3 ambient = light.ambient * vec3(texture(material.texture_diffuse1, TexCoord));
     vec3 diffuse = light.diffuse * diffuseIntensity * vec3(texture(material.texture_diffuse1, TexCoord));
-    vec3 specular = light.specular * specularIntensity * vec3(texture(material.texture_specular1, TexCoord));
+    vec3 specular = light.specular * specularIntensity * (vec3(texture(material.texture_specular1, TexCoord)) / 2.);
 
     return (ambient + diffuse + specular);
 }
@@ -163,7 +163,7 @@ vec3 lightPoint(Light light, vec3 normal, vec3 fragmentToCameraDirection) {
     // combine results
     vec3 ambient = light.ambient * vec3(texture(material.texture_diffuse1, TexCoord));
     vec3 diffuse = light.diffuse * diffuseIntensity * vec3(texture(material.texture_diffuse1, TexCoord));
-    vec3 specular = light.specular * specularIntensity * vec3(texture(material.texture_specular1, TexCoord));
+    vec3 specular = light.specular * specularIntensity * (vec3(texture(material.texture_specular1, TexCoord)) / 2.);
 
     ambient *= attenuation;
     diffuse *= attenuation;
@@ -195,7 +195,8 @@ vec3 lightSpot(Light light, vec3 normal, vec3 fragmentToCameraDirection) {
     // combine results
     vec3 ambient = light.ambient * vec3(texture(material.texture_diffuse1, TexCoord));
     vec3 diffuse = light.diffuse * diffuseIntensity * vec3(texture(material.texture_diffuse1, TexCoord));
-    vec3 specular = light.specular * specularIntensity * vec3(texture(material.texture_specular1, TexCoord));
+    vec3 specular = light.specular * specularIntensity * (vec3(texture(material.texture_specular1, TexCoord)) / 2.);
+
     ambient *= attenuation * intensity;
     diffuse *= attenuation * intensity;
     specular *= attenuation * intensity;
