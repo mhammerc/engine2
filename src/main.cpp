@@ -84,7 +84,6 @@ auto main() -> int {
     Node node;
     {
         auto model = std::make_shared<Model>("../assets/backpack/backpack.obj");
-        //	auto model = std::make_shared<Model>("../assets/sponza2/sponza.obj");
 
         node.shader() = diffuse_shader;
         node.model() = model;
@@ -95,12 +94,12 @@ auto main() -> int {
 
     Node node2;
     {
-        auto model = std::make_shared<Model>("../assets/backpack/backpack.obj");
-        //	auto model = std::make_shared<Model>("../assets/sponza2/sponza.obj");
+        auto model = std::make_shared<Model>("../assets/plane/plane.obj");
 
         node2.shader() = diffuse_shader;
         node2.model() = model;
-        node2.position() = glm::vec3(-4.F, 0.F, -5.F);
+        node2.position() = glm::vec3(0.F, -5.F, -5.F);
+        node2.scale() = glm::vec3(1.F);
 
         scene.nodes.push_back(node2);
     }
@@ -114,10 +113,9 @@ auto main() -> int {
         "../assets/skybox/back.jpg",
     });
 
-    int width = 0;
-    int height = 0;
-    glfwGetFramebufferSize(window, &width, &height);
-    auto frame_buffer = FrameBuffer::create(width, height);
+    vec2i size(0);
+    glfwGetFramebufferSize(window, &size.x, &size.y);
+    auto frame_buffer = FrameBuffer::create(size);
 
     auto quad_vao = VertexArrayObject::from_quad();
 
@@ -129,12 +127,16 @@ auto main() -> int {
         glClearColor(0.2F, 0.3F, 0.3F, 1.0F);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-        glfwGetFramebufferSize(window, &width, &height);
-        const glm::mat4 projection =
-            glm::perspective(glm::radians(45.0F), static_cast<float>(width) / static_cast<float>(height), 0.1F, 100.0F);
+        glfwGetFramebufferSize(window, &size.x, &size.y);
+        const glm::mat4 projection = glm::perspective(
+            glm::radians(45.0F),
+            static_cast<float>(size.x) / static_cast<float>(size.y),
+            0.1F,
+            100.0F
+        );
 
         // Resize the framebuffer as needed
-        frame_buffer->resize(width, height);
+        frame_buffer->resize(size);
 
         // Render scene
         {

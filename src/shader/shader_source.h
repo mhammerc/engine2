@@ -1,15 +1,16 @@
 #pragma once
 
 #include <filesystem>
+#include <memory>
 #include <optional>
 #include <string>
 
-#include "../opengl/opengl.h"
+#include "../common.h"
 
 struct ShaderSource {
     enum Type { UNKNOWN, FRAGMENT, VERTEX, GEOMETRY };
 
-    static auto from_file(Type type, const std::filesystem::path& path) -> std::optional<ShaderSource>;
+    static auto from_file(Type type, const std::filesystem::path& path) -> std::unique_ptr<ShaderSource>;
 
     ~ShaderSource() noexcept;
 
@@ -19,22 +20,27 @@ struct ShaderSource {
     ShaderSource(ShaderSource&&) noexcept;
     auto operator=(ShaderSource&&) noexcept -> ShaderSource&;
 
+  public:
     /**
-   * @return true on success, false otherwise.
-   */
+     * @return true on success, false otherwise.
+     */
     auto compile() -> bool;
 
-    auto type() -> Type;
-    auto source() -> const std::string&;
-    auto path() -> const std::filesystem::path&;
-    auto handle() -> GLuint;
+    [[nodiscard]] auto type() const -> Type;
+    [[nodiscard]] auto source() const -> std::string;
+    [[nodiscard]] auto path() const -> std::filesystem::path;
+    [[nodiscard]] auto handle() const -> u32;
 
   private:
     ShaderSource() = default;
 
+  private:
     Type _type = Type::UNKNOWN;
     std::string _source;
     std::filesystem::path _path;
 
-    GLuint _handle = 0;
+    u32 _handle = 0;
+
+  private:
+    auto release() -> void;
 };

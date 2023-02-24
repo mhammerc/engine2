@@ -1,10 +1,10 @@
 #include "texture.h"
 
-auto Texture::from_file(const std::filesystem::path& path, Type type, bool flip) -> std::optional<Texture> {
+auto Texture::from_file(const std::filesystem::path& path, Type type, bool flip) -> std::unique_ptr<Texture> {
     auto image = Image::from_file(path, Image::Channels::RGB, flip);
 
-    if (!image.has_value()) {
-        return std::nullopt;
+    if (!image) {
+        return nullptr;
     }
 
     GLuint texture = 0;
@@ -26,21 +26,21 @@ auto Texture::from_file(const std::filesystem::path& path, Type type, bool flip)
         GL_TEXTURE_2D,
         0,
         internalformat,
-        image->width,
-        image->height,
+        image->size().x,
+        image->size().y,
         0,
         GL_RGB,
         GL_UNSIGNED_BYTE,
-        image->data
+        image->data()
     );
     glGenerateMipmap(GL_TEXTURE_2D);
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    return Texture(texture, type);
+    return std::make_unique<Texture>(Texture(texture, type));
 }
 
-auto Texture::from_empty(Type type, int width, int height, int multisample) -> std::unique_ptr<Texture> {
+auto Texture::from_empty(Type type, vec2i size, int multisample) -> std::unique_ptr<Texture> {
     GLuint handle = 0;
 
     int const target = multisample == 0 ? GL_TEXTURE_2D : GL_TEXTURE_2D_MULTISAMPLE;
@@ -62,9 +62,9 @@ auto Texture::from_empty(Type type, int width, int height, int multisample) -> s
     }
 
     if (multisample == 0) {
-        glTexImage2D(target, 0, internalformat, width, height, 0, format, textureType, nullptr);
+        glTexImage2D(target, 0, internalformat, size.x, size.y, 0, format, textureType, nullptr);
     } else {
-        glTexImage2DMultisample(target, multisample, internalformat, width, height, GL_TRUE);
+        glTexImage2DMultisample(target, multisample, internalformat, size.x, size.y, GL_TRUE);
     }
 
     glBindTexture(target, 0);
@@ -72,14 +72,19 @@ auto Texture::from_empty(Type type, int width, int height, int multisample) -> s
     return std::make_unique<Texture>(Texture(handle, type));
 }
 
-auto Texture::activate_as(int index) -> void {
+auto Texture::activate_as(u32 index) -> void {
     glActiveTexture(GL_TEXTURE0 + index);
     glBindTexture(GL_TEXTURE_2D, _handle);
 }
 
 Texture::~Texture() noexcept {
-    if (_handle != 0U) {
+    release();
+}
+
+auto Texture::release() -> void {
+    if (_handle != 0) {
         glDeleteTextures(1, &_handle);
+        _handle = 0;
     }
 }
 
@@ -88,6 +93,8 @@ Texture::Texture(Texture&& from) noexcept : _handle(from._handle), _type(from._t
 }
 
 auto Texture::operator=(Texture&& from) noexcept -> Texture& {
+    release();
+
     _handle = from._handle;
     _type = from._type;
 

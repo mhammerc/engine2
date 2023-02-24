@@ -22,5 +22,6 @@ class Model {
     void processNode(aiNode* node, const aiScene* scene);
     auto processMesh(aiMesh* mesh, const aiScene* scene) -> Mesh;
 
-    auto loadMaterialTextures(aiMaterial* mat, aiTextureType _type, Texture::Type type) -> std::vector<Texture>;
+    auto loadMaterialTextures(aiMaterial* mat, aiTextureType _type, Texture::Type type)
+        -> std::vector<std::unique_ptr<Texture>>;
 };

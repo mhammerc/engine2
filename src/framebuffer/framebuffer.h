@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "../opengl/opengl.h"
+#include "../common.h"
 #include "../texture/texture.h"
 
 class FrameBuffer {
@@ -18,10 +18,10 @@ class FrameBuffer {
 
     enum Type { Color, ColorDepthStencil };
 
-    static auto create(int width, int height) -> std::unique_ptr<FrameBuffer>;
+    static auto create(vec2i size) -> std::unique_ptr<FrameBuffer>;
 
     // Methods
-    auto resize(int width, int height) -> void;
+    auto resize(vec2i size) -> void;
 
     auto bind() -> void;
     auto unbind() -> void;
@@ -36,7 +36,7 @@ class FrameBuffer {
 
     GLuint _handle = 0;
     Type _type = Type::ColorDepthStencil;
-    glm::vec2 _size;
+    vec2i _size;
 
     std::unique_ptr<Texture> _color;
     std::unique_ptr<Texture> _depth_stencil;

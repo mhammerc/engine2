@@ -3,7 +3,6 @@
 #include "../texture/image.h"
 #include "spdlog/spdlog.h"
 
-//static const float skybox_vertices[] = {
 static const std::array<float, 108> skybox_vertices = {
     // positions
     -1.0F, 1.0F,  -1.0F, -1.0F, -1.0F, -1.0F, 1.0F,  -1.0F, -1.0F,
@@ -36,7 +35,7 @@ auto Skybox::from_files(const std::array<std::filesystem::path, 6>& files) -> st
             const auto& file = files.at(i);
             auto image = Image::from_file(file, Image::Channels::RGB, false);
 
-            if (!image.has_value()) {
+            if (!image) {
                 spdlog::error("Could not load create skybox face");
                 continue;
             }
@@ -45,12 +44,12 @@ auto Skybox::from_files(const std::array<std::filesystem::path, 6>& files) -> st
                 GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
                 0,
                 GL_RGB,
-                image->width,
-                image->height,
+                image->size().x,
+                image->size().y,
                 0,
                 GL_RGB,
                 GL_UNSIGNED_BYTE,
-                image->data
+                image->data()
             );
         }
 

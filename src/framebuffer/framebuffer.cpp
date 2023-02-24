@@ -4,7 +4,7 @@
 
 #include <utility>
 
-auto FrameBuffer::create(int width, int height) -> std::unique_ptr<FrameBuffer> {
+auto FrameBuffer::create(vec2i size) -> std::unique_ptr<FrameBuffer> {
     GLuint handle = 0;
     glGenFramebuffers(1, &handle);
 
@@ -15,8 +15,8 @@ auto FrameBuffer::create(int width, int height) -> std::unique_ptr<FrameBuffer> 
     // - all buffers are complete
     // - each buffers must be of the same size as the framebuffer
 
-    auto color_buffer = Texture::from_empty(Texture::Type::Color, width, height, 0);
-    auto depth_stencil_buffer = Texture::from_empty(Texture::Type::DepthStencil, width, height, 0);
+    auto color_buffer = Texture::from_empty(Texture::Type::Color, size, 0);
+    auto depth_stencil_buffer = Texture::from_empty(Texture::Type::DepthStencil, size, 0);
 
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, color_buffer->handle(), 0);
 
@@ -38,20 +38,20 @@ auto FrameBuffer::create(int width, int height) -> std::unique_ptr<FrameBuffer> 
     auto frame_buffer = std::make_unique<FrameBuffer>(FrameBuffer());
     frame_buffer->_handle = handle;
     frame_buffer->_type = Type::ColorDepthStencil;
-    frame_buffer->_size = glm::vec2(width, height);
+    frame_buffer->_size = size;
     frame_buffer->_color = std::move(color_buffer);
     frame_buffer->_depth_stencil = std::move(depth_stencil_buffer);
 
     return frame_buffer;
 }
 
-auto FrameBuffer::resize(int width, int height) -> void {
-    if (width == static_cast<int>(_size.x) && height == static_cast<int>(_size.y)) {
+auto FrameBuffer::resize(vec2i size) -> void {
+    if (size == _size) {
         // Already the good size
         return;
     }
 
-    auto new_frame_buffer = FrameBuffer::create(width, height);
+    auto new_frame_buffer = FrameBuffer::create(size);
 
     std::swap(*this, *new_frame_buffer);
 }

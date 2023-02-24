@@ -88,7 +88,7 @@ auto Model::processMesh(aiMesh* mesh, const aiScene* scene) -> Mesh {
         }
     }
 
-    std::vector<Texture> textures;
+    std::vector<std::unique_ptr<Texture>> textures;
     if (mesh->mMaterialIndex >= 0) {
         auto* material = scene->mMaterials[mesh->mMaterialIndex];
 
@@ -102,8 +102,7 @@ auto Model::processMesh(aiMesh* mesh, const aiScene* scene) -> Mesh {
         }
 
         {
-            std::vector<Texture> specularMaps =
-                loadMaterialTextures(material, aiTextureType_SPECULAR, Texture::Specular);
+            auto specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, Texture::Specular);
             textures.insert(
                 textures.end(),
                 std::make_move_iterator(specularMaps.begin()),
@@ -115,8 +114,9 @@ auto Model::processMesh(aiMesh* mesh, const aiScene* scene) -> Mesh {
     return {std::move(vertices), std::move(indices), std::move(textures)};
 }
 
-auto Model::loadMaterialTextures(aiMaterial* mat, aiTextureType _type, Texture::Type type) -> std::vector<Texture> {
-    std::vector<Texture> textures;
+auto Model::loadMaterialTextures(aiMaterial* mat, aiTextureType _type, Texture::Type type)
+    -> std::vector<std::unique_ptr<Texture>> {
+    std::vector<std::unique_ptr<Texture>> textures;
 
     const auto textureCount = mat->GetTextureCount(_type);
 
@@ -126,7 +126,7 @@ auto Model::loadMaterialTextures(aiMaterial* mat, aiTextureType _type, Texture::
 
         auto texture = Texture::from_file(directory / str.C_Str(), type);
 
-        textures.push_back(std::move(texture.value()));
+        textures.push_back(std::move(texture));
     }
 
     return textures;

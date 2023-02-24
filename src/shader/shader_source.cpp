@@ -8,7 +8,7 @@
 #include "../utils/read_file_to_string.h"
 
 static auto shader_type(ShaderSource::Type type) -> GLenum {
-    GLenum shaderType;
+    GLenum shaderType = 0;
 
     switch (type) {
         case ShaderSource::FRAGMENT:
@@ -29,6 +29,10 @@ static auto shader_type(ShaderSource::Type type) -> GLenum {
 }
 
 ShaderSource::~ShaderSource() noexcept {
+    release();
+}
+
+auto ShaderSource::release() -> void {
     if (_handle != 0) {
         glDeleteShader(_handle);
         _handle = 0;
@@ -44,6 +48,8 @@ ShaderSource::ShaderSource(ShaderSource&& from) noexcept :
 }
 
 auto ShaderSource::operator=(ShaderSource&& from) noexcept -> ShaderSource& {
+    release();
+
     _type = from._type;
     _source = from._source;
     _path = from._path;
@@ -54,25 +60,25 @@ auto ShaderSource::operator=(ShaderSource&& from) noexcept -> ShaderSource& {
     return *this;
 }
 
-auto ShaderSource::from_file(Type type, const std::filesystem::path& path) -> std::optional<ShaderSource> {
+auto ShaderSource::from_file(Type type, const std::filesystem::path& path) -> std::unique_ptr<ShaderSource> {
     auto file = read_file_to_string(path);
 
     if (!file.has_value()) {
         spdlog::error("Could not read file {}", path.c_str());
-        return std::nullopt;
+        return nullptr;
     }
 
-    GLuint const handle = glCreateShader(shader_type(type));
+    u32 handle = glCreateShader(shader_type(type));
 
     if (handle == 0) {
-        return std::nullopt;
+        return nullptr;
     }
 
-    ShaderSource source {};
-    source._type = type;
-    source._source = *file;
-    source._path = path;
-    source._handle = handle;
+    auto source = std::make_unique<ShaderSource>(ShaderSource());
+    source->_type = type;
+    source->_source = std::move(*file);
+    source->_path = path;
+    source->_handle = handle;
 
     return source;
 }
@@ -105,18 +111,18 @@ auto ShaderSource::compile() -> bool {
     return true;
 }
 
-auto ShaderSource::type() -> Type {
+auto ShaderSource::type() const -> Type {
     return _type;
 }
 
-auto ShaderSource::source() -> const std::string& {
+auto ShaderSource::source() const -> std::string {
     return _source;
 }
 
-auto ShaderSource::path() -> const std::filesystem::path& {
+auto ShaderSource::path() const -> std::filesystem::path {
     return _path;
 }
 
-auto ShaderSource::handle() -> GLuint {
+auto ShaderSource::handle() const -> u32 {
     return _handle;
 }

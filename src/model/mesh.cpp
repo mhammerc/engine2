@@ -55,10 +55,10 @@ void Mesh::draw(ShaderProgram& shader) {
         int currentIndex = 0;
         const char* type = "";
 
-        if (texture.type() == Texture::Diffuse) {
+        if (texture->type() == Texture::Diffuse) {
             currentIndex = diffuseIndex++;
             type = "diffuse";
-        } else if (texture.type() == Texture::Specular) {
+        } else if (texture->type() == Texture::Specular) {
             currentIndex = specularIndex++;
             type = "specular";
         }
@@ -66,7 +66,7 @@ void Mesh::draw(ShaderProgram& shader) {
         auto const uniformName = std::string("material.texture_").append(type).append(std::to_string(currentIndex));
         shader.set_uniform(uniformName, static_cast<int>(i));
 
-        texture.activate_as(i);
+        texture->activate_as(i);
     }
 
     glActiveTexture(GL_TEXTURE0);
@@ -77,7 +77,11 @@ void Mesh::draw(ShaderProgram& shader) {
     shader.unbind();
 }
 
-Mesh::Mesh(std::vector<Vertex>&& vertices, std::vector<unsigned int>&& indices, std::vector<Texture>&& textures) :
+Mesh::Mesh(
+    std::vector<Vertex>&& vertices,
+    std::vector<unsigned int>&& indices,
+    std::vector<std::unique_ptr<Texture>>&& textures
+) :
     vertices(std::move(vertices)),
     indices(std::move(indices)),
     textures(std::move(textures)) {

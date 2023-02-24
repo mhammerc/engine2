@@ -4,7 +4,7 @@
 #include <memory>
 #include <string>
 
-#include "../opengl/opengl.h"
+#include "../common.h"
 
 class ShaderProgram {
   public:
@@ -24,21 +24,27 @@ class ShaderProgram {
     ShaderProgram(ShaderProgram&&) noexcept;
     auto operator=(ShaderProgram&&) noexcept -> ShaderProgram&;
 
+  public:
     void set_uniform(const std::string& name, float value);
-    void set_uniform(const std::string& name, int value);
+    void set_uniform(const std::string& name, i32 value);
+    void set_uniform(const std::string& name, u32 value);
     void set_uniform(const std::string& name, bool value);
-    void set_uniform(const std::string& name, glm::vec4 value);
-    void set_uniform(const std::string& name, glm::vec3 value);
-    void set_uniform(const std::string& name, glm::mat4 value);
-    void set_uniform(const std::string& name, glm::mat3 value);
+    void set_uniform(const std::string& name, vec4 value);
+    void set_uniform(const std::string& name, vec3 value);
+    void set_uniform(const std::string& name, vec2 value);
+    void set_uniform(const std::string& name, mat4 value);
+    void set_uniform(const std::string& name, mat3 value);
 
     auto bind() -> void;
     auto unbind() -> void;
 
   private:
     ShaderProgram() = default;
+    auto release() -> void;
 
-    GLuint handle = 0;
+  private:
+    u32 _handle = 0;
 
+  private:
     auto link() -> bool;
 };

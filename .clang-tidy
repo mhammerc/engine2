@@ -14,4 +14,10 @@ bugprone-*,
 -readability-magic-numbers,
 -cppcoreguidelines-pro-type-vararg,
 -cppcoreguidelines-pro-type-union-access,
--misc-no-recursion'
+-misc-no-recursion,
+-readability-redundant-access-specifiers'
+CheckOptions:
+      - key:     readability-implicit-bool-conversion.AllowIntegerConditions
+        value:   true
+      - key:     readability-implicit-bool-conversion.AllowPointerConditions
+        value:   true

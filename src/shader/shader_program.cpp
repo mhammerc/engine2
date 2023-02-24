@@ -6,22 +6,28 @@
 
 #include "shader_source.h"
 
-ShaderProgram::ShaderProgram(ShaderProgram&& from) noexcept : handle(from.handle) {
-    from.handle = 0;
+ShaderProgram::ShaderProgram(ShaderProgram&& from) noexcept : _handle(from._handle) {
+    from._handle = 0;
 }
 
 auto ShaderProgram::operator=(ShaderProgram&& from) noexcept -> ShaderProgram& {
-    handle = from.handle;
+    release();
 
-    from.handle = 0;
+    _handle = from._handle;
+
+    from._handle = 0;
 
     return *this;
 }
 
 ShaderProgram::~ShaderProgram() noexcept {
-    if (handle != 0) {
-        glDeleteProgram(handle);
-        handle = 0;
+    release();
+}
+
+auto ShaderProgram::release() -> void {
+    if (_handle != 0) {
+        glDeleteProgram(_handle);
+        _handle = 0;
     }
 }
 
@@ -31,7 +37,7 @@ auto ShaderProgram::from_vertex_and_fragment(
 ) -> std::unique_ptr<ShaderProgram> {
     auto vertex = ShaderSource::from_file(ShaderSource::VERTEX, vertex_file);
 
-    if (!vertex.has_value()) {
+    if (!vertex) {
         return nullptr;
     }
 
@@ -41,7 +47,7 @@ auto ShaderProgram::from_vertex_and_fragment(
 
     auto fragment = ShaderSource::from_file(ShaderSource::FRAGMENT, fragment_file);
 
-    if (!fragment.has_value()) {
+    if (!fragment) {
         return nullptr;
     }
 
@@ -49,13 +55,13 @@ auto ShaderProgram::from_vertex_and_fragment(
         return nullptr;
     }
 
-    GLuint const handle = glCreateProgram();
+    u32 const handle = glCreateProgram();
 
     glAttachShader(handle, vertex->handle());
     glAttachShader(handle, fragment->handle());
 
     auto program = std::make_unique<ShaderProgram>(ShaderProgram {});
-    program->handle = handle;
+    program->_handle = handle;
 
     if (!program->link()) {
         return nullptr;
@@ -71,7 +77,7 @@ auto ShaderProgram::from_vertex_and_fragment_and_geometry(
 ) -> std::unique_ptr<ShaderProgram> {
     auto vertex = ShaderSource::from_file(ShaderSource::VERTEX, vertex_file);
 
-    if (!vertex.has_value()) {
+    if (!vertex) {
         return nullptr;
     }
 
@@ -81,7 +87,7 @@ auto ShaderProgram::from_vertex_and_fragment_and_geometry(
 
     auto geometry = ShaderSource::from_file(ShaderSource::GEOMETRY, geometry_file);
 
-    if (!geometry.has_value()) {
+    if (!geometry) {
         return nullptr;
     }
 
@@ -91,7 +97,7 @@ auto ShaderProgram::from_vertex_and_fragment_and_geometry(
 
     auto fragment = ShaderSource::from_file(ShaderSource::FRAGMENT, fragment_file);
 
-    if (!fragment.has_value()) {
+    if (!fragment) {
         return nullptr;
     }
 
@@ -106,7 +112,7 @@ auto ShaderProgram::from_vertex_and_fragment_and_geometry(
     glAttachShader(handle, fragment->handle());
 
     auto program = std::make_unique<ShaderProgram>(ShaderProgram {});
-    program->handle = handle;
+    program->_handle = handle;
 
     if (!program->link()) {
         return nullptr;
@@ -116,11 +122,11 @@ auto ShaderProgram::from_vertex_and_fragment_and_geometry(
 }
 
 auto ShaderProgram::link() -> bool {
-    glLinkProgram(handle);
+    glLinkProgram(_handle);
 
     std::array<char, 1024> log {};
     int log_size = 0;
-    glGetProgramInfoLog(handle, 1024, &log_size, log.data());
+    glGetProgramInfoLog(_handle, 1024, &log_size, log.data());
 
     // Logs may contain compilation errors, warning, etc.
     if (log_size > 0) {
@@ -128,7 +134,7 @@ auto ShaderProgram::link() -> bool {
     }
 
     int success = 0;
-    glGetProgramiv(handle, GL_LINK_STATUS, &success);
+    glGetProgramiv(_handle, GL_LINK_STATUS, &success);
 
     if (success == 0) {
         spdlog::error("Could not create or link ShaderProgram.");
@@ -139,15 +145,15 @@ auto ShaderProgram::link() -> bool {
     return true;
 }
 
-void ShaderProgram::set_uniform(const std::string& name, int value) {
-    int const uniformLocation = glGetUniformLocation(handle, name.c_str());
+void ShaderProgram::set_uniform(const std::string& name, i32 value) {
+    int const uniformLocation = glGetUniformLocation(_handle, name.c_str());
 
     if (uniformLocation == -1) {
         spdlog::warn("Uniform '{}' not found when trying to set it.", name);
         return;
     }
 
-    glUseProgram(handle);
+    glUseProgram(_handle);
     glUniform1i(uniformLocation, value);
 
     GLenum const error = glGetError();
@@ -158,14 +164,14 @@ void ShaderProgram::set_uniform(const std::string& name, int value) {
 }
 
 void ShaderProgram::set_uniform(const std::string& name, float value) {
-    int const uniformLocation = glGetUniformLocation(handle, name.c_str());
+    int const uniformLocation = glGetUniformLocation(_handle, name.c_str());
 
     if (uniformLocation == -1) {
         spdlog::warn("Uniform '{}' not found when trying to set it.", name);
         return;
     }
 
-    glUseProgram(handle);
+    glUseProgram(_handle);
     glUniform1f(uniformLocation, value);
 
     GLenum const error = glGetError();
@@ -176,14 +182,14 @@ void ShaderProgram::set_uniform(const std::string& name, float value) {
 }
 
 void ShaderProgram::set_uniform(const std::string& name, glm::vec4 value) {
-    int const uniformLocation = glGetUniformLocation(handle, name.c_str());
+    int const uniformLocation = glGetUniformLocation(_handle, name.c_str());
 
     if (uniformLocation == -1) {
         spdlog::warn("Uniform '{}' not found when trying to set it.", name);
         return;
     }
 
-    glUseProgram(handle);
+    glUseProgram(_handle);
     glUniform4f(uniformLocation, value.x, value.y, value.z, value.w);
 
     GLenum const error = glGetError();
@@ -194,14 +200,14 @@ void ShaderProgram::set_uniform(const std::string& name, glm::vec4 value) {
 }
 
 void ShaderProgram::set_uniform(const std::string& name, glm::vec3 value) {
-    int const uniformLocation = glGetUniformLocation(handle, name.c_str());
+    int const uniformLocation = glGetUniformLocation(_handle, name.c_str());
 
     if (uniformLocation == -1) {
         spdlog::warn("Uniform '{}' not found when trying to set it.", name);
         return;
     }
 
-    glUseProgram(handle);
+    glUseProgram(_handle);
     glUniform3f(uniformLocation, value.x, value.y, value.z);
 
     GLenum const error = glGetError();
@@ -212,14 +218,14 @@ void ShaderProgram::set_uniform(const std::string& name, glm::vec3 value) {
 }
 
 void ShaderProgram::set_uniform(const std::string& name, glm::mat4 value) {
-    int const uniformLocation = glGetUniformLocation(handle, name.c_str());
+    int const uniformLocation = glGetUniformLocation(_handle, name.c_str());
 
     if (uniformLocation == -1) {
         spdlog::warn("Uniform '{}' not found when trying to set it.", name);
         return;
     }
 
-    glUseProgram(handle);
+    glUseProgram(_handle);
     glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(value));
 
     GLenum const error = glGetError();
@@ -230,14 +236,14 @@ void ShaderProgram::set_uniform(const std::string& name, glm::mat4 value) {
 }
 
 void ShaderProgram::set_uniform(const std::string& name, glm::mat3 value) {
-    int const uniformLocation = glGetUniformLocation(handle, name.c_str());
+    int const uniformLocation = glGetUniformLocation(_handle, name.c_str());
 
     if (uniformLocation == -1) {
         spdlog::warn("Uniform '{}' not found when trying to set it.", name);
         return;
     }
 
-    glUseProgram(handle);
+    glUseProgram(_handle);
     glUniformMatrix3fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(value));
 
     GLenum const error = glGetError();
@@ -256,7 +262,7 @@ void ShaderProgram::set_uniform(const std::string& name, bool value) {
 }
 
 auto ShaderProgram::bind() -> void {
-    glUseProgram(handle);
+    glUseProgram(_handle);
 }
 
 auto ShaderProgram::unbind() -> void {

@@ -17,9 +17,13 @@ class Mesh {
   public:
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
-    std::vector<Texture> textures;
+    std::vector<std::unique_ptr<Texture>> textures;
 
-    Mesh(std::vector<Vertex>&& vertices, std::vector<unsigned int>&& indices, std::vector<Texture>&& textures);
+    Mesh(
+        std::vector<Vertex>&& vertices,
+        std::vector<unsigned int>&& indices,
+        std::vector<std::unique_ptr<Texture>>&& textures
+    );
 
     void draw(ShaderProgram& shader);
 
