@@ -4,12 +4,13 @@
 #include <memory>
 #include <vector>
 
-#include "../camera/camera.h"
-#include "../node/node.h"
-#include "../shader/shader_program.h"
-#include "../skybox/skybox.h"
-#include "../vertex_array_object/vertex_array_object.h"
+#include "../graphics/opengl/shader_program.h"
+#include "../graphics/opengl/skybox.h"
+#include "../graphics/opengl/vertex_array_object.h"
+#include "camera.h"
+#include "game_object.h"
 #include "light.h"
+#include "node.h"
 
 #define POST_PROCESS_INVERSE (1 << 0)
 #define POST_PROCESS_GRAYSCALE (1 << 1)
@@ -24,10 +25,12 @@
  */
 class Scene {
   public:
+    Scene();
     auto draw(GLFWwindow* window, float delta_time, glm::mat4 projection, Skybox* skybox) -> void;
     auto draw_nodes(glm::mat4 projection) -> void;
     auto draw_nodes_outline(glm::mat4 projection) -> void;
     auto draw_nodes_normals(glm::mat4 projection) -> void;
+    GameObject world;
 
     std::array<Light, 10> lights {};
     std::vector<Node> nodes;

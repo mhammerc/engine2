@@ -2,7 +2,22 @@
 
 #include <spdlog/fmt/fmt.h>
 
-#include "../gui/gui.h"
+#include "../ui/gui.h"
+
+Scene::Scene() {
+    world.name() = "World";
+
+    auto bag = std::make_unique<GameObject>("bag");
+    auto player = std::make_unique<GameObject>("player");
+    player->childrens().emplace_back(std::make_unique<GameObject>("camera"));
+    auto skybox = std::make_unique<GameObject>("skybox");
+    auto floor = std::make_unique<GameObject>("floor");
+
+    world.childrens().push_back(std::move(bag));
+    world.childrens().push_back(std::move(player));
+    world.childrens().push_back(std::move(skybox));
+    world.childrens().push_back(std::move(floor));
+}
 
 auto Scene::draw(GLFWwindow* window, float delta_time, glm::mat4 projection, Skybox* skybox) -> void {
     gui_show_system_window(this, delta_time, window);

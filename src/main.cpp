@@ -1,15 +1,23 @@
-#include "camera/camera.h"
-#include "engine.h"
-#include "framebuffer/framebuffer.h"
-#include "glfw/glfw.h"
-#include "gui/gui.h"
-#include "model/model.h"
-#include "opengl/opengl.h"
+#include "core/game_loop.h"
+#include "core/locator.h"
+#include "core/resource_cache.h"
+#include "graphics/opengl/framebuffer.h"
+#include "graphics/opengl/model.h"
+#include "graphics/opengl/shader_loader.h"
+#include "graphics/opengl/shader_program.h"
+#include "graphics/opengl/skybox.h"
+#include "graphics/opengl/texture_loader.h"
+#include "platform/glfw.h"
+#include "platform/opengl.h"
+#include "scene/camera.h"
+#include "scene/game_object.h"
 #include "scene/scene.h"
-#include "shader/shader_program.h"
-#include "skybox/skybox.h"
 #include "spdlog/spdlog.h"
 #include "stb_image/stb_image.h"
+#include "ui/gui.h"
+
+using ShaderCache = engine::resource_cache<ShaderProgram, engine::shader_program_loader>;
+using TextureCache = engine::resource_cache<Texture, engine::texture_loader>;
 
 auto main() -> int {
     auto* window = init_glfw_and_opengl();
@@ -23,41 +31,33 @@ auto main() -> int {
         return 1;
     }
 
-    std::shared_ptr<ShaderProgram> diffuse_shader = ShaderProgram::from_vertex_and_fragment_and_geometry(
-        "../shaders/diffuse.vert",
-        "../shaders/diffuse.frag",
-        "../shaders/diffuse.glsl"
-    );
+    auto shader_cache = engine::locator<ShaderCache>::emplace();
+
+    auto diffuse_shader = shader_cache.load("diffuse");
     if (diffuse_shader == nullptr) {
         spdlog::critical("could not create shader program.");
         return 1;
     }
 
-    auto light_source_shader =
-        ShaderProgram::from_vertex_and_fragment("../shaders/light.vert", "../shaders/light.frag");
+    auto light_source_shader = shader_cache.load("light");
     if (light_source_shader == nullptr) {
         spdlog::critical("could not create shader program.");
         return 1;
     }
 
-    auto outline_shader = ShaderProgram::from_vertex_and_fragment("../shaders/outline.vert", "../shaders/outline.frag");
+    auto outline_shader = shader_cache.load("outline");
     if (outline_shader == nullptr) {
         spdlog::critical("could not create shader program.");
         return 1;
     }
 
-    auto postprocess_shader =
-        ShaderProgram::from_vertex_and_fragment("../shaders/postprocess.vert", "../shaders/postprocess.frag");
+    auto postprocess_shader = shader_cache.load("postprocess");
     if (postprocess_shader == nullptr) {
         spdlog::critical("could not create shader program.");
         return 1;
     }
 
-    auto normal_shader = ShaderProgram::from_vertex_and_fragment_and_geometry(
-        "../shaders/normal.vert",
-        "../shaders/normal.frag",
-        "../shaders/normal.geo"
-    );
+    auto normal_shader = shader_cache.load("normal");
     if (normal_shader == nullptr) {
         spdlog::critical("could not create shader program.");
         return 1;

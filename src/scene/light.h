@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../opengl/opengl.h"
+#include "../platform/opengl.h"
 
 struct Light {
     enum Type {

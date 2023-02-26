@@ -9,48 +9,65 @@ project(opengl_engine VERSION 0.1.0)
 add_executable(opengl_engine)
 
 set(SOURCES
-        src/camera/camera.cpp
-        src/camera/camera.h
-        src/engine.h
-        src/framebuffer/framebuffer.cpp
-        src/framebuffer/framebuffer.h
-        src/game_loop.cpp
-        src/glfw/glfw.cpp
-        src/glfw/glfw.h
-        src/gui/gui.cpp
-        src/gui/gui.h
+        src/core/game_loop.cpp
+        src/core/game_loop.h
+        src/core/locator.h
+        src/core/resource_cache.h
+        src/graphics/opengl/framebuffer.cpp
+        src/graphics/opengl/framebuffer.h
+        src/graphics/opengl/image.cpp
+        src/graphics/opengl/image.h
+        src/graphics/opengl/mesh.cpp
+        src/graphics/opengl/mesh.h
+        src/graphics/opengl/model.cpp
+        src/graphics/opengl/model.h
+        src/graphics/opengl/shader_loader.cpp
+        src/graphics/opengl/shader_loader.h
+        src/graphics/opengl/shader_program.cpp
+        src/graphics/opengl/shader_program.h
+        src/graphics/opengl/shader_source.cpp
+        src/graphics/opengl/shader_source.h
+        src/graphics/opengl/skybox.cpp
+        src/graphics/opengl/skybox.h
+        src/graphics/opengl/texture.cpp
+        src/graphics/opengl/texture.h
+        src/graphics/opengl/texture_loader.cpp
+        src/graphics/opengl/texture_loader.h
+        src/graphics/opengl/vertex_array_object.cpp
+        src/graphics/opengl/vertex_array_object.h
+        src/graphics/opengl/vertex_buffer_object.cpp
+        src/graphics/opengl/vertex_buffer_object.h
+        src/graphics/opengl/vertex_buffer_object_from_cube.cpp
+        src/graphics/opengl/vertex_buffer_object_from_quad.cpp
         src/main.cpp
-        src/model/mesh.cpp
-        src/model/mesh.h
-        src/model/model.cpp
-        src/model/model.h
-        src/node/node.cpp
-        src/node/node.h
-        src/opengl/opengl.cpp
-        src/opengl/opengl.h
+        src/platform/glfw.cpp
+        src/platform/glfw.h
+        src/platform/opengl.cpp
+        src/platform/opengl.h
+        src/scene/camera.cpp
+        src/scene/camera.h
+        src/scene/component.cpp
+        src/scene/component.h
+        src/scene/components/material_component.cpp
+        src/scene/components/material_component.h
+        src/scene/components/renderer_component.cpp
+        src/scene/components/renderer_component.h
+        src/scene/components/transform_component.cpp
+        src/scene/components/transform_component.h
+        src/scene/game_object.cpp
+        src/scene/game_object.h
         src/scene/light.h
+        src/scene/node.cpp
+        src/scene/node.h
         src/scene/scene.cpp
         src/scene/scene.h
-        src/shader/shader_program.cpp
-        src/shader/shader_program.h
-        src/shader/shader_source.cpp
-        src/shader/shader_source.h
-        src/skybox/skybox.cpp
-        src/skybox/skybox.h
-        src/texture/image.cpp
-        src/texture/image.h
-        src/texture/texture.cpp
-        src/texture/texture.h
+        src/ui/gui.cpp
+        src/ui/gui.h
         src/utils/platform_info.cpp
         src/utils/platform_info.h
         src/utils/read_file_to_string.cpp
         src/utils/read_file_to_string.h
-        src/vertex_array_object/vertex_array_object.cpp
-        src/vertex_array_object/vertex_array_object.h
-        src/vertex_buffer_object/vertex_buffer_object.cpp
-        src/vertex_buffer_object/vertex_buffer_object.h
-        src/vertex_buffer_object/vertex_buffer_object_from_cube.cpp
-        src/vertex_buffer_object/vertex_buffer_object_from_quad.cpp
+        src/utils/type_index.h
         )
 
 target_sources(opengl_engine PRIVATE ${SOURCES})
@@ -59,11 +76,11 @@ target_sources(opengl_engine PRIVATE ${SOURCES})
 set_property(TARGET opengl_engine PROPERTY CXX_STANDARD 23)
 
 # Enable warnings, and warnings as errors
-if(MSVC)
-  target_compile_options(opengl_engine PRIVATE /W4 /WX)
-else()
-  target_compile_options(opengl_engine BEFORE PRIVATE -Wall -Wextra -Wpedantic -Werror)
-endif()
+if (MSVC)
+    target_compile_options(opengl_engine PRIVATE /W4 /WX)
+else ()
+    target_compile_options(opengl_engine BEFORE PRIVATE -Wall -Wextra -Wpedantic -Werror)
+endif ()
 
 # spdlog
 add_subdirectory(vendors/spdlog EXCLUDE_FROM_ALL)
