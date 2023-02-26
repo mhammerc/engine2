@@ -4,9 +4,12 @@
 #include <filesystem>
 #include <memory>
 
-#include "../../platform/opengl.h"
+#include "../platform/opengl.h"
 #include "shader_program.h"
 
+namespace engine {
+
+// TODO: refactor to generic cubemap implementation and have skybox being a component.
 class Skybox {
   public:
     // Constructors
@@ -33,3 +36,5 @@ class Skybox {
     std::array<std::filesystem::path, 6> _files;
     std::unique_ptr<ShaderProgram> _shader;
 };
+
+}  // namespace engine

@@ -1,5 +1,7 @@
 #include "game_object.h"
 
+namespace engine {
+
 GameObject::GameObject(std::string name) : _name(std::move(name)) {}
 
 auto GameObject::name() -> std::string& {
@@ -22,3 +24,5 @@ auto GameObject::get_next_global_index() -> size_t {
     static size_t global_index = -1;
     return ++global_index;
 }
+
+}  // namespace engine

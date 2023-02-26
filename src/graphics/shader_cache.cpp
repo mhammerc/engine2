@@ -1,4 +1,4 @@
-#include "shader_loader.h"
+#include "shader_cache.h"
 
 #include <filesystem>
 
@@ -6,7 +6,7 @@
 
 using namespace engine;
 
-auto shader_program_loader::operator()(const std::string& name) const -> result_type {
+auto ShaderProgramLoader::operator()(const std::string& name) const -> result_type {
     std::filesystem::path folder = "../shaders";
 
     auto path = folder / name;

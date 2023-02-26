@@ -1,12 +1,13 @@
 #include "core/game_loop.h"
 #include "core/locator.h"
 #include "core/resource_cache.h"
-#include "graphics/opengl/framebuffer.h"
-#include "graphics/opengl/model.h"
-#include "graphics/opengl/shader_loader.h"
-#include "graphics/opengl/shader_program.h"
-#include "graphics/opengl/skybox.h"
-#include "graphics/opengl/texture_loader.h"
+#include "graphics/framebuffer.h"
+#include "graphics/mesh_loader.h"
+#include "graphics/renderer_context.h"
+#include "graphics/shader_cache.h"
+#include "graphics/shader_program.h"
+#include "graphics/skybox.h"
+#include "graphics/texture_cache.h"
 #include "platform/glfw.h"
 #include "platform/opengl.h"
 #include "scene/camera.h"
@@ -16,8 +17,7 @@
 #include "stb_image/stb_image.h"
 #include "ui/gui.h"
 
-using ShaderCache = engine::resource_cache<ShaderProgram, engine::shader_program_loader>;
-using TextureCache = engine::resource_cache<Texture, engine::texture_loader>;
+using namespace engine;
 
 auto main() -> int {
     auto* window = init_glfw_and_opengl();
@@ -31,7 +31,10 @@ auto main() -> int {
         return 1;
     }
 
-    auto shader_cache = engine::locator<ShaderCache>::emplace();
+    auto& shader_cache = engine::locator<engine::ShaderCache>::emplace();
+    engine::locator<engine::TextureCache>::emplace();
+    engine::locator<engine::MeshCache>::emplace();
+    auto &renderer_context = engine::locator<engine::RendererContext>::emplace();
 
     auto diffuse_shader = shader_cache.load("diffuse");
     if (diffuse_shader == nullptr) {
@@ -67,6 +70,7 @@ auto main() -> int {
     scene.camera = std::make_shared<Camera>(window);
     scene.outline_shader = std::move(outline_shader);
     scene.normal_shader = std::move(normal_shader);
+    renderer_context.camera = scene.camera.get();
 
     {
         auto const pointLight = Light {
@@ -79,29 +83,6 @@ auto main() -> int {
             .specular = glm::vec3(1.F, 1.F, 1.F),
         };
         scene.lights.at(0) = pointLight;
-    }
-
-    Node node;
-    {
-        auto model = std::make_shared<Model>("../assets/backpack/backpack.obj");
-
-        node.shader() = diffuse_shader;
-        node.model() = model;
-        node.position() = glm::vec3(0.F, 0.F, -5.F);
-
-        scene.nodes.push_back(node);
-    }
-
-    Node node2;
-    {
-        auto model = std::make_shared<Model>("../assets/plane/plane.obj");
-
-        node2.shader() = diffuse_shader;
-        node2.model() = model;
-        node2.position() = glm::vec3(0.F, -5.F, -5.F);
-        node2.scale() = glm::vec3(1.F);
-
-        scene.nodes.push_back(node2);
     }
 
     auto skybox = Skybox::from_files({
@@ -119,7 +100,11 @@ auto main() -> int {
 
     auto quad_vao = VertexArrayObject::from_quad();
 
-    game_loop(window, [&](float delta_time, bool& /*should_quit*/) {
+    engine::game_loop([&](float delta_time, bool& should_quit) {
+        if (glfwWindowShouldClose(window) != 0) {
+            should_quit = true;
+        }
+
         gui_prepare_frame();
 
         process_inputs(delta_time, window, *scene.camera);
@@ -128,7 +113,7 @@ auto main() -> int {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
         glfwGetFramebufferSize(window, &size.x, &size.y);
-        const glm::mat4 projection = glm::perspective(
+        renderer_context.projection = glm::perspective(
             glm::radians(45.0F),
             static_cast<float>(size.x) / static_cast<float>(size.y),
             0.1F,
@@ -146,7 +131,7 @@ auto main() -> int {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
             skybox->activate_cubemap_as(10);
-            scene.draw(window, delta_time, projection, skybox.get());
+            scene.draw(window, delta_time, skybox.get());
 
             frame_buffer->unbind();
         }

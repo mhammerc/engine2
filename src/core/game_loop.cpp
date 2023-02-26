@@ -1,15 +1,16 @@
-#include <chrono>
-
 #include "game_loop.h"
 
-using namespace std::chrono;
+#include <chrono>
 
-void game_loop(GLFWwindow* window, const std::function<void(float, bool&)>& loop) {
+using namespace std::chrono;
+using namespace engine;
+
+void engine::game_loop(const std::function<void(float, bool&)>& loop) {
     auto last_iteration = steady_clock::now();
 
     bool should_quit = false;
 
-    while (glfwWindowShouldClose(window) == 0 && !should_quit) {
+    while (!should_quit) {
         auto current_iteration = steady_clock::now();
 
         std::chrono::duration<float> const delta_time = current_iteration - last_iteration;

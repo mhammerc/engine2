@@ -4,6 +4,8 @@
 
 #include "spdlog/spdlog.h"
 
+using namespace engine;
+
 auto FrameBuffer::create(vec2i size) -> std::unique_ptr<FrameBuffer> {
     GLuint handle = 0;
     glGenFramebuffers(1, &handle);

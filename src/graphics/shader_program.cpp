@@ -5,6 +5,8 @@
 #include "shader_source.h"
 #include "spdlog/spdlog.h"
 
+using namespace engine;
+
 ShaderProgram::ShaderProgram(ShaderProgram&& from) noexcept : _handle(from._handle) {
     from._handle = 0;
 }

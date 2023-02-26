@@ -2,8 +2,10 @@
 
 #include <memory>
 
-#include "../../common.h"
+#include "../common.h"
 #include "texture.h"
+
+namespace engine {
 
 class FrameBuffer {
     // Constructors and destructors
@@ -41,3 +43,5 @@ class FrameBuffer {
     std::unique_ptr<Texture> _color;
     std::unique_ptr<Texture> _depth_stencil;
 };
+
+}  // namespace engine

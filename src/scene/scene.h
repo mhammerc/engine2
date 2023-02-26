@@ -4,13 +4,12 @@
 #include <memory>
 #include <vector>
 
-#include "../graphics/opengl/shader_program.h"
-#include "../graphics/opengl/skybox.h"
-#include "../graphics/opengl/vertex_array_object.h"
+#include "../graphics/shader_program.h"
+#include "../graphics/skybox.h"
+#include "../to_be_deleted/vertex_array_object.h"
 #include "camera.h"
 #include "game_object.h"
 #include "light.h"
-#include "node.h"
 
 #define POST_PROCESS_INVERSE (1 << 0)
 #define POST_PROCESS_GRAYSCALE (1 << 1)
@@ -19,6 +18,8 @@
 #define POST_PROCESS_SHARPEN (1 << 4)
 #define POST_PROCESS_EDGE_DETECTION (1 << 5)
 
+namespace engine {
+
 /**
  * A `Scene` represent the "world". Everything that currently lives into
  * the world such as objects, lights, behaviors and more.
@@ -26,14 +27,13 @@
 class Scene {
   public:
     Scene();
-    auto draw(GLFWwindow* window, float delta_time, glm::mat4 projection, Skybox* skybox) -> void;
-    auto draw_nodes(glm::mat4 projection) -> void;
-    auto draw_nodes_outline(glm::mat4 projection) -> void;
-    auto draw_nodes_normals(glm::mat4 projection) -> void;
-    GameObject world;
+    auto draw(GLFWwindow* window, float delta_time, Skybox* skybox) -> void;
+    auto draw_nodes(GameObject* game_object) -> void;
+    auto draw_nodes_outline() -> void;
+    auto draw_nodes_normals() -> void;
+    engine::GameObject world;
 
     std::array<Light, 10> lights {};
-    std::vector<Node> nodes;
 
     std::shared_ptr<Camera> camera;
 
@@ -54,3 +54,5 @@ class Scene {
     std::shared_ptr<ShaderProgram> outline_shader;
     std::shared_ptr<ShaderProgram> normal_shader;
 };
+
+}  // namespace engine

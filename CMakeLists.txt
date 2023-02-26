@@ -13,32 +13,26 @@ set(SOURCES
         src/core/game_loop.h
         src/core/locator.h
         src/core/resource_cache.h
-        src/graphics/opengl/framebuffer.cpp
-        src/graphics/opengl/framebuffer.h
-        src/graphics/opengl/image.cpp
-        src/graphics/opengl/image.h
-        src/graphics/opengl/mesh.cpp
-        src/graphics/opengl/mesh.h
-        src/graphics/opengl/model.cpp
-        src/graphics/opengl/model.h
-        src/graphics/opengl/shader_loader.cpp
-        src/graphics/opengl/shader_loader.h
-        src/graphics/opengl/shader_program.cpp
-        src/graphics/opengl/shader_program.h
-        src/graphics/opengl/shader_source.cpp
-        src/graphics/opengl/shader_source.h
-        src/graphics/opengl/skybox.cpp
-        src/graphics/opengl/skybox.h
-        src/graphics/opengl/texture.cpp
-        src/graphics/opengl/texture.h
-        src/graphics/opengl/texture_loader.cpp
-        src/graphics/opengl/texture_loader.h
-        src/graphics/opengl/vertex_array_object.cpp
-        src/graphics/opengl/vertex_array_object.h
-        src/graphics/opengl/vertex_buffer_object.cpp
-        src/graphics/opengl/vertex_buffer_object.h
-        src/graphics/opengl/vertex_buffer_object_from_cube.cpp
-        src/graphics/opengl/vertex_buffer_object_from_quad.cpp
+        src/graphics/framebuffer.cpp
+        src/graphics/framebuffer.h
+        src/graphics/mesh.cpp
+        src/graphics/mesh.h
+        src/graphics/mesh_loader.cpp
+        src/graphics/mesh_loader.h
+        src/graphics/shader_cache.cpp
+        src/graphics/shader_cache.h
+        src/graphics/shader_program.cpp
+        src/graphics/shader_program.h
+        src/graphics/shader_source.cpp
+        src/graphics/shader_source.h
+        src/graphics/skybox.cpp
+        src/graphics/skybox.h
+        src/graphics/texture.cpp
+        src/graphics/texture.h
+        src/graphics/texture_cache.cpp
+        src/graphics/texture_cache.h
+        src/graphics/texture_image.cpp
+        src/graphics/texture_image.h
         src/main.cpp
         src/platform/glfw.cpp
         src/platform/glfw.h
@@ -56,11 +50,17 @@ set(SOURCES
         src/scene/components/transform_component.h
         src/scene/game_object.cpp
         src/scene/game_object.h
+        src/scene/game_object_from_model.cpp
+        src/scene/game_object_from_model.h
         src/scene/light.h
-        src/scene/node.cpp
-        src/scene/node.h
         src/scene/scene.cpp
         src/scene/scene.h
+        src/to_be_deleted/vertex_array_object.cpp
+        src/to_be_deleted/vertex_array_object.h
+        src/to_be_deleted/vertex_buffer_object.cpp
+        src/to_be_deleted/vertex_buffer_object.h
+        src/to_be_deleted/vertex_buffer_object_from_cube.cpp
+        src/to_be_deleted/vertex_buffer_object_from_quad.cpp
         src/ui/gui.cpp
         src/ui/gui.h
         src/utils/platform_info.cpp

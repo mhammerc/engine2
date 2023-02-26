@@ -1,6 +1,8 @@
 #pragma once
 
-#include "../platform/opengl.h"
+#include "../common.h"
+
+namespace engine {
 
 struct Light {
     enum Type {
@@ -12,8 +14,8 @@ struct Light {
 
     Type type = Type::Unset;
 
-    glm::vec3 position;  // spot, point
-    glm::vec3 direction;  // spot, directional
+    vec3 position;  // spot, point
+    vec3 direction;  // spot, directional
 
     float innerCutOff;  // spot
     float outerCutOff;  // spot
@@ -22,7 +24,9 @@ struct Light {
     float linear;  // spot, point
     float quadratic;  // spot, point
 
-    glm::vec3 ambient;
-    glm::vec3 diffuse;
-    glm::vec3 specular;
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
 };
+
+}  // namespace engine

@@ -2,7 +2,7 @@
 
 #include <utility>
 
-#include "../../platform/opengl.h"
+#include "../platform/opengl.h"
 
 auto VertexBufferObject::define_attribute(size_t index, size_t size, size_t offset) -> void {
     bind();

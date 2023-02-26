@@ -3,9 +3,11 @@
 #include <filesystem>
 #include <optional>
 
-#include "../../common.h"
+#include "../common.h"
 
-class Image {
+namespace engine {
+
+class TextureImage {
   public:
     enum Channels {
         RGB = 3,
@@ -16,15 +18,15 @@ class Image {
 
   public:
     static auto from_file(const std::filesystem::path& path, std::optional<Channels> desired_channels, bool flip = true)
-        -> std::unique_ptr<Image>;
+        -> std::unique_ptr<TextureImage>;
 
-    ~Image() noexcept;
+    ~TextureImage() noexcept;
 
-    Image(const Image&) = delete;
-    auto operator=(const Image&) -> Image& = delete;
+    TextureImage(const TextureImage&) = delete;
+    auto operator=(const TextureImage&) -> TextureImage& = delete;
 
-    Image(Image&&) noexcept;
-    auto operator=(Image&&) noexcept -> Image&;
+    TextureImage(TextureImage&&) noexcept;
+    auto operator=(TextureImage&&) noexcept -> TextureImage&;
 
   public:
     [[nodiscard]] auto size() const -> vec2i;
@@ -32,7 +34,7 @@ class Image {
     [[nodiscard]] auto data() const -> u8 const*;
 
   private:
-    Image(vec2i size, Channels channels, u8 const* data);
+    TextureImage(vec2i size, Channels channels, u8 const* data);
 
     auto release() -> void;
 
@@ -42,3 +44,5 @@ class Image {
 
     u8 const* _data;
 };
+
+}  // namespace engine

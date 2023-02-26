@@ -10,7 +10,7 @@
 #include "../utils/type_index.h"
 #include "component.h"
 
-using namespace engine;
+namespace engine {
 
 class GameObject {
   public:
@@ -34,11 +34,15 @@ class GameObject {
 
         auto insertion = _components.insert({type_id, std::move(component)});
 
-        assert(insertion.second);
-
         auto pointer = insertion.first->second.get();
 
         return dynamic_cast<T*>(pointer);
+    }
+
+    template<typename T, typename... Args>
+    auto emplace_component(Args&&... args) -> T* {
+        auto instance = std::make_unique<T>(std::forward<Args>(args)...);
+        return insert_component(std::move(instance));
     }
 
     template<typename T>
@@ -79,3 +83,5 @@ class GameObject {
 
     std::vector<std::unique_ptr<GameObject>> _childrens;
 };
+
+}  // namespace engine

@@ -2,7 +2,7 @@
 
 #include <utility>
 
-#include "../../platform/opengl.h"
+#include "../platform/opengl.h"
 
 auto VertexArrayObject::from_cube() -> std::shared_ptr<VertexArrayObject> {
     unsigned int handle = 0;

@@ -3,7 +3,7 @@
 #include <array>
 #include <stdexcept>
 
-#include "../../utils/read_file_to_string.h"
+#include "../utils/read_file_to_string.h"
 #include "spdlog/spdlog.h"
 
 using namespace engine;

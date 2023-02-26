@@ -1,5 +1,7 @@
 #pragma once
 
+namespace engine {
+
 class GameObject;
 
 class Component {
@@ -25,3 +27,5 @@ class Component {
   private:
     GameObject* _game_object = nullptr;
 };
+
+}  // namespace engine

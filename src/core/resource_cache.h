@@ -22,6 +22,14 @@ class resource_cache {
         "The loader doesn't return the same resource or type (shared_ptr)."
     );
 
+    resource_cache() = default;
+    ~resource_cache() = default;
+    resource_cache(const resource_cache&) = delete;
+    auto operator=(const resource_cache&) -> resource_cache& = delete;
+
+    /**
+     * May return nullptr.
+     */
     [[nodiscard]] auto get(std::string const& name) -> type {
         auto it = _resources.find(name);
 
@@ -40,7 +48,7 @@ class resource_cache {
             return load(name, std::forward<Args>(args)...);
         }
 
-        return *it;
+        return it->second;
     }
 
     template<typename... Args>

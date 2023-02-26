@@ -5,7 +5,9 @@
 #include <optional>
 #include <string>
 
-#include "../../common.h"
+#include "../common.h"
+
+namespace engine {
 
 struct ShaderSource {
     enum Type { UNKNOWN, FRAGMENT, VERTEX, GEOMETRY };
@@ -44,3 +46,5 @@ struct ShaderSource {
   private:
     auto release() -> void;
 };
+
+}  // namespace engine

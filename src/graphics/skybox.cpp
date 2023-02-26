@@ -1,7 +1,9 @@
 #include "skybox.h"
 
-#include "image.h"
 #include "spdlog/spdlog.h"
+#include "texture_image.h"
+
+using namespace engine;
 
 static const std::array<float, 108> skybox_vertices = {
     // positions
@@ -33,7 +35,7 @@ auto Skybox::from_files(const std::array<std::filesystem::path, 6>& files) -> st
 
         for (size_t i = 0; i < files.size(); ++i) {
             const auto& file = files.at(i);
-            auto image = Image::from_file(file, Image::Channels::RGB, false);
+            auto image = TextureImage::from_file(file, TextureImage::Channels::RGB, false);
 
             if (!image) {
                 spdlog::error("Could not load create skybox face");

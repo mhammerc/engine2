@@ -4,7 +4,9 @@
 #include <memory>
 #include <string>
 
-#include "../../common.h"
+#include "../common.h"
+
+namespace engine {
 
 class ShaderProgram {
   public:
@@ -48,3 +50,5 @@ class ShaderProgram {
   private:
     auto link() -> bool;
 };
+
+}  // namespace engine

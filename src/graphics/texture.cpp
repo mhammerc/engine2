@@ -1,7 +1,9 @@
 #include "texture.h"
 
+using namespace engine;
+
 auto Texture::from_file(const std::filesystem::path& path, Type type, bool flip) -> std::unique_ptr<Texture> {
-    auto image = Image::from_file(path, Image::Channels::RGB, flip);
+    auto image = TextureImage::from_file(path, TextureImage::Channels::RGB, flip);
 
     if (!image) {
         return nullptr;
@@ -72,9 +74,9 @@ auto Texture::from_empty(Type type, vec2i size, int multisample) -> std::unique_
     return std::make_unique<Texture>(Texture(handle, type));
 }
 
-auto Texture::activate_as(u32 index) -> void {
+auto Texture::activate_as(u32 index, bool disable) -> void {
     glActiveTexture(GL_TEXTURE0 + index);
-    glBindTexture(GL_TEXTURE_2D, _handle);
+    glBindTexture(GL_TEXTURE_2D, disable ? 0 : _handle);
 }
 
 Texture::~Texture() noexcept {

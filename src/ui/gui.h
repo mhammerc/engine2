@@ -2,8 +2,11 @@
 
 #include "../scene/scene.h"
 
+namespace engine {
+
 auto gui_init(GLFWwindow* window) -> bool;
 auto gui_prepare_frame() -> void;
 auto gui_end_frame() -> void;
 auto gui_show_system_window(Scene* scene, float delta_time, GLFWwindow* window) -> void;
-auto gui_show_hierarchy(Scene* scene, GLFWwindow* window) -> void;
+
+}  // namespace engine

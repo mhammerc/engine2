@@ -4,8 +4,10 @@
 #include <memory>
 #include <optional>
 
-#include "../../common.h"
-#include "image.h"
+#include "../common.h"
+#include "texture_image.h"
+
+namespace engine {
 
 class Texture {
   public:
@@ -14,7 +16,7 @@ class Texture {
     static auto from_file(const std::filesystem::path& path, Type type, bool flip = true) -> std::unique_ptr<Texture>;
     static auto from_empty(Type type, vec2i size, int multisample) -> std::unique_ptr<Texture>;
 
-    auto activate_as(u32 index) -> void;
+    auto activate_as(u32 index, bool disable = false) -> void;
 
     ~Texture() noexcept;
 
@@ -36,3 +38,5 @@ class Texture {
     u32 _handle = 0;
     Type _type;
 };
+
+}  // namespace engine

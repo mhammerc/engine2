@@ -1,10 +1,12 @@
-#include "image.h"
+#include "texture_image.h"
 
 #include "spdlog/spdlog.h"
 #include "stb_image/stb_image.h"
 
-auto Image::from_file(const std::filesystem::path& path, std::optional<Channels> desired_channels, bool flip)
-    -> std::unique_ptr<Image> {
+using namespace engine;
+
+auto TextureImage::from_file(const std::filesystem::path& path, std::optional<Channels> desired_channels, bool flip)
+    -> std::unique_ptr<TextureImage> {
     vec2i size(0);
     int number_of_channels = 0;
 
@@ -23,19 +25,18 @@ auto Image::from_file(const std::filesystem::path& path, std::optional<Channels>
         return nullptr;
     }
 
-    auto image =
-        Image(size, static_cast<Channels>(desired_channels.has_value() ? *desired_channels : number_of_channels), data);
+    auto image = TextureImage(size, static_cast<Channels>(desired_channels.has_value() ? *desired_channels : number_of_channels), data);
 
-    return std::make_unique<Image>(std::move(image));
+    return std::make_unique<TextureImage>(std::move(image));
 }
 
-Image::Image(vec2i size, Channels channels, u8 const* data) : _size(size), _channels(channels), _data(data) {}
+TextureImage::TextureImage(vec2i size, Channels channels, u8 const* data) : _size(size), _channels(channels), _data(data) {}
 
-Image::Image(Image&& from) noexcept : _size(from._size), _channels(from._channels), _data(from._data) {
+TextureImage::TextureImage(TextureImage&& from) noexcept : _size(from._size), _channels(from._channels), _data(from._data) {
     from._data = nullptr;
 }
 
-auto Image::operator=(Image&& from) noexcept -> Image& {
+auto TextureImage::operator=(TextureImage&& from) noexcept -> TextureImage& {
     release();
 
     _size = from._size;
@@ -47,25 +48,25 @@ auto Image::operator=(Image&& from) noexcept -> Image& {
     return *this;
 }
 
-Image::~Image() noexcept {
+TextureImage::~TextureImage() noexcept {
     release();
 }
 
-auto Image::release() -> void {
+auto TextureImage::release() -> void {
     if (_data != nullptr) {
         stbi_image_free((void*)_data);
         _data = nullptr;
     }
 }
 
-auto Image::size() const -> vec2i {
+auto TextureImage::size() const -> vec2i {
     return _size;
 }
 
-auto Image::channels() const -> Channels {
+auto TextureImage::channels() const -> Channels {
     return _channels;
 }
 
-auto Image::data() const -> u8 const* {
+auto TextureImage::data() const -> u8 const* {
     return _data;
 }

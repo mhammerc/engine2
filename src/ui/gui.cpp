@@ -10,7 +10,9 @@
 
 #include "spdlog/fmt/bundled/format.h"
 
-auto gui_init(GLFWwindow* window) -> bool {
+using namespace engine;
+
+auto engine::gui_init(GLFWwindow* window) -> bool {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
@@ -27,13 +29,13 @@ auto gui_init(GLFWwindow* window) -> bool {
     return true;
 }
 
-auto gui_prepare_frame() -> void {
+auto engine::gui_prepare_frame() -> void {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 }
 
-auto gui_end_frame() -> void {
+auto engine::gui_end_frame() -> void {
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
@@ -71,7 +73,7 @@ static auto hierarchy_item(GameObject& object, size_t& currently_selected) -> vo
     }
 }
 
-auto gui_show_hierarchy(Scene* scene, GLFWwindow* /*window*/) -> void {
+static auto gui_show_hierarchy(Scene* scene, GLFWwindow* /*window*/) -> void {
     ImGui::SeparatorText("Hierarchy");
 
     auto& childrens = scene->world.childrens();
@@ -83,7 +85,7 @@ auto gui_show_hierarchy(Scene* scene, GLFWwindow* /*window*/) -> void {
     });
 }
 
-auto gui_show_system_window(Scene* scene, float delta_time, GLFWwindow* window) -> void {
+auto engine::gui_show_system_window(Scene* scene, float delta_time, GLFWwindow* window) -> void {
     ImGuiWindowFlags window_flags = 0;
     window_flags |= ImGuiWindowFlags_NoTitleBar;
     // window_flags |= ImGuiWindowFlags_MenuBar;
