@@ -1,6 +1,9 @@
+#include <entt/entt.hpp>
+
 #include "core/game_loop.h"
 #include "core/locator.h"
 #include "core/resource_cache.h"
+#include "entt/entity/fwd.hpp"
 #include "graphics/framebuffer.h"
 #include "graphics/mesh_loader.h"
 #include "graphics/renderer_context.h"
@@ -20,6 +23,11 @@
 using namespace engine;
 
 auto main() -> int {
+    auto registry = entt::registry();
+
+    auto entity = registry.create();
+    (void)entity;
+
     auto* window = init_glfw_and_opengl();
     if (window == nullptr) {
         spdlog::critical("Could not initialize GLFW3 or OpenGL.");
@@ -34,7 +42,7 @@ auto main() -> int {
     auto& shader_cache = engine::locator<engine::ShaderCache>::emplace();
     engine::locator<engine::TextureCache>::emplace();
     engine::locator<engine::MeshCache>::emplace();
-    auto &renderer_context = engine::locator<engine::RendererContext>::emplace();
+    auto& renderer_context = engine::locator<engine::RendererContext>::emplace();
 
     auto diffuse_shader = shader_cache.load("diffuse");
     if (diffuse_shader == nullptr) {

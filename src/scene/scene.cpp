@@ -54,8 +54,8 @@ auto Scene::draw(GLFWwindow* window, float delta_time, Skybox* /*skybox*/) -> vo
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     }
 
-    auto& renderer_context = locator<RendererContext>::value();
-    renderer_context.lights = lights;
+    auto* renderer_context = locator<RendererContext>::value();
+    renderer_context->lights = lights;
     draw_nodes(&world);
 
     // if (show_normals) {

@@ -77,7 +77,7 @@ static auto aimesh_to_mesh(aiMesh const* mesh) -> std::unique_ptr<Mesh> {
 
 static auto aimaterial_to_textures(aiMaterial const* mat, aiScene const* /*scene*/, path const& working_directory)
     -> std::map<i32, std::shared_ptr<Texture>> {
-    auto& texture_cache = locator<TextureCache>::value();
+    auto* texture_cache = locator<TextureCache>::value();
 
     // texture 1 is always diffuse.
     // texture 2 is always specular.
@@ -90,7 +90,7 @@ static auto aimaterial_to_textures(aiMaterial const* mat, aiScene const* /*scene
 
         auto texture_path = working_directory / filename.C_Str();
 
-        auto texture = texture_cache.get_or_load(texture_path, texture_path, Texture::Type::Diffuse);
+        auto texture = texture_cache->get_or_load(texture_path, texture_path, Texture::Type::Diffuse);
         textures.insert({1, std::move(texture)});
     }
 
@@ -101,7 +101,7 @@ static auto aimaterial_to_textures(aiMaterial const* mat, aiScene const* /*scene
 
         auto texture_path = working_directory / filename.C_Str();
 
-        auto texture = texture_cache.get_or_load(texture_path, texture_path, Texture::Type::Specular);
+        auto texture = texture_cache->get_or_load(texture_path, texture_path, Texture::Type::Specular);
         textures.insert({2, std::move(texture)});
     }
 
@@ -112,12 +112,12 @@ static auto on_mesh(GameObject* game_object, aiMesh const* aimesh, aiScene const
     -> void {
     auto* material = game_object->component<MaterialComponent>();
     // auto mesh_cache = locator<MeshCache>::value();
-    auto& shader_cache = locator<ShaderCache>::value();
+    auto* shader_cache = locator<ShaderCache>::value();
 
     auto mesh = aimesh_to_mesh(aimesh);
     // TODO: mesh isn't cached
     material->mesh() = std::move(mesh);
-    material->shader() = shader_cache.get("diffuse");
+    material->shader() = shader_cache->get("diffuse");
 
     if (aimesh->mMaterialIndex >= 0) {
         std::span<aiMaterial*> const raw_materials(scene->mMaterials, scene->mNumMaterials);

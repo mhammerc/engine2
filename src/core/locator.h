@@ -29,10 +29,10 @@ class locator {
         return _pointer != nullptr;
     }
 
-    [[nodiscard]] static auto value() noexcept -> type& {
+    [[nodiscard]] static auto value() noexcept -> type* {
         assert(has_value());
 
-        return *_pointer;
+        return _pointer.get();
     }
 
     template<typename Impl = Service, typename... Args>

@@ -95,6 +95,10 @@ add_subdirectory(vendors/assimp EXCLUDE_FROM_ALL)
 target_compile_options(assimp PRIVATE -Wno-error)
 target_link_libraries(opengl_engine PUBLIC assimp)
 
+# EnTT
+add_subdirectory(vendors/entt)
+target_link_libraries(opengl_engine PUBLIC EnTT)
+
 # GLM
 set(glm_DIR vendors/glm/cmake/glm)
 find_package(glm REQUIRED)
