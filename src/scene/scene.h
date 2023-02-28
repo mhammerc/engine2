@@ -6,7 +6,6 @@
 
 #include "../graphics/shader_program.h"
 #include "../graphics/skybox.h"
-#include "../to_be_deleted/vertex_array_object.h"
 #include "camera.h"
 #include "game_object.h"
 #include "light.h"

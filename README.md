@@ -3,7 +3,7 @@
 ## TODO
 
 - Skybox: make a cubemap OpenGL abstraction and refactor skybox to a Component.
-- camera: refactor to a component
+- camera: refactor
 - Quaternions in transforms
 - Inspector of objects which allow to view and edit transforms (with euler angles for humans)
 

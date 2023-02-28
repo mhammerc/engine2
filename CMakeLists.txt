@@ -17,6 +17,7 @@ set(SOURCES
         src/graphics/mesh.h
         src/graphics/mesh_cache.cpp
         src/graphics/mesh_cache.h
+        src/graphics/mesh_from.cpp
         src/graphics/shader_cache.cpp
         src/graphics/shader_cache.h
         src/graphics/shader_program.cpp
@@ -53,12 +54,6 @@ set(SOURCES
         src/scene/light.h
         src/scene/scene.cpp
         src/scene/scene.h
-        src/to_be_deleted/vertex_array_object.cpp
-        src/to_be_deleted/vertex_array_object.h
-        src/to_be_deleted/vertex_buffer_object.cpp
-        src/to_be_deleted/vertex_buffer_object.h
-        src/to_be_deleted/vertex_buffer_object_from_cube.cpp
-        src/to_be_deleted/vertex_buffer_object_from_quad.cpp
         src/ui/gui.cpp
         src/ui/gui.h
         src/utils/platform_info.cpp

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <vector>
 
 #include "../common.h"
@@ -22,6 +23,13 @@ class Mesh {
     };
 
   public:
+    /**
+     * Generate a cube with vertex ranging from [-0.5;]
+     */
+    [[nodiscard]] static auto from_cube() -> std::unique_ptr<Mesh>;
+
+    [[nodiscard]] static auto from_quad() -> std::unique_ptr<Mesh>;
+
     Mesh(std::vector<Vertex>&& vertices, std::vector<u32>&& indices);
     ~Mesh() noexcept;
 

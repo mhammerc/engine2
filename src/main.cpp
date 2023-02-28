@@ -39,7 +39,7 @@ auto main() -> int {
 
     auto& shader_cache = entt::locator<engine::ShaderCache>::emplace();
     entt::locator<engine::TextureCache>::emplace();
-    entt::locator<engine::MeshCache>::emplace();
+    auto& mesh_cache = entt::locator<engine::MeshCache>::emplace();
 
     auto& renderer_context = entt::locator<engine::RendererContext>::emplace();
 
@@ -103,7 +103,7 @@ auto main() -> int {
     glfwGetFramebufferSize(window, &size.x, &size.y);
     auto frame_buffer = FrameBuffer::create(size);
 
-    auto quad_vao = VertexArrayObject::from_quad();
+    auto mesh_quad = mesh_cache.load("quad"_hs, Mesh::from_quad());
 
     engine::game_loop([&](float delta_time, bool& should_quit) {
         if (glfwWindowShouldClose(window) != 0) {
@@ -148,7 +148,7 @@ auto main() -> int {
             frame_buffer->color_texture()->activate_as(0);
             auto _postprocess_shader = shader_cache["postprocess"_hs];
 
-            // postprocess_shader->second.set_uniform("screenTexture", 0);
+            _postprocess_shader->set_uniform("screenTexture", 0);
 
             int post_process = 0;
             if (scene.inverse) {
@@ -172,7 +172,7 @@ auto main() -> int {
             _postprocess_shader->set_uniform("post_process", post_process);
 
             _postprocess_shader->bind();
-            quad_vao->draw();
+            mesh_quad.first->second->draw();
             _postprocess_shader->unbind();
 
             glEnable(GL_DEPTH_TEST);
