@@ -1,34 +1,35 @@
 #include "scene.h"
 
 #include <spdlog/fmt/fmt.h>
+#include <spdlog/spdlog.h>
 
 #include <entt/entt.hpp>
 
 #include "../graphics/renderer_context.h"
 #include "../ui/gui.h"
-#include "components/renderer_component.h"
+#include "components/material_component.h"
+#include "components/name_component.h"
 #include "components/transform_component.h"
-#include "game_object_from_model.h"
+#include "entity_from_model.h"
 
 using namespace engine;
 
 Scene::Scene() {
-    world.name() = "World";
+    auto backpacks = entity_from_model("../assets/backpack/backpack.obj", registry);
+    for (auto& backpack : backpacks) {
+        registry.emplace<NameComponent>(backpack, "backpack");
+        registry.get_or_emplace<TransformComponent>(backpack).position = vec3(0.F, 0.F, -5.F);
+    }
 
-    auto backpack = game_object_from_model("../assets/backpack/backpack.obj");
-    backpack->name() = "backpack";
-    backpack->component<TransformComponent>()->position() = vec3(0.F, 0.F, -5.F);
-
-    auto floor = game_object_from_model("../assets/plane/plane.obj");
-    floor->name() = "floor";
-    floor->component<TransformComponent>()->position() = vec3(0.F, -5.F, 0.F);
-
-    world.childrens().push_back(std::move(backpack));
-    world.childrens().push_back(std::move(floor));
+    auto floors = entity_from_model("../assets/plane/plane.obj", registry);
+    for (auto& floor : floors) {
+        registry.emplace<NameComponent>(floor, "floor");
+        registry.get_or_emplace<TransformComponent>(floor).position = vec3(0.F, -5.F, 0.F);
+    }
 }
 
 auto Scene::draw(GLFWwindow* window, float delta_time, Skybox* /*skybox*/) -> void {
-    gui_show_system_window(this, delta_time, window);
+    gui_show_system_window(this, delta_time, window, registry);
 
     camera->computeFront();
 
@@ -57,7 +58,7 @@ auto Scene::draw(GLFWwindow* window, float delta_time, Skybox* /*skybox*/) -> vo
 
     auto& renderer_context = entt::locator<RendererContext>::value();
     renderer_context.lights = lights;
-    draw_nodes(&world);
+    draw_nodes();
 
     // if (show_normals) {
     //     draw_nodes_normals(projection);
@@ -82,15 +83,68 @@ auto Scene::draw(GLFWwindow* window, float delta_time, Skybox* /*skybox*/) -> vo
     // }
 }
 
-auto Scene::draw_nodes(GameObject* game_object) -> void {
-    auto* renderer = game_object->component<RendererComponent>();
+auto Scene::draw_nodes() -> void {
+    auto drawables = registry.view<TransformComponent, MaterialComponent>();
 
-    if (renderer) {
-        renderer->on_draw();
-    }
+    for (auto [entity, transform, material] : drawables.each()) {
+        auto const& renderer_context = entt::locator<RendererContext>::value();
 
-    for (auto& child : game_object->childrens()) {
-        draw_nodes(child.get());
+        auto const model = transform.matrix();
+        auto const modelNormal = mat3(glm::transpose(glm::inverse(model)));
+
+        // MVP
+        material.shader->set_uniform("model", model);
+        material.shader->set_uniform("modelNormal", modelNormal);
+        material.shader->set_uniform("view", renderer_context.camera->getMatrix());
+        material.shader->set_uniform("projection", renderer_context.projection);
+
+        material.shader->set_uniform("cameraPosition", renderer_context.camera->pos);
+
+        for (size_t i = 0; i < 10; ++i) {
+            Light const& light = renderer_context.lights.at(i);
+
+            material.shader->set_uniform(fmt::format("lights[{}].type", i), static_cast<int>(light.type));
+            material.shader->set_uniform(fmt::format("lights[{}].position", i), light.position);
+            material.shader->set_uniform(fmt::format("lights[{}].direction", i), glm::normalize(light.direction));
+            material.shader->set_uniform(fmt::format("lights[{}].innerCutOff", i), light.innerCutOff);
+            material.shader->set_uniform(fmt::format("lights[{}].outerCutOff", i), light.outerCutOff);
+            material.shader->set_uniform(fmt::format("lights[{}].constant", i), light.constant);
+            material.shader->set_uniform(fmt::format("lights[{}].linear", i), light.linear);
+            material.shader->set_uniform(fmt::format("lights[{}].quadratic", i), light.quadratic);
+            material.shader->set_uniform(fmt::format("lights[{}].ambient", i), light.ambient);
+            material.shader->set_uniform(fmt::format("lights[{}].diffuse", i), light.diffuse);
+            material.shader->set_uniform(fmt::format("lights[{}].specular", i), light.specular);
+        }
+
+        bool mirror = false;
+        bool glass = false;
+        float explosion = 0.F;
+
+        material.shader->set_uniform("material.shininess", 256.0F);
+        material.shader->set_uniform("material.texture_environment", 10);
+        material.shader->set_uniform("material.reflect", mirror ? 1.F : 0.F);
+        material.shader->set_uniform("material.refract", glass ? 1.F : 0.F);
+
+        if (material.textures.contains(1)) {
+            material.shader->set_uniform("material.texture_diffuse1", 1);
+        } else {
+            material.shader->set_uniform("material.texture_diffuse1", 0);
+        }
+
+        if (material.textures.contains(2)) {
+            material.shader->set_uniform("material.texture_specular1", 2);
+        } else {
+            material.shader->set_uniform("material.texture_specular1", 0);
+        }
+
+        material.shader->set_uniform("explosion", explosion);
+
+        material.shader->bind();
+        for (auto const& texture : material.textures) {
+            texture.second->activate_as(texture.first, false);
+        }
+
+        material.mesh->draw();
     }
 }
 

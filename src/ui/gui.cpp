@@ -8,6 +8,7 @@
 #include <array>
 #include <numeric>
 
+#include "../scene/components/name_component.h"
 #include "spdlog/fmt/bundled/format.h"
 
 using namespace engine;
@@ -40,52 +41,54 @@ auto engine::gui_end_frame() -> void {
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-static auto hierarchy_item(GameObject& object, size_t& currently_selected) -> void {
+static auto hierarchy_item(entt::entity entity, NameComponent const& name, entt::entity& currently_selected) -> void {
     const ImGuiTreeNodeFlags tree_base_flags =
         ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
     const ImGuiTreeNodeFlags tree_leaf_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 
     ImGuiTreeNodeFlags flags = tree_base_flags;
 
-    bool is_leaf = object.childrens().empty();
+    // bool is_leaf = object.childrens().empty();
+    bool is_leaf = true;
 
     if (is_leaf) {
         flags |= tree_leaf_flags;
     }
 
-    if (object.unique_index() == currently_selected) {
+    if (entity == currently_selected) {
         flags |= ImGuiTreeNodeFlags_Selected;
     }
 
-    bool is_open = ImGui::TreeNodeEx((void*)(intptr_t)object.unique_index(), flags, "%s", object.name().c_str());
+    bool is_open = ImGui::TreeNodeEx((void*)(intptr_t)entity, flags, "%s", name.name.c_str());
 
     if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) {
-        currently_selected = object.unique_index();
+        currently_selected = entity;
     }
 
     if (is_open && !is_leaf) {
-        auto& childrens = object.childrens();
+        // auto& childrens = object.childrens();
 
-        std::for_each(childrens.begin(), childrens.end(), [&currently_selected](std::unique_ptr<GameObject>& object) {
-            hierarchy_item(*object, currently_selected);
-        });
+        // std::for_each(childrens.begin(), childrens.end(), [&currently_selected](std::unique_ptr<GameObject>& object) {
+        //     hierarchy_item(*object, currently_selected);
+        // });
         ImGui::TreePop();
     }
 }
 
-static auto gui_show_hierarchy(Scene* scene, GLFWwindow* /*window*/) -> void {
+static auto gui_show_hierarchy(Scene* scene, GLFWwindow* /*window*/, entt::registry& registry) -> void {
     ImGui::SeparatorText("Hierarchy");
 
-    auto& childrens = scene->world.childrens();
+    static entt::entity currently_selected = entt::null;
 
-    static size_t currently_selected = -1;
+    auto view = registry.view<NameComponent>();
 
-    std::for_each(childrens.begin(), childrens.end(), [](std::unique_ptr<GameObject>& object) {
-        hierarchy_item(*object, currently_selected);
-    });
+    for (auto [entity, name] : view.each()) {
+        hierarchy_item(entity, name, currently_selected);
+    }
 }
 
-auto engine::gui_show_system_window(Scene* scene, float delta_time, GLFWwindow* window) -> void {
+auto engine::gui_show_system_window(Scene* scene, float delta_time, GLFWwindow* window, entt::registry& registry)
+    -> void {
     ImGuiWindowFlags window_flags = 0;
     window_flags |= ImGuiWindowFlags_NoTitleBar;
     // window_flags |= ImGuiWindowFlags_MenuBar;
@@ -154,7 +157,7 @@ auto engine::gui_show_system_window(Scene* scene, float delta_time, GLFWwindow* 
         ImGui::Checkbox("Edge Detection", &scene->edge_dectection);
     }
 
-    gui_show_hierarchy(scene, window);
+    gui_show_hierarchy(scene, window, registry);
 
     ImGui::End();
 }

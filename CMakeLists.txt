@@ -39,18 +39,12 @@ set(SOURCES
         src/platform/opengl.h
         src/scene/camera.cpp
         src/scene/camera.h
-        src/scene/component.cpp
-        src/scene/component.h
         src/scene/components/material_component.cpp
         src/scene/components/material_component.h
-        src/scene/components/renderer_component.cpp
-        src/scene/components/renderer_component.h
         src/scene/components/transform_component.cpp
         src/scene/components/transform_component.h
-        src/scene/game_object.cpp
-        src/scene/game_object.h
-        src/scene/game_object_from_model.cpp
-        src/scene/game_object_from_model.h
+        src/scene/entity_from_model.cpp
+        src/scene/entity_from_model.h
         src/scene/light.h
         src/scene/scene.cpp
         src/scene/scene.h
@@ -72,7 +66,7 @@ set_property(TARGET opengl_engine PROPERTY CXX_STANDARD 23)
 if (MSVC)
     target_compile_options(opengl_engine PRIVATE /W4 /WX)
 else ()
-    target_compile_options(opengl_engine BEFORE PRIVATE -Wall -Wextra -Wpedantic -Werror -Wno-error=unused-variable)
+    target_compile_options(opengl_engine BEFORE PRIVATE -Wall -Wextra -Wpedantic -Werror -Wno-error=unused-variable -Wno-error=unused-parameter)
 endif ()
 
 # spdlog

@@ -1,13 +1,13 @@
 #pragma once
 
 #include <array>
+#include <entt/entt.hpp>
 #include <memory>
 #include <vector>
 
 #include "../graphics/shader_program.h"
 #include "../graphics/skybox.h"
 #include "camera.h"
-#include "game_object.h"
 #include "light.h"
 
 #define POST_PROCESS_INVERSE (1 << 0)
@@ -27,10 +27,10 @@ class Scene {
   public:
     Scene();
     auto draw(GLFWwindow* window, float delta_time, Skybox* skybox) -> void;
-    auto draw_nodes(GameObject* game_object) -> void;
+    auto draw_nodes() -> void;
     auto draw_nodes_outline() -> void;
     auto draw_nodes_normals() -> void;
-    engine::GameObject world;
+    entt::registry registry;
 
     std::array<Light, 10> lights {};
 

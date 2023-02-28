@@ -1,4 +1,4 @@
-#include "game_object_from_model.h"
+#include "entity_from_model.h"
 
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
@@ -16,7 +16,6 @@
 #include "../graphics/texture_cache.h"
 #include "assimp/material.h"
 #include "components/material_component.h"
-#include "components/renderer_component.h"
 #include "components/transform_component.h"
 
 using namespace engine;
@@ -110,31 +109,39 @@ static auto aimaterial_to_textures(aiMaterial const* mat, aiScene const* /*scene
     return textures;
 }
 
-static auto on_mesh(GameObject* game_object, aiMesh const* aimesh, aiScene const* scene, path const& working_directory)
-    -> void {
-    auto* material = game_object->component<MaterialComponent>();
-    // auto mesh_cache = locator<MeshCache>::value();
-    auto& shader_cache = entt::locator<ShaderCache>::value();
+static auto on_mesh(
+    entt::entity entity,
+    entt::registry& registry,
+    aiMesh const* aimesh,
+    aiScene const* scene,
+    path const& working_directory
+) -> void {
+    auto& material = registry.get<MaterialComponent>(entity);
 
+    auto& shader_cache = entt::locator<ShaderCache>::value();
     auto mesh = aimesh_to_mesh(aimesh);
+
     // TODO: mesh isn't cached
-    material->mesh() = std::move(mesh);
-    material->shader() = shader_cache["diffuse"_hs].handle();
+    material.mesh = std::move(mesh);
+    material.shader = shader_cache["diffuse"_hs].handle();
 
     if (aimesh->mMaterialIndex >= 0) {
         std::span<aiMaterial*> const raw_materials(scene->mMaterials, scene->mNumMaterials);
-        material->textures() = aimaterial_to_textures(raw_materials[aimesh->mMaterialIndex], scene, working_directory);
+        material.textures = aimaterial_to_textures(raw_materials[aimesh->mMaterialIndex], scene, working_directory);
     }
 }
 
 // Each node is a game object.
-static auto on_node(aiNode const* node, aiScene const* scene, path const& working_directory)
-    -> std::unique_ptr<GameObject> {
-    auto game_object = std::make_unique<GameObject>();
-
-    game_object->emplace_component<TransformComponent>();
-    game_object->emplace_component<MaterialComponent>();
-    game_object->emplace_component<RendererComponent>();
+static auto on_node(
+    aiNode const* node,
+    aiScene const* scene,
+    path const& working_directory,
+    entt::registry& registry,
+    std::vector<entt::entity>& entities
+) -> void {
+    auto entity = entities.emplace_back(registry.create());
+    registry.emplace<TransformComponent>(entity);
+    registry.emplace<MaterialComponent>(entity);
 
     std::span<u32> const raw_mesh_indexes {node->mMeshes, node->mNumMeshes};
     std::span<aiMesh*> const raw_meshes {scene->mMeshes, scene->mNumMeshes};
@@ -143,19 +150,18 @@ static auto on_node(aiNode const* node, aiScene const* scene, path const& workin
     // TODO: a node may have multiple meshes.
     if (!raw_mesh_indexes.empty()) {
         auto* raw_mesh = raw_meshes[0];
-        on_mesh(game_object.get(), raw_mesh, scene, working_directory);
+        on_mesh(entity, registry, raw_mesh, scene, working_directory);
     }
 
     std::span<aiNode*> const node_childrens {node->mChildren, node->mNumChildren};
     for (auto* children : node_childrens) {
-        auto game_object_children = on_node(children, scene, working_directory);
-        game_object->childrens().emplace_back(std::move(game_object_children));
+        on_node(children, scene, working_directory, registry, entities);
     }
-
-    return game_object;
 }
 
-auto engine::game_object_from_model(const path& path) -> std::unique_ptr<GameObject> {
+auto engine::entity_from_model(const path& path, entt::registry& registry) -> std::vector<entt::entity> {
+    std::vector<entt::entity> entities;
+
     auto directory = path;
     directory.remove_filename();
 
@@ -169,8 +175,10 @@ auto engine::game_object_from_model(const path& path) -> std::unique_ptr<GameObj
 
     if (scene == nullptr || (scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) != 0U || scene->mRootNode == nullptr) {
         spdlog::error("Could not load model '{}'. Error: '{}'.", path.c_str(), importer.GetErrorString());
-        return nullptr;
+        return entities;
     }
 
-    return on_node(scene->mRootNode, scene, directory);
+    on_node(scene->mRootNode, scene, directory, registry, entities);
+
+    return entities;
 }

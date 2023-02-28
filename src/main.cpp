@@ -12,7 +12,6 @@
 #include "platform/glfw.h"
 #include "platform/opengl.h"
 #include "scene/camera.h"
-#include "scene/game_object.h"
 #include "scene/scene.h"
 #include "spdlog/spdlog.h"
 #include "stb_image/stb_image.h"
@@ -22,9 +21,6 @@ using namespace engine;
 
 auto main() -> int {
     auto registry = entt::registry();
-
-    auto entity = registry.create();
-    (void)entity;
 
     auto* window = init_glfw_and_opengl();
     if (window == nullptr) {
