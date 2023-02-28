@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../core/resource_cache.h"
+#include <entt/entt.hpp>
+
 #include "shader_program.h"
 
 namespace engine {
@@ -11,6 +12,6 @@ struct ShaderProgramLoader {
     auto operator()(std::string const& name) const -> result_type;
 };
 
-using ShaderCache = engine::resource_cache<ShaderProgram, ShaderProgramLoader>;
+using ShaderCache = entt::resource_cache<ShaderProgram, ShaderProgramLoader>;
 
 }  // namespace engine

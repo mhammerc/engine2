@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../core/resource_cache.h"
+#include <entt/entt.hpp>
+
 #include "mesh.h"
 
 namespace engine {
@@ -12,6 +13,6 @@ struct MeshLoader {
         -> result_type;
 };
 
-using MeshCache = engine::resource_cache<Mesh, MeshLoader>;
+using MeshCache = entt::resource_cache<Mesh, MeshLoader>;
 
 }  // namespace engine

@@ -11,14 +11,12 @@ add_executable(opengl_engine)
 set(SOURCES
         src/core/game_loop.cpp
         src/core/game_loop.h
-        src/core/locator.h
-        src/core/resource_cache.h
         src/graphics/framebuffer.cpp
         src/graphics/framebuffer.h
         src/graphics/mesh.cpp
         src/graphics/mesh.h
-        src/graphics/mesh_loader.cpp
-        src/graphics/mesh_loader.h
+        src/graphics/mesh_cache.cpp
+        src/graphics/mesh_cache.h
         src/graphics/shader_cache.cpp
         src/graphics/shader_cache.h
         src/graphics/shader_program.cpp
@@ -79,7 +77,7 @@ set_property(TARGET opengl_engine PROPERTY CXX_STANDARD 23)
 if (MSVC)
     target_compile_options(opengl_engine PRIVATE /W4 /WX)
 else ()
-    target_compile_options(opengl_engine BEFORE PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(opengl_engine BEFORE PRIVATE -Wall -Wextra -Wpedantic -Werror -Wno-error=unused-variable)
 endif ()
 
 # spdlog

@@ -2,7 +2,8 @@
 
 #include <spdlog/fmt/fmt.h>
 
-#include "../core/locator.h"
+#include <entt/entt.hpp>
+
 #include "../graphics/renderer_context.h"
 #include "../ui/gui.h"
 #include "components/renderer_component.h"
@@ -54,8 +55,8 @@ auto Scene::draw(GLFWwindow* window, float delta_time, Skybox* /*skybox*/) -> vo
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     }
 
-    auto* renderer_context = locator<RendererContext>::value();
-    renderer_context->lights = lights;
+    auto& renderer_context = entt::locator<RendererContext>::value();
+    renderer_context.lights = lights;
     draw_nodes(&world);
 
     // if (show_normals) {

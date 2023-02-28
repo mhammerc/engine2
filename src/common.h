@@ -5,6 +5,7 @@
 
 #include <cinttypes>
 #include <cstddef>
+#include <entt/core/hashed_string.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_access.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -14,6 +15,8 @@
 #include "conf.h"
 
 namespace engine {
+
+using namespace entt::literals;
 
 using i8 = std::int8_t;
 using i16 = std::int16_t;

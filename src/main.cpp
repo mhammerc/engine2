@@ -1,11 +1,9 @@
 #include <entt/entt.hpp>
 
 #include "core/game_loop.h"
-#include "core/locator.h"
-#include "core/resource_cache.h"
 #include "entt/entity/fwd.hpp"
 #include "graphics/framebuffer.h"
-#include "graphics/mesh_loader.h"
+#include "graphics/mesh_cache.h"
 #include "graphics/renderer_context.h"
 #include "graphics/shader_cache.h"
 #include "graphics/shader_program.h"
@@ -39,45 +37,44 @@ auto main() -> int {
         return 1;
     }
 
-    auto& shader_cache = engine::locator<engine::ShaderCache>::emplace();
-    engine::locator<engine::TextureCache>::emplace();
-    engine::locator<engine::MeshCache>::emplace();
-    auto& renderer_context = engine::locator<engine::RendererContext>::emplace();
+    auto& shader_cache = entt::locator<engine::ShaderCache>::emplace();
+    entt::locator<engine::TextureCache>::emplace();
+    entt::locator<engine::MeshCache>::emplace();
 
-    auto diffuse_shader = shader_cache.load("diffuse");
-    if (diffuse_shader == nullptr) {
+    auto& renderer_context = entt::locator<engine::RendererContext>::emplace();
+
+    auto [diffuse_shader, _] = shader_cache.load("diffuse"_hs, "diffuse");
+    if (diffuse_shader->second.handle() == nullptr) {
         spdlog::critical("could not create shader program.");
         return 1;
     }
 
-    auto light_source_shader = shader_cache.load("light");
-    if (light_source_shader == nullptr) {
+    auto [light_source_shader, _2] = shader_cache.load("light"_hs, "light");
+    if (light_source_shader->second.handle() == nullptr) {
         spdlog::critical("could not create shader program.");
         return 1;
     }
 
-    auto outline_shader = shader_cache.load("outline");
-    if (outline_shader == nullptr) {
+    auto [outline_shader, _3] = shader_cache.load("outline"_hs, "outline");
+    if (outline_shader->second.handle() == nullptr) {
         spdlog::critical("could not create shader program.");
         return 1;
     }
 
-    auto postprocess_shader = shader_cache.load("postprocess");
-    if (postprocess_shader == nullptr) {
+    auto [postprocess_shader, _4] = shader_cache.load("postprocess"_hs, "postprocess");
+    if (postprocess_shader->second.handle() == nullptr) {
         spdlog::critical("could not create shader program.");
         return 1;
     }
 
-    auto normal_shader = shader_cache.load("normal");
-    if (normal_shader == nullptr) {
+    auto [normal_shader, _5] = shader_cache.load("normal"_hs, "normal");
+    if (normal_shader->second.handle() == nullptr) {
         spdlog::critical("could not create shader program.");
         return 1;
     }
 
     Scene scene;
     scene.camera = std::make_shared<Camera>(window);
-    scene.outline_shader = std::move(outline_shader);
-    scene.normal_shader = std::move(normal_shader);
     renderer_context.camera = scene.camera.get();
 
     {
@@ -149,7 +146,9 @@ auto main() -> int {
             glDisable(GL_DEPTH_TEST);
 
             frame_buffer->color_texture()->activate_as(0);
-            postprocess_shader->set_uniform("screenTexture", 0);
+            auto _postprocess_shader = shader_cache["postprocess"_hs];
+
+            // postprocess_shader->second.set_uniform("screenTexture", 0);
 
             int post_process = 0;
             if (scene.inverse) {
@@ -170,11 +169,11 @@ auto main() -> int {
             if (scene.edge_dectection) {
                 post_process |= POST_PROCESS_EDGE_DETECTION;
             }
-            postprocess_shader->set_uniform("post_process", post_process);
+            _postprocess_shader->set_uniform("post_process", post_process);
 
-            postprocess_shader->bind();
+            _postprocess_shader->bind();
             quad_vao->draw();
-            postprocess_shader->unbind();
+            _postprocess_shader->unbind();
 
             glEnable(GL_DEPTH_TEST);
         }

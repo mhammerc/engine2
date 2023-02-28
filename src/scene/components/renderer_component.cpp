@@ -1,6 +1,7 @@
 #include "renderer_component.h"
 
-#include "../../core/locator.h"
+#include <entt/entt.hpp>
+
 #include "../../graphics/renderer_context.h"
 #include "../game_object.h"
 #include "material_component.h"
@@ -12,7 +13,7 @@ namespace engine {
 auto RendererComponent::on_draw() -> void {
     auto* transform = game_object()->component<TransformComponent>();
     auto* material = game_object()->component<MaterialComponent>();
-    auto* renderer_context = locator<RendererContext>::value();
+    auto& renderer_context = entt::locator<RendererContext>::value();
 
     if (!transform || !material) {
         spdlog::error(
@@ -26,13 +27,13 @@ auto RendererComponent::on_draw() -> void {
     // MVP
     material->shader()->set_uniform("model", model);
     material->shader()->set_uniform("modelNormal", modelNormal);
-    material->shader()->set_uniform("view", renderer_context->camera->getMatrix());
-    material->shader()->set_uniform("projection", renderer_context->projection);
+    material->shader()->set_uniform("view", renderer_context.camera->getMatrix());
+    material->shader()->set_uniform("projection", renderer_context.projection);
 
-    material->shader()->set_uniform("cameraPosition", renderer_context->camera->pos);
+    material->shader()->set_uniform("cameraPosition", renderer_context.camera->pos);
 
     for (size_t i = 0; i < 10; ++i) {
-        Light const& light = renderer_context->lights.at(i);
+        Light const& light = renderer_context.lights.at(i);
 
         material->shader()->set_uniform(fmt::format("lights[{}].type", i), static_cast<int>(light.type));
         material->shader()->set_uniform(fmt::format("lights[{}].position", i), light.position);

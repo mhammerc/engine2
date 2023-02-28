@@ -51,8 +51,8 @@ class Scene {
     bool show_normals = false;
     float explosion = 0.F;
 
-    std::shared_ptr<ShaderProgram> outline_shader;
-    std::shared_ptr<ShaderProgram> normal_shader;
+    // std::shared_ptr<ShaderProgram> outline_shader;
+    // std::shared_ptr<ShaderProgram> normal_shader;
 };
 
 }  // namespace engine
