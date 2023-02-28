@@ -11,8 +11,8 @@
 
 As of 2023 February, we use Visual Studio Code with the following extensions :
 
-- `C/C++ Extension Pack`
-- `clangd`
+- `CMake Tools` from `Microsoft`
+- `clangd` from `LLVM`
   - Accept to disable Intellisense
   - Run `clangd: download language server` to have a proper clangd
 - `Clang-Format`

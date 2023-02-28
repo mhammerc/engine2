@@ -6,6 +6,7 @@
 #include <entt/entt.hpp>
 
 #include "../graphics/renderer_context.h"
+#include "../graphics/shader_cache.h"
 #include "../ui/gui.h"
 #include "components/material_component.h"
 #include "components/name_component.h"
@@ -60,27 +61,18 @@ auto Scene::draw(GLFWwindow* window, float delta_time, Skybox* /*skybox*/) -> vo
     renderer_context.lights = lights;
     draw_nodes();
 
-    // if (show_normals) {
-    //     draw_nodes_normals(projection);
-    // }
+    if (show_normals) {
+        draw_nodes_normals();
+    }
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     glDisable(GL_STENCIL_TEST);
     // skybox->draw(projection, camera->getMatrix());
 
-    // if (outline) {
-    //     glEnable(GL_STENCIL_TEST);
-    //     glStencilMask(0x00);
-    //     glDisable(GL_DEPTH_TEST);
-    //     glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-
-    //     draw_nodes_outline(projection);
-
-    //     glEnable(GL_DEPTH_TEST);
-    //     glDisable(GL_STENCIL_TEST);
-    //     glStencilMask(0xFF);
-    // }
+    if (outline) {
+        draw_nodes_outline();
+    }
 }
 
 auto Scene::draw_nodes() -> void {
@@ -116,10 +108,6 @@ auto Scene::draw_nodes() -> void {
             material.shader->set_uniform(fmt::format("lights[{}].specular", i), light.specular);
         }
 
-        bool mirror = false;
-        bool glass = false;
-        float explosion = 0.F;
-
         material.shader->set_uniform("material.shininess", 256.0F);
         material.shader->set_uniform("material.texture_environment", 10);
         material.shader->set_uniform("material.reflect", mirror ? 1.F : 0.F);
@@ -149,29 +137,58 @@ auto Scene::draw_nodes() -> void {
 }
 
 auto Scene::draw_nodes_outline() -> void {
-    // for (auto& node : nodes) {
-    //     auto previousShader = node.shader();
-    //     node.shader() = outline_shader;
+    auto shader_cache = entt::locator<ShaderCache>::value();
+    auto shader_outline = shader_cache["outline"_hs];
 
-    //     node.shader()->set_uniform("view", camera->getMatrix());
-    //     node.shader()->set_uniform("projection", projection);
+    auto drawables = registry.view<TransformComponent, MaterialComponent>();
 
-    //     node.draw();
+    glEnable(GL_STENCIL_TEST);
+    glStencilMask(0x00);
+    glDisable(GL_DEPTH_TEST);
+    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 
-    //     node.shader() = previousShader;
-    // }
+    for (auto [entity, transform, material] : drawables.each()) {
+        auto const& renderer_context = entt::locator<RendererContext>::value();
+
+        auto const model = transform.matrix();
+        auto const modelNormal = mat3(glm::transpose(glm::inverse(model)));
+
+        // MVP
+        shader_outline->set_uniform("model", model);
+        shader_outline->set_uniform("modelNormal", modelNormal);
+        shader_outline->set_uniform("view", renderer_context.camera->getMatrix());
+        shader_outline->set_uniform("projection", renderer_context.projection);
+
+        shader_outline->bind();
+        material.mesh->draw();
+        shader_outline->unbind();
+    }
+
+    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_STENCIL_TEST);
+    glStencilMask(0xFF);
 }
 
 auto Scene::draw_nodes_normals() -> void {
-    // for (auto& node : nodes) {
-    //     auto previousShader = node.shader();
-    //     node.shader() = normal_shader;
+    auto shader_cache = entt::locator<ShaderCache>::value();
+    auto shader_normal = shader_cache["normal"_hs];
 
-    //     node.shader()->set_uniform("view", camera->getMatrix());
-    //     node.shader()->set_uniform("projection", projection);
+    auto drawables = registry.view<TransformComponent, MaterialComponent>();
 
-    //     node.draw();
+    for (auto [entity, transform, material] : drawables.each()) {
+        auto const& renderer_context = entt::locator<RendererContext>::value();
 
-    //     node.shader() = previousShader;
-    // }
+        auto const model = transform.matrix();
+        auto const modelNormal = mat3(glm::transpose(glm::inverse(model)));
+
+        // MVP
+        shader_normal->set_uniform("model", model);
+        shader_normal->set_uniform("modelNormal", modelNormal);
+        shader_normal->set_uniform("view", renderer_context.camera->getMatrix());
+        shader_normal->set_uniform("projection", renderer_context.projection);
+
+        shader_normal->bind();
+        material.mesh->draw();
+        shader_normal->unbind();
+    }
 }

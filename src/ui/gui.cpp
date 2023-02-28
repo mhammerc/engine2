@@ -75,7 +75,7 @@ static auto hierarchy_item(entt::entity entity, NameComponent const& name, entt:
     }
 }
 
-static auto gui_show_hierarchy(Scene* scene, GLFWwindow* /*window*/, entt::registry& registry) -> void {
+static auto gui_show_hierarchy(Scene* /*scene*/, GLFWwindow* /*window*/, entt::registry& registry) -> void {
     ImGui::SeparatorText("Hierarchy");
 
     static entt::entity currently_selected = entt::null;

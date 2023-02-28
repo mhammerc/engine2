@@ -10,7 +10,6 @@
 #include "graphics/skybox.h"
 #include "graphics/texture_cache.h"
 #include "platform/glfw.h"
-#include "platform/opengl.h"
 #include "scene/camera.h"
 #include "scene/scene.h"
 #include "spdlog/spdlog.h"
@@ -99,7 +98,7 @@ auto main() -> int {
     glfwGetFramebufferSize(window, &size.x, &size.y);
     auto frame_buffer = FrameBuffer::create(size);
 
-    auto mesh_quad = mesh_cache.load("quad"_hs, Mesh::from_quad());
+    mesh_cache.load("quad"_hs, Mesh::from_quad());
 
     engine::game_loop([&](float delta_time, bool& should_quit) {
         if (glfwWindowShouldClose(window) != 0) {
@@ -168,7 +167,8 @@ auto main() -> int {
             _postprocess_shader->set_uniform("post_process", post_process);
 
             _postprocess_shader->bind();
-            mesh_quad.first->second->draw();
+            auto mesh_quad = mesh_cache["quad"_hs];
+            mesh_quad->draw();
             _postprocess_shader->unbind();
 
             glEnable(GL_DEPTH_TEST);
