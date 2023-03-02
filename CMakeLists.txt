@@ -9,6 +9,8 @@ project(opengl_engine VERSION 0.1.0)
 add_executable(opengl_engine)
 
 set(SOURCES
+        src/core/entity.cpp
+        src/core/entity.h
         src/core/game_loop.cpp
         src/core/game_loop.h
         src/core/reflection.cpp
