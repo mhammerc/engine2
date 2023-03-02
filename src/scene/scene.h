@@ -5,8 +5,6 @@
 #include <memory>
 #include <vector>
 
-#include "../graphics/shader_program.h"
-#include "../graphics/skybox.h"
 #include "camera.h"
 #include "light.h"
 
@@ -25,12 +23,14 @@ namespace engine {
  */
 class Scene {
   public:
-    Scene();
-    auto draw(GLFWwindow* window, float delta_time, Skybox* skybox) -> void;
+    Scene(entt::registry& registry);
+    auto draw(GLFWwindow* window, float delta_time) -> void;
     auto draw_nodes() -> void;
     auto draw_nodes_outline() -> void;
     auto draw_nodes_normals() -> void;
-    entt::registry registry;
+    auto draw_skybox() -> void;
+
+    entt::registry& registry;
 
     std::array<Light, 10> lights {};
 
@@ -38,8 +38,6 @@ class Scene {
 
     bool flashlight = true;
     bool wireframe = false;
-    bool mirror = false;
-    bool glass = false;
     bool outline = false;
     bool inverse = false;
     bool black_and_white = false;

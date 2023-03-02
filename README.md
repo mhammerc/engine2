@@ -2,7 +2,6 @@
 
 ## TODO
 
-- Skybox: make a cubemap OpenGL abstraction and refactor skybox to a Component.
 - camera: refactor
 - Quaternions in transforms
 - Inspector of objects which allow to view and edit transforms (with euler angles for humans)
@@ -11,6 +10,8 @@
 
 As of 2023 February, we use Visual Studio Code with the following extensions :
 
+- `C/C++` from `Microsoft`
+  - Used only for debugging.
 - `CMake Tools` from `Microsoft`
 - `clangd` from `LLVM`
   - Accept to disable Intellisense

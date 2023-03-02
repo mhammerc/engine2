@@ -1,24 +1,26 @@
 #include <entt/entt.hpp>
 
 #include "core/game_loop.h"
+#include "core/reflection.h"
 #include "entt/entity/fwd.hpp"
+#include "graphics/cube_map_cache.h"
 #include "graphics/framebuffer.h"
 #include "graphics/mesh_cache.h"
 #include "graphics/renderer_context.h"
 #include "graphics/shader_cache.h"
 #include "graphics/shader_program.h"
-#include "graphics/skybox.h"
 #include "graphics/texture_cache.h"
 #include "platform/glfw.h"
 #include "scene/camera.h"
 #include "scene/scene.h"
 #include "spdlog/spdlog.h"
 #include "stb_image/stb_image.h"
-#include "ui/gui.h"
+#include "ui/ui.h"
 
 using namespace engine;
 
 auto main() -> int {
+    reflection::register_all();
     auto registry = entt::registry();
 
     auto* window = init_glfw_and_opengl();
@@ -27,7 +29,7 @@ auto main() -> int {
         return 1;
     }
 
-    if (!gui_init(window)) {
+    if (!ui_init(window)) {
         spdlog::critical("Could not initialize GUI.");
         return 1;
     }
@@ -35,6 +37,7 @@ auto main() -> int {
     auto& shader_cache = entt::locator<engine::ShaderCache>::emplace();
     entt::locator<engine::TextureCache>::emplace();
     auto& mesh_cache = entt::locator<engine::MeshCache>::emplace();
+    auto& cubemap_cache = entt::locator<engine::CubeMapCache>::emplace();
 
     auto& renderer_context = entt::locator<engine::RendererContext>::emplace();
 
@@ -68,7 +71,25 @@ auto main() -> int {
         return 1;
     }
 
-    Scene scene;
+    auto [skybox_shader, _7] = shader_cache.load("skybox"_hs, "skybox");
+    if (skybox_shader->second.handle() == nullptr) {
+        spdlog::critical("could not create shader program.");
+        return 1;
+    }
+
+    cubemap_cache.load(
+        "skybox"_hs,
+        std::array<std::filesystem::path, 6>({
+            "../assets/skybox/right.jpg",
+            "../assets/skybox/left.jpg",
+            "../assets/skybox/top.jpg",
+            "../assets/skybox/bottom.jpg",
+            "../assets/skybox/front.jpg",
+            "../assets/skybox/back.jpg",
+        })
+    );
+
+    Scene scene(registry);
     scene.camera = std::make_shared<Camera>(window);
     renderer_context.camera = scene.camera.get();
 
@@ -85,58 +106,49 @@ auto main() -> int {
         scene.lights.at(0) = pointLight;
     }
 
-    auto skybox = Skybox::from_files({
-        "../assets/skybox/right.jpg",
-        "../assets/skybox/left.jpg",
-        "../assets/skybox/top.jpg",
-        "../assets/skybox/bottom.jpg",
-        "../assets/skybox/front.jpg",
-        "../assets/skybox/back.jpg",
-    });
-
-    vec2i size(0);
-    glfwGetFramebufferSize(window, &size.x, &size.y);
-    auto frame_buffer = FrameBuffer::create(size);
+    auto frame_buffer = FrameBuffer::create({1, 1});
+    auto frame_buffer_postprocess = FrameBuffer::create({1, 1});
 
     mesh_cache.load("quad"_hs, Mesh::from_quad());
+    mesh_cache.load("cube"_hs, Mesh::from_cube());
 
     engine::game_loop([&](float delta_time, bool& should_quit) {
         if (glfwWindowShouldClose(window) != 0) {
             should_quit = true;
         }
 
-        gui_prepare_frame();
+        ui_prepare_frame();
 
         process_inputs(delta_time, window, *scene.camera);
+
+        ui_draw(delta_time, &scene, window, registry, frame_buffer_postprocess.get());
 
         glClearColor(0.2F, 0.3F, 0.3F, 1.0F);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-        glfwGetFramebufferSize(window, &size.x, &size.y);
+        auto size = frame_buffer_postprocess->size();
         renderer_context.projection = glm::perspective(
+            // TODO: slider in UI to change fov
             glm::radians(45.0F),
             static_cast<float>(size.x) / static_cast<float>(size.y),
             0.1F,
             100.0F
         );
 
-        // Resize the framebuffer as needed
-        frame_buffer->resize(size);
-
         // Render scene
         {
+            frame_buffer->resize(size);
             frame_buffer->bind();
 
             glClearColor(0.1F, 0.1F, 0.1F, 1.0F);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-            skybox->activate_cubemap_as(10);
-            scene.draw(window, delta_time, skybox.get());
+            scene.draw(window, delta_time);
 
             frame_buffer->unbind();
         }
 
-        // Render postprocess quad
+        // Render postprocess quad to another frame_buffer
         {
             glDisable(GL_DEPTH_TEST);
 
@@ -168,13 +180,15 @@ auto main() -> int {
 
             _postprocess_shader->bind();
             auto mesh_quad = mesh_cache["quad"_hs];
+            frame_buffer_postprocess->bind();
             mesh_quad->draw();
+            frame_buffer_postprocess->unbind();
             _postprocess_shader->unbind();
 
             glEnable(GL_DEPTH_TEST);
         }
 
-        gui_end_frame();
+        ui_end_frame();
         glfwPollEvents();
         glfwSwapBuffers(window);
     });

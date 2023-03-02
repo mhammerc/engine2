@@ -1,5 +1,7 @@
 #include "texture.h"
 
+#include "texture_image.h"
+
 using namespace engine;
 
 auto Texture::from_file(const std::filesystem::path& path, Type type, bool flip) -> std::unique_ptr<Texture> {

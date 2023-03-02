@@ -12,4 +12,8 @@ struct TransformComponent {
     [[nodiscard]] auto matrix() const -> mat4;
 };
 
+namespace reflection {
+    auto register_transform_component() -> void;
+}
+
 }  // namespace engine

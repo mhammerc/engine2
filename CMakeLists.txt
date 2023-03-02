@@ -11,21 +11,26 @@ add_executable(opengl_engine)
 set(SOURCES
         src/core/game_loop.cpp
         src/core/game_loop.h
+        src/core/reflection.cpp
+        src/core/reflection.h
+        src/graphics/cube_map.cpp
+        src/graphics/cube_map.h
+        src/graphics/cube_map_cache.cpp
+        src/graphics/cube_map_cache.h
         src/graphics/framebuffer.cpp
         src/graphics/framebuffer.h
         src/graphics/mesh.cpp
         src/graphics/mesh.h
         src/graphics/mesh_cache.cpp
         src/graphics/mesh_cache.h
-        src/graphics/mesh_from.cpp
+        src/graphics/mesh_from_cube.cpp
+        src/graphics/mesh_from_quad.cpp
         src/graphics/shader_cache.cpp
         src/graphics/shader_cache.h
         src/graphics/shader_program.cpp
         src/graphics/shader_program.h
         src/graphics/shader_source.cpp
         src/graphics/shader_source.h
-        src/graphics/skybox.cpp
-        src/graphics/skybox.h
         src/graphics/texture.cpp
         src/graphics/texture.h
         src/graphics/texture_cache.cpp
@@ -41,6 +46,9 @@ set(SOURCES
         src/scene/camera.h
         src/scene/components/material_component.cpp
         src/scene/components/material_component.h
+        src/scene/components/name_component.cpp
+        src/scene/components/name_component.h
+        src/scene/components/skybox_component.cpp
         src/scene/components/transform_component.cpp
         src/scene/components/transform_component.h
         src/scene/entity_from_model.cpp
@@ -48,8 +56,14 @@ set(SOURCES
         src/scene/light.h
         src/scene/scene.cpp
         src/scene/scene.h
-        src/ui/gui.cpp
-        src/ui/gui.h
+        src/ui/ui.cpp
+        src/ui/ui.h
+        src/ui/ui_window_entity_editor.cpp
+        src/ui/ui_window_hierarchy.cpp
+        src/ui/ui_window_scene.cpp
+        src/ui/ui_window_system.cpp
+        src/ui/utils.cpp
+        src/ui/utils.h
         src/utils/platform_info.cpp
         src/utils/platform_info.h
         src/utils/read_file_to_string.cpp
@@ -74,10 +88,16 @@ add_subdirectory(vendors/spdlog EXCLUDE_FROM_ALL)
 target_link_libraries(opengl_engine PUBLIC spdlog)
 
 # GLFW
+set(GLFW_BUILD_EXAMPLES OFF)
+set(GLFW_BUILD_TESTS OFF)
+set(GLFW_INSTALL OFF)
+set(GLFW_BUILD_DOCS OFF)
 add_subdirectory(vendors/glfw EXCLUDE_FROM_ALL)
 target_link_libraries(opengl_engine PUBLIC glfw)
 
 # Open Asset Import Library (assimp)
+set(ASSIMP_BUILD_TESTS OFF)
+set(ASSIMP_INSTALL OFF)
 add_subdirectory(vendors/assimp EXCLUDE_FROM_ALL)
 target_compile_options(assimp PRIVATE -Wno-error)
 target_link_libraries(opengl_engine PUBLIC assimp)

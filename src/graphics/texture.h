@@ -5,7 +5,6 @@
 #include <optional>
 
 #include "../common.h"
-#include "texture_image.h"
 
 namespace engine {
 

@@ -1,7 +1,10 @@
 #pragma once
 
-#include <glad/glad.h>
+// NOLINTBEGIN(unused-includes)
+
 #define GLFW_INCLUDE_NONE
+
+#include <glad/glad.h>
 
 #include <cinttypes>
 #include <cstddef>
@@ -41,3 +44,5 @@ using mat4 = glm::mat4;
 using namespace entt::literals;  // so we can use '_hs' suffix on C strings for EnTT calls
 
 }  // namespace engine
+
+// NOLINTEND(unused-includes)

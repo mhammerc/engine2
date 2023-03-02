@@ -10,7 +10,6 @@
 
 #include "../common.h"
 #include "../graphics/mesh.h"
-#include "../graphics/mesh_cache.h"
 #include "../graphics/shader_cache.h"
 #include "../graphics/texture.h"
 #include "../graphics/texture_cache.h"

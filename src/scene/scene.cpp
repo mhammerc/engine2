@@ -5,17 +5,19 @@
 
 #include <entt/entt.hpp>
 
+#include "../graphics/cube_map_cache.h"
+#include "../graphics/mesh_cache.h"
 #include "../graphics/renderer_context.h"
 #include "../graphics/shader_cache.h"
-#include "../ui/gui.h"
 #include "components/material_component.h"
 #include "components/name_component.h"
+#include "components/skybox_component.h"
 #include "components/transform_component.h"
 #include "entity_from_model.h"
 
 using namespace engine;
 
-Scene::Scene() {
+Scene::Scene(entt::registry& registry) : registry(registry) {
     auto backpacks = entity_from_model("../assets/backpack/backpack.obj", registry);
     for (auto& backpack : backpacks) {
         registry.emplace<NameComponent>(backpack, "backpack");
@@ -27,11 +29,15 @@ Scene::Scene() {
         registry.emplace<NameComponent>(floor, "floor");
         registry.get_or_emplace<TransformComponent>(floor).position = vec3(0.F, -5.F, 0.F);
     }
+
+    auto skybox = registry.create();
+    {
+        registry.emplace<NameComponent>(skybox, "skybox");
+        registry.emplace<SkyboxComponent>(skybox);
+    }
 }
 
-auto Scene::draw(GLFWwindow* window, float delta_time, Skybox* /*skybox*/) -> void {
-    gui_show_system_window(this, delta_time, window, registry);
-
+auto Scene::draw(GLFWwindow* window, float delta_time) -> void {
     camera->computeFront();
 
     lights.at(9) = Light {
@@ -65,9 +71,12 @@ auto Scene::draw(GLFWwindow* window, float delta_time, Skybox* /*skybox*/) -> vo
         draw_nodes_normals();
     }
 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    if (wireframe) {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
 
     glDisable(GL_STENCIL_TEST);
+    draw_skybox();
     // skybox->draw(projection, camera->getMatrix());
 
     if (outline) {
@@ -76,9 +85,17 @@ auto Scene::draw(GLFWwindow* window, float delta_time, Skybox* /*skybox*/) -> vo
 }
 
 auto Scene::draw_nodes() -> void {
-    auto drawables = registry.view<TransformComponent, MaterialComponent>();
+    auto drawables = registry.view<NameComponent, TransformComponent, MaterialComponent>();
 
-    for (auto [entity, transform, material] : drawables.each()) {
+    auto& cubemap_cache = entt::locator<CubeMapCache>::value();
+    auto skybox = cubemap_cache["skybox"_hs];
+    skybox->activate_as(10);
+
+    for (auto [entity, name, transform, material] : drawables.each()) {
+        if (!name.enabled) {
+            continue;
+        }
+
         auto const& renderer_context = entt::locator<RendererContext>::value();
 
         auto const model = transform.matrix();
@@ -108,10 +125,10 @@ auto Scene::draw_nodes() -> void {
             material.shader->set_uniform(fmt::format("lights[{}].specular", i), light.specular);
         }
 
-        material.shader->set_uniform("material.shininess", 256.0F);
+        material.shader->set_uniform("material.shininess", material.shininess);
+        material.shader->set_uniform("material.reflect", material.reflection);
+        material.shader->set_uniform("material.refract", material.refraction);
         material.shader->set_uniform("material.texture_environment", 10);
-        material.shader->set_uniform("material.reflect", mirror ? 1.F : 0.F);
-        material.shader->set_uniform("material.refract", glass ? 1.F : 0.F);
 
         if (material.textures.contains(1)) {
             material.shader->set_uniform("material.texture_diffuse1", 1);
@@ -134,20 +151,26 @@ auto Scene::draw_nodes() -> void {
 
         material.mesh->draw();
     }
+
+    skybox->activate_as(10, true);
 }
 
 auto Scene::draw_nodes_outline() -> void {
     auto shader_cache = entt::locator<ShaderCache>::value();
     auto shader_outline = shader_cache["outline"_hs];
 
-    auto drawables = registry.view<TransformComponent, MaterialComponent>();
+    auto drawables = registry.view<NameComponent, TransformComponent, MaterialComponent>();
 
     glEnable(GL_STENCIL_TEST);
     glStencilMask(0x00);
     glDisable(GL_DEPTH_TEST);
     glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 
-    for (auto [entity, transform, material] : drawables.each()) {
+    for (auto [entity, name, transform, material] : drawables.each()) {
+        if (!name.enabled) {
+            continue;
+        }
+
         auto const& renderer_context = entt::locator<RendererContext>::value();
 
         auto const model = transform.matrix();
@@ -173,10 +196,14 @@ auto Scene::draw_nodes_normals() -> void {
     auto shader_cache = entt::locator<ShaderCache>::value();
     auto shader_normal = shader_cache["normal"_hs];
 
-    auto drawables = registry.view<TransformComponent, MaterialComponent>();
+    auto const& renderer_context = entt::locator<RendererContext>::value();
 
-    for (auto [entity, transform, material] : drawables.each()) {
-        auto const& renderer_context = entt::locator<RendererContext>::value();
+    auto drawables = registry.view<NameComponent, TransformComponent, MaterialComponent>();
+
+    for (auto [entity, name, transform, material] : drawables.each()) {
+        if (!name.enabled) {
+            continue;
+        }
 
         auto const model = transform.matrix();
         auto const modelNormal = mat3(glm::transpose(glm::inverse(model)));
@@ -191,4 +218,41 @@ auto Scene::draw_nodes_normals() -> void {
         material.mesh->draw();
         shader_normal->unbind();
     }
+}
+
+auto Scene::draw_skybox() -> void {
+    glDepthFunc(GL_LEQUAL);
+
+    auto skyboxes = registry.view<NameComponent, SkyboxComponent>();
+
+    auto const& renderer_context = entt::locator<RendererContext>::value();
+
+    auto cubemap = entt::locator<CubeMapCache>::value()["skybox"_hs];
+    auto shader = entt::locator<ShaderCache>::value()["skybox"_hs];
+    auto cube = entt::locator<MeshCache>::value()["cube"_hs];
+
+    cubemap->activate_as(0);
+    shader->set_uniform("skybox", 0);
+
+    auto view = renderer_context.camera->getMatrix();
+    // Remove translation from the view matrix.
+    // For the skybox, only rotation is needed.
+    view = glm::mat4(glm::mat3(view));
+    shader->set_uniform("view", view);
+    shader->set_uniform("projection", renderer_context.projection);
+
+    shader->bind();
+
+    for (auto [entity, name] : skyboxes.each()) {
+        if (!name.enabled) {
+            continue;
+        }
+
+        cube->draw();
+    }
+
+    shader->unbind();
+    cubemap->activate_as(0, true);
+
+    glDepthFunc(GL_LESS);
 }

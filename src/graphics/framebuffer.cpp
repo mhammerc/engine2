@@ -60,6 +60,8 @@ auto FrameBuffer::resize(vec2i size) -> void {
 
 auto FrameBuffer::bind() -> void {
     glBindFramebuffer(GL_FRAMEBUFFER, _handle);
+
+    glViewport(0, 0, _size.x, _size.y);
 }
 
 auto FrameBuffer::unbind() -> void {
@@ -74,15 +76,13 @@ auto FrameBuffer::type() const -> Type {
     return _type;
 }
 
-auto FrameBuffer::size() const -> glm::vec2 {
+auto FrameBuffer::size() const -> vec2i {
     return _size;
 }
 
 auto FrameBuffer::color_texture() const -> Texture* {
     return _color.get();
 }
-
-FrameBuffer::FrameBuffer() {}
 
 FrameBuffer::FrameBuffer(FrameBuffer&& from) noexcept :
     _handle(from._handle),
@@ -94,6 +94,8 @@ FrameBuffer::FrameBuffer(FrameBuffer&& from) noexcept :
 }
 
 auto FrameBuffer::operator=(FrameBuffer&& from) noexcept -> FrameBuffer& {
+    release();
+
     _handle = from._handle;
     _type = from._type;
     _size = from._size;
@@ -106,6 +108,10 @@ auto FrameBuffer::operator=(FrameBuffer&& from) noexcept -> FrameBuffer& {
 }
 
 FrameBuffer::~FrameBuffer() noexcept {
+    release();
+}
+
+auto FrameBuffer::release() -> void {
     if (_handle != 0) {
         glDeleteFramebuffers(1, &_handle);
         _handle = 0;

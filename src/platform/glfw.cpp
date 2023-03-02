@@ -20,31 +20,6 @@ auto process_inputs(float delta_time, GLFWwindow* window, Camera& camera) -> voi
         glfwSetWindowShouldClose(window, true);
     }
 
-    const float cameraSpeed = 7.F * delta_time;
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        camera.pos += cameraSpeed * camera.front;
-    }
-
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        camera.pos -= cameraSpeed * camera.front;
-    }
-
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        camera.pos -= glm::normalize(glm::cross(camera.front, camera.up)) * cameraSpeed;
-    }
-
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        camera.pos += glm::normalize(glm::cross(camera.front, camera.up)) * cameraSpeed;
-    }
-
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-        camera.pos += camera.up * cameraSpeed;
-    }
-
-    if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
-        camera.pos -= camera.up * cameraSpeed;
-    }
-
     static bool first_mouse = true;
     static bool mouse_captured = false;
 
@@ -60,6 +35,33 @@ auto process_inputs(float delta_time, GLFWwindow* window, Camera& camera) -> voi
         mouse_captured = false;
 
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
+
+    if (mouse_captured) {
+        const float cameraSpeed = 7.F * delta_time;
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+            camera.pos += cameraSpeed * camera.front;
+        }
+
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+            camera.pos -= cameraSpeed * camera.front;
+        }
+
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+            camera.pos -= glm::normalize(glm::cross(camera.front, camera.up)) * cameraSpeed;
+        }
+
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+            camera.pos += glm::normalize(glm::cross(camera.front, camera.up)) * cameraSpeed;
+        }
+
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+            camera.pos += camera.up * cameraSpeed;
+        }
+
+        if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
+            camera.pos -= camera.up * cameraSpeed;
+        }
     }
 
     if (mouse_captured) {
