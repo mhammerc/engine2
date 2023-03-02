@@ -12,8 +12,9 @@ auto ui::internal::ui_draw_window_scene(FrameBuffer* scene_texture) -> void {
     ImGui::Begin("Scene", nullptr, flags);
 
     auto window_size = ImGui::GetContentRegionAvail();
+    float dpi_scale = ImGui::GetWindowDpiScale();
 
-    scene_texture->resize({window_size.x, window_size.y});
+    scene_texture->resize({window_size.x * dpi_scale, window_size.y * dpi_scale});
 
     ImGui::Image(
         reinterpret_cast<void*>(scene_texture->color_texture()->handle()),

@@ -68,7 +68,14 @@ auto Mesh::vao() const -> u32 {
     return _vao;
 }
 
-Mesh::Mesh(std::vector<Vertex>&& vertices, std::vector<u32>&& indices) : _vertices(vertices), _indices(indices) {
+auto Mesh::name() const -> std::string_view const {
+    return _name;
+}
+
+Mesh::Mesh(std::string name, std::vector<Vertex>&& vertices, std::vector<u32>&& indices) :
+    _name(std::move(name)),
+    _vertices(vertices),
+    _indices(indices) {
     upload_buffers();
 }
 

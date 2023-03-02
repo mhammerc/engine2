@@ -1,7 +1,13 @@
 #include <imgui/imgui.h>
+#include <spdlog/fmt/fmt.h>
 #include <spdlog/spdlog.h>
 
+#include "../graphics/mesh.h"
+#include "../graphics/mesh_cache.h"
+#include "../graphics/shader_cache.h"
+#include "../graphics/shader_program.h"
 #include "../scene/components/name_component.h"
+#include "spdlog/fmt/bundled/core.h"
 #include "ui_internal.h"
 #include "utils.h"
 
@@ -38,9 +44,6 @@ static auto on_property(entt::meta_any& instance, entt::meta_data const& member)
         return;
     }
 
-    // ImGui::Text("%s", property_name);
-    // ImGui::SameLine();
-
     if (auto any = member.get(instance)) {
         if (auto* value = any.try_cast<float>(); value) {
             bool edited = ImGui::DragFloat(property_name, value);
@@ -55,6 +58,42 @@ static auto on_property(entt::meta_any& instance, entt::meta_data const& member)
 
             if (edited) {
                 member.set(instance, *value);
+            }
+        }
+
+        if (auto* value = any.try_cast<std::shared_ptr<ShaderProgram>>(); value) {
+            auto shader_cache = entt::locator<ShaderCache>::value();
+
+            if (ImGui::BeginCombo("Shader", (*value)->name().data())) {
+                for (auto shader : shader_cache) {
+                    bool selected = ImGui::Selectable(
+                        fmt::format("{}##{}", shader.second->name(), shader.first).c_str(),
+                        shader.second.handle().get() == value->get()
+                    );
+
+                    if (selected) {
+                        member.set(instance, shader.second.handle());
+                    }
+                }
+                ImGui::EndCombo();
+            }
+        }
+
+        if (auto* value = any.try_cast<std::shared_ptr<Mesh>>(); value) {
+            auto shader_cache = entt::locator<MeshCache>::value();
+
+            if (ImGui::BeginCombo("Mesh", (*value)->name().data())) {
+                for (auto shader : shader_cache) {
+                    bool selected = ImGui::Selectable(
+                        fmt::format("{}##{}", shader.second->name(), shader.first).c_str(),
+                        shader.second.handle().get() == value->get()
+                    );
+
+                    if (selected) {
+                        member.set(instance, shader.second.handle());
+                    }
+                }
+                ImGui::EndCombo();
             }
         }
     }

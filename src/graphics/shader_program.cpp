@@ -33,6 +33,7 @@ auto ShaderProgram::release() -> void {
 }
 
 auto ShaderProgram::from_vertex_and_fragment(
+    const std::string& name,
     const std::filesystem::path& vertex_file,
     const std::filesystem::path& fragment_file
 ) -> std::unique_ptr<ShaderProgram> {
@@ -62,6 +63,7 @@ auto ShaderProgram::from_vertex_and_fragment(
     glAttachShader(handle, fragment->handle());
 
     auto program = std::make_unique<ShaderProgram>(ShaderProgram {});
+    program->_name = name;
     program->_handle = handle;
 
     if (!program->link()) {
@@ -72,6 +74,7 @@ auto ShaderProgram::from_vertex_and_fragment(
 }
 
 auto ShaderProgram::from_vertex_and_fragment_and_geometry(
+    const std::string& name,
     const std::filesystem::path& vertex_file,
     const std::filesystem::path& fragment_file,
     const std::filesystem::path& geometry_file
@@ -113,6 +116,7 @@ auto ShaderProgram::from_vertex_and_fragment_and_geometry(
     glAttachShader(handle, fragment->handle());
 
     auto program = std::make_unique<ShaderProgram>(ShaderProgram {});
+    program->_name = name;
     program->_handle = handle;
 
     if (!program->link()) {
@@ -268,4 +272,8 @@ auto ShaderProgram::bind() -> void {
 
 auto ShaderProgram::unbind() -> void {
     glUseProgram(0);
+}
+
+auto ShaderProgram::name() const -> const std::string_view {
+    return _name;
 }

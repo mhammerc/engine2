@@ -16,8 +16,8 @@ auto ShaderProgramLoader::operator()(const std::string& name) const -> result_ty
     auto geometry = std::filesystem::path(path) += ".geo";
 
     if (std::filesystem::exists(geometry)) {
-        return ShaderProgram::from_vertex_and_fragment_and_geometry(vertex, fragment, geometry);
+        return ShaderProgram::from_vertex_and_fragment_and_geometry(name, vertex, fragment, geometry);
     }
 
-    return ShaderProgram::from_vertex_and_fragment(vertex, fragment);
+    return ShaderProgram::from_vertex_and_fragment(name, vertex, fragment);
 }

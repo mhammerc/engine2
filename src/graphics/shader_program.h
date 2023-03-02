@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "../common.h"
 
@@ -10,9 +11,13 @@ namespace engine {
 
 class ShaderProgram {
   public:
-    static auto from_vertex_and_fragment(const std::filesystem::path& vertex, const std::filesystem::path& fragment)
-        -> std::unique_ptr<ShaderProgram>;
+    static auto from_vertex_and_fragment(
+        const std::string& name,
+        const std::filesystem::path& vertex,
+        const std::filesystem::path& fragment
+    ) -> std::unique_ptr<ShaderProgram>;
     static auto from_vertex_and_fragment_and_geometry(
+        const std::string& name,
         const std::filesystem::path& vertex,
         const std::filesystem::path& fragment,
         const std::filesystem::path& geometry
@@ -40,12 +45,15 @@ class ShaderProgram {
     auto bind() -> void;
     auto unbind() -> void;
 
+    [[nodiscard]] auto name() const -> const std::string_view;
+
   private:
     ShaderProgram() = default;
     auto release() -> void;
 
   private:
     u32 _handle = 0;
+    std::string _name;
 
   private:
     auto link() -> bool;

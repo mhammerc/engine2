@@ -10,6 +10,7 @@
 
 #include "../common.h"
 #include "../graphics/mesh.h"
+#include "../graphics/mesh_cache.h"
 #include "../graphics/shader_cache.h"
 #include "../graphics/texture.h"
 #include "../graphics/texture_cache.h"
@@ -21,7 +22,7 @@ using namespace engine;
 
 using path = std::filesystem::path;
 
-static auto aimesh_to_mesh(aiMesh const* mesh) -> std::unique_ptr<Mesh> {
+static auto aimesh_to_mesh(aiMesh const* mesh, path const& name) -> std::unique_ptr<Mesh> {
     std::span<aiVector3D> const raw_vertices(mesh->mVertices, mesh->mNumVertices);
     std::span<aiVector3D> const raw_normals(mesh->mNormals, mesh->mNumVertices);
     // We care only about texture coordinate 0 for now.
@@ -68,13 +69,16 @@ static auto aimesh_to_mesh(aiMesh const* mesh) -> std::unique_ptr<Mesh> {
         }
     }
 
-    auto _mesh = std::make_unique<Mesh>(std::move(vertices), std::move(indices));
+    auto _mesh = std::make_unique<Mesh>(std::string(name.c_str()), std::move(vertices), std::move(indices));
 
     return _mesh;
 }
 
-static auto aimaterial_to_textures(aiMaterial const* mat, aiScene const* /*scene*/, path const& working_directory)
+static auto aimaterial_to_textures(aiMaterial const* mat, aiScene const* /*scene*/, path const& filename)
     -> std::map<i32, std::shared_ptr<Texture>> {
+    auto working_directory = path(filename);
+    working_directory.remove_filename();
+
     auto& texture_cache = entt::locator<TextureCache>::value();
 
     // texture 1 is always diffuse.
@@ -108,25 +112,23 @@ static auto aimaterial_to_textures(aiMaterial const* mat, aiScene const* /*scene
     return textures;
 }
 
-static auto on_mesh(
-    entt::entity entity,
-    entt::registry& registry,
-    aiMesh const* aimesh,
-    aiScene const* scene,
-    path const& working_directory
-) -> void {
+static auto
+on_mesh(entt::entity entity, entt::registry& registry, aiMesh const* aimesh, aiScene const* scene, path const& filename)
+    -> void {
     auto& material = registry.get<MaterialComponent>(entity);
 
     auto& shader_cache = entt::locator<ShaderCache>::value();
-    auto mesh = aimesh_to_mesh(aimesh);
+    auto& mesh_cache = entt::locator<MeshCache>::value();
 
-    // TODO: mesh isn't cached
-    material.mesh = std::move(mesh);
+    auto _mesh = aimesh_to_mesh(aimesh, filename);
+    auto [mesh, _] = mesh_cache.load(entt::hashed_string(filename.c_str()), std::move(_mesh));
+
+    material.mesh = mesh->second.handle();
     material.shader = shader_cache["diffuse"_hs].handle();
 
     if (aimesh->mMaterialIndex >= 0) {
         std::span<aiMaterial*> const raw_materials(scene->mMaterials, scene->mNumMaterials);
-        material.textures = aimaterial_to_textures(raw_materials[aimesh->mMaterialIndex], scene, working_directory);
+        material.textures = aimaterial_to_textures(raw_materials[aimesh->mMaterialIndex], scene, filename);
     }
 }
 
@@ -134,7 +136,7 @@ static auto on_mesh(
 static auto on_node(
     aiNode const* node,
     aiScene const* scene,
-    path const& working_directory,
+    path const& filename,
     entt::registry& registry,
     std::vector<entt::entity>& entities
 ) -> void {
@@ -149,20 +151,20 @@ static auto on_node(
     // TODO: a node may have multiple meshes.
     if (!raw_mesh_indexes.empty()) {
         auto* raw_mesh = raw_meshes[0];
-        on_mesh(entity, registry, raw_mesh, scene, working_directory);
+        on_mesh(entity, registry, raw_mesh, scene, filename);
     }
 
     std::span<aiNode*> const node_childrens {node->mChildren, node->mNumChildren};
     for (auto* children : node_childrens) {
-        on_node(children, scene, working_directory, registry, entities);
+        on_node(children, scene, filename, registry, entities);
     }
 }
 
 auto engine::entity_from_model(const path& path, entt::registry& registry) -> std::vector<entt::entity> {
     std::vector<entt::entity> entities;
 
-    auto directory = path;
-    directory.remove_filename();
+    // auto directory = path;
+    // directory.remove_filename();
 
     Assimp::Importer importer;
 
@@ -177,7 +179,7 @@ auto engine::entity_from_model(const path& path, entt::registry& registry) -> st
         return entities;
     }
 
-    on_node(scene->mRootNode, scene, directory, registry, entities);
+    on_node(scene->mRootNode, scene, path, registry, entities);
 
     return entities;
 }

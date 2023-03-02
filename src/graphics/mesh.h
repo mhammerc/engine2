@@ -1,6 +1,8 @@
 #pragma once
 
 #include <memory>
+#include <string>
+#include <string_view>
 #include <vector>
 
 #include "../common.h"
@@ -30,7 +32,7 @@ class Mesh {
 
     [[nodiscard]] static auto from_quad() -> std::unique_ptr<Mesh>;
 
-    Mesh(std::vector<Vertex>&& vertices, std::vector<u32>&& indices);
+    Mesh(std::string name, std::vector<Vertex>&& vertices, std::vector<u32>&& indices);
     ~Mesh() noexcept;
 
     Mesh(const Mesh&) = delete;
@@ -40,6 +42,7 @@ class Mesh {
     auto operator=(Mesh&&) noexcept -> Mesh&;
 
   public:
+    [[nodiscard]] auto name() const -> std::string_view const;
     [[nodiscard]] auto vao() const -> u32;
     auto draw() const -> void;
 
@@ -48,6 +51,7 @@ class Mesh {
     auto upload_buffers() -> void;
 
   private:
+    std::string _name;
     std::vector<Vertex> _vertices;
     std::vector<u32> _indices;
 

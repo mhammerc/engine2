@@ -32,33 +32,22 @@ auto ui::internal::ui_draw_window_system(Scene* scene, float delta_time, GLFWwin
     glfwGetFramebufferSize(window, &width, &height);
     ImGui::Text("Rendered Resolution: %dx%d", width, height);
 
-    if (ImGui::CollapsingHeader("Lighting")) {
-        ImGui::Checkbox("Flashlight", &scene->flashlight);
-    }
+    ImGui::SeparatorText("Lighting");
+    ImGui::Checkbox("Flashlight", &scene->flashlight);
 
-    if (ImGui::CollapsingHeader("Shaders")) {
-        ImGui::Checkbox("Wireframe", &scene->wireframe);
+    ImGui::SeparatorText("Shaders");
+    ImGui::Checkbox("Wireframe", &scene->wireframe);
+    ImGui::Checkbox("Objects Outline", &scene->outline);
+    ImGui::Checkbox("Show Normals", &scene->show_normals);
+    ImGui::SliderFloat("Explosion", &scene->explosion, 0.F, 1.F);
 
-        ImGui::Checkbox("Objects Outline", &scene->outline);
-
-        ImGui::Checkbox("Show Normals", &scene->show_normals);
-
-        ImGui::SliderFloat("Explosion", &scene->explosion, 0.F, 1.F);
-    }
-
-    if (ImGui::CollapsingHeader("Post-Processing")) {
-        ImGui::Checkbox("Inverse", &scene->inverse);
-
-        ImGui::Checkbox("Grayscale", &scene->black_and_white);
-
-        ImGui::Checkbox("Sepia", &scene->sepia);
-
-        ImGui::Checkbox("Blur", &scene->blur);
-
-        ImGui::Checkbox("Sharpen", &scene->sharpen);
-
-        ImGui::Checkbox("Edge Detection", &scene->edge_dectection);
-    }
+    ImGui::SeparatorText("Post-Processing");
+    ImGui::Checkbox("Inverse", &scene->inverse);
+    ImGui::Checkbox("Grayscale", &scene->black_and_white);
+    ImGui::Checkbox("Sepia", &scene->sepia);
+    ImGui::Checkbox("Blur", &scene->blur);
+    ImGui::Checkbox("Sharpen", &scene->sharpen);
+    ImGui::Checkbox("Edge Detection", &scene->edge_dectection);
 
     ImGui::End();
 }

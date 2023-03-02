@@ -15,11 +15,24 @@ auto engine::ui_init(GLFWwindow* window) -> bool {
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-    io.ConfigFlags |= ImGuiConfigFlags_IsSRGB;
+    // io.ConfigFlags |= ImGuiConfigFlags_IsSRGB;
 
-    // Setup Dear ImGui style
-    // ImGui::StyleColorsDark();
-    ImGui::StyleColorsLight();
+    auto& style = ImGui::GetStyle();
+    style.WindowRounding = 2.F;
+    style.ChildRounding = 2.F;
+    style.FrameRounding = 2.F;
+    style.PopupRounding = 2.F;
+    style.GrabRounding = 2.F;
+
+    ImFontConfig config {};
+    config.OversampleH = 3;
+    config.OversampleV = 3;
+    io.Fonts->AddFontFromFileTTF("../assets/JetBrainsMono-Regular.ttf", 14, &config);
+    io.Fonts->Build();
+
+    ImGui::StyleColorsDark();
+    // ImGui::StyleColorsLight();
+    // ImGui::StyleColorsClassic();
 
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
