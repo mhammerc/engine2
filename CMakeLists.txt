@@ -110,8 +110,9 @@ add_subdirectory(vendors/entt)
 target_link_libraries(opengl_engine PUBLIC EnTT)
 
 # GLM
-set(glm_DIR vendors/glm/cmake/glm)
-find_package(glm REQUIRED)
+# set(glm_DIR vendors/glm/cmake/glm)
+# find_package(glm REQUIRED)
+add_subdirectory(vendors/glm)
 target_link_libraries(opengl_engine PUBLIC glm::glm)
 
 # ImGUI

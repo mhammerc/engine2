@@ -27,7 +27,7 @@ auto engine::ui_init(GLFWwindow* window) -> bool {
     ImFontConfig config {};
     config.OversampleH = 3;
     config.OversampleV = 3;
-    io.Fonts->AddFontFromFileTTF("../assets/JetBrainsMono-Regular.ttf", 14, &config);
+    io.Fonts->AddFontFromFileTTF("../assets/JetBrainsMono-Medium.ttf", 16, &config);
     io.Fonts->Build();
 
     ImGui::StyleColorsDark();
@@ -59,6 +59,30 @@ auto engine::ui_draw(
     entt::registry& registry,
     FrameBuffer* scene_texture
 ) -> void {
+    ImGui::BeginMainMenuBar();
+
+    if (ImGui::BeginMenu("Options")) {
+        if (ImGui::BeginMenu("Colors")) {
+            if (ImGui::MenuItem("Light")) {
+                ImGui::StyleColorsLight();
+            }
+
+            if (ImGui::MenuItem("Dark")) {
+                ImGui::StyleColorsDark();
+            }
+
+            if (ImGui::MenuItem("Classic")) {
+                ImGui::StyleColorsClassic();
+            }
+
+            ImGui::EndMenu();
+        }
+
+        ImGui::EndMenu();
+    }
+
+    ImGui::EndMainMenuBar();
+
     ImGui::DockSpaceOverViewport();
 
     ImGui::ShowDemoWindow();
