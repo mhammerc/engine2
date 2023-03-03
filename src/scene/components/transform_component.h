@@ -6,7 +6,7 @@ namespace engine {
 
 struct TransformComponent {
     vec3 position = vec3(0.F);
-    vec3 rotation = vec3(0.F);
+    glm::quat rotation;
     vec3 scale = vec3(1.F);
 
     [[nodiscard]] auto matrix() const -> mat4;

@@ -10,9 +10,7 @@ auto TransformComponent::matrix() const -> mat4 {
     {
         transform = glm::translate(transform, position);
 
-        transform = glm::rotate(transform, glm::radians(rotation.x), glm::vec3(1.F, 0.F, 0.F));
-        transform = glm::rotate(transform, glm::radians(rotation.y), glm::vec3(0.F, 1.F, 0.F));
-        transform = glm::rotate(transform, glm::radians(rotation.z), glm::vec3(0.F, 0.F, 1.F));
+        transform = transform * glm::mat4_cast(rotation);
 
         transform = glm::scale(transform, scale);
     }

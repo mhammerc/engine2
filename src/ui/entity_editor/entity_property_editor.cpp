@@ -1,5 +1,6 @@
 #include <imgui/imgui.h>
 #include <spdlog/fmt/fmt.h>
+#include <spdlog/spdlog.h>
 
 #include "../../graphics/mesh.h"
 #include "../../graphics/mesh_cache.h"
@@ -7,6 +8,7 @@
 #include "../../graphics/shader_program.h"
 #include "../../graphics/texture.h"
 #include "entity_editor.h"
+#include "glm/gtc/quaternion.hpp"
 
 using namespace engine;
 
@@ -26,6 +28,23 @@ static auto on_property_boolean(const char* name, bool* value) -> bool {
     bool edited = ImGui::Checkbox(name, value);
 
     return edited;
+}
+
+static auto on_property_quaternion(const char* name, glm::quat* value) -> bool {
+    auto radians_euler_angles = glm::eulerAngles(*value);
+    auto degree_euler_angles = glm::degrees(radians_euler_angles);
+
+    if (on_property_float3(name, &degree_euler_angles)) {
+        radians_euler_angles = glm::radians(degree_euler_angles);
+
+        glm::quat new_quaternion(radians_euler_angles);
+
+        *value = new_quaternion;
+
+        return true;
+    }
+
+    return false;
 }
 
 static auto on_property_shader(const char* name, std::shared_ptr<ShaderProgram>* value)
@@ -98,6 +117,12 @@ auto ui::internal::on_property(entt::meta_any& instance, entt::meta_data const& 
         }
     } else if (auto* value = any.try_cast<vec3>(); value) {
         bool edited = on_property_float3(property_name, value);
+
+        if (edited) {
+            member.set(instance, *value);
+        }
+    } else if (auto* value = any.try_cast<glm::quat>(); value) {
+        bool edited = on_property_quaternion(property_name, value);
 
         if (edited) {
             member.set(instance, *value);
