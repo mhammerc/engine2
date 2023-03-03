@@ -1,6 +1,7 @@
 #include "glfw.h"
 
 #include "../utils/platform_info.h"
+#include "opengl.h"
 #include "spdlog/spdlog.h"
 
 using namespace engine;
@@ -14,7 +15,7 @@ static auto framebuffer_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-auto process_inputs(float delta_time, GLFWwindow* window, Camera& camera) -> void {
+auto process_inputs(float delta_time, GLFWwindow* window, engine::CameraComponent& camera) -> void {
     // KEYBOARD
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
@@ -40,43 +41,42 @@ auto process_inputs(float delta_time, GLFWwindow* window, Camera& camera) -> voi
     if (mouse_captured) {
         const float cameraSpeed = 7.F * delta_time;
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-            camera.pos += cameraSpeed * camera.front;
+            camera.position += cameraSpeed * camera.front_direction;
         }
 
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-            camera.pos -= cameraSpeed * camera.front;
+            camera.position -= cameraSpeed * camera.front_direction;
         }
 
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-            camera.pos -= glm::normalize(glm::cross(camera.front, camera.up)) * cameraSpeed;
+            camera.position -= glm::normalize(glm::cross(camera.front_direction, camera.up_axis)) * cameraSpeed;
         }
 
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-            camera.pos += glm::normalize(glm::cross(camera.front, camera.up)) * cameraSpeed;
+            camera.position += glm::normalize(glm::cross(camera.front_direction, camera.up_axis)) * cameraSpeed;
         }
 
         if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-            camera.pos += camera.up * cameraSpeed;
+            camera.position += camera.up_axis * cameraSpeed;
         }
 
         if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
-            camera.pos -= camera.up * cameraSpeed;
+            camera.position -= camera.up_axis * cameraSpeed;
         }
     }
 
     if (mouse_captured) {
-        // MOUSE
-        double cursor_x = 0;
-        double cursor_y = 0;
-        glfwGetCursorPos(window, &cursor_x, &cursor_y);
-        glm::vec2 const cursor_position(cursor_x, cursor_y);
+        static glm::vec<2, double> previous_cursor_position(0);
+        glm::vec<2, double> cursor_position(0);
+
+        glfwGetCursorPos(window, &cursor_position.x, &cursor_position.y);
 
         if (first_mouse) {
-            camera.previous_cursor_position = cursor_position;
+            previous_cursor_position = cursor_position;
             first_mouse = false;
         }
 
-        glm::vec2 cursor_delta = cursor_position - camera.previous_cursor_position;
+        glm::vec2 cursor_delta = cursor_position - previous_cursor_position;
 
         float const sensitivity = 0.1F;
         cursor_delta *= sensitivity;
@@ -92,8 +92,8 @@ auto process_inputs(float delta_time, GLFWwindow* window, Camera& camera) -> voi
             camera.pitch = -maxPitch;
         }
 
-        camera.computeFront();
-        camera.previous_cursor_position = cursor_position;
+        camera.update_front_direction();
+        previous_cursor_position = cursor_position;
     }
 }
 

@@ -4,6 +4,7 @@
 
 #include "../graphics/framebuffer.h"
 #include "../scene/scene.h"
+#include "../utils/glfw3.h"
 
 namespace engine {
 

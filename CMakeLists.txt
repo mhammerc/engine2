@@ -44,8 +44,8 @@ set(SOURCES
         src/platform/glfw.h
         src/platform/opengl.cpp
         src/platform/opengl.h
-        src/scene/camera.cpp
-        src/scene/camera.h
+        src/scene/components/camera_component.cpp
+        src/scene/components/camera_component.h
         src/scene/components/material_component.cpp
         src/scene/components/material_component.h
         src/scene/components/name_component.cpp

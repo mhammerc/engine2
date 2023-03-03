@@ -22,3 +22,5 @@ CheckOptions:
         value:   true
       - key:     readability-implicit-bool-conversion.AllowPointerConditions
         value:   true
+      - key:     misc-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic
+        value:   true

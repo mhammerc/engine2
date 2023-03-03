@@ -2,6 +2,7 @@
 
 #include "../graphics/framebuffer.h"
 #include "../scene/scene.h"
+#include "../utils/glfw3.h"
 
 namespace engine::ui::internal {
 auto ui_draw_window_system(Scene* scene, float delta_time, GLFWwindow* window) -> void;

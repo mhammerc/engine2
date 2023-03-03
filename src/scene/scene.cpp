@@ -9,6 +9,7 @@
 #include "../graphics/mesh_cache.h"
 #include "../graphics/renderer_context.h"
 #include "../graphics/shader_cache.h"
+#include "components/camera_component.h"
 #include "components/material_component.h"
 #include "components/name_component.h"
 #include "components/skybox_component.h"
@@ -35,15 +36,25 @@ Scene::Scene(entt::registry& registry) : registry(registry) {
         registry.emplace<NameComponent>(skybox, "skybox");
         registry.emplace<SkyboxComponent>(skybox);
     }
+
+    camera = registry.create();
+    registry.emplace<CameraComponent>(camera);
+    registry.emplace<NameComponent>(camera, "camera");
 }
 
-auto Scene::draw(GLFWwindow* window, float delta_time) -> void {
-    camera->computeFront();
+auto Scene::camera_info() -> CameraComponent& {
+    auto& camera_info = registry.get<CameraComponent>(camera);
+
+    return camera_info;
+}
+
+auto Scene::draw(float /*delta_time*/) -> void {
+    auto const& _camera_info = camera_info();
 
     lights.at(9) = Light {
         .type = flashlight ? Light::Spot : Light::Unset,
-        .position = camera->pos,
-        .direction = camera->front,
+        .position = _camera_info.position,
+        .direction = _camera_info.front_direction,
         .innerCutOff = glm::cos(glm::radians(12.5F)),
         .outerCutOff = glm::cos(glm::radians(17.5F)),
         .linear = 0.09F,
@@ -77,7 +88,6 @@ auto Scene::draw(GLFWwindow* window, float delta_time) -> void {
 
     glDisable(GL_STENCIL_TEST);
     draw_skybox();
-    // skybox->draw(projection, camera->getMatrix());
 
     if (outline) {
         draw_nodes_outline();
@@ -90,6 +100,8 @@ auto Scene::draw_nodes() -> void {
     auto& cubemap_cache = entt::locator<CubeMapCache>::value();
     auto skybox = cubemap_cache["skybox"_hs];
     skybox->activate_as(10);
+
+    auto const& _camera_info = camera_info();
 
     for (auto [entity, name, transform, material] : drawables.each()) {
         if (!name.enabled) {
@@ -104,10 +116,10 @@ auto Scene::draw_nodes() -> void {
         // MVP
         material.shader->set_uniform("model", model);
         material.shader->set_uniform("modelNormal", modelNormal);
-        material.shader->set_uniform("view", renderer_context.camera->getMatrix());
+        material.shader->set_uniform("view", _camera_info.view_matrix());
         material.shader->set_uniform("projection", renderer_context.projection);
 
-        material.shader->set_uniform("cameraPosition", renderer_context.camera->pos);
+        material.shader->set_uniform("cameraPosition", _camera_info.position);
 
         for (size_t i = 0; i < 10; ++i) {
             Light const& light = renderer_context.lights.at(i);
@@ -156,6 +168,7 @@ auto Scene::draw_nodes() -> void {
 }
 
 auto Scene::draw_nodes_outline() -> void {
+    auto const& _camera_info = camera_info();
     auto shader_cache = entt::locator<ShaderCache>::value();
     auto shader_outline = shader_cache["outline"_hs];
 
@@ -179,7 +192,7 @@ auto Scene::draw_nodes_outline() -> void {
         // MVP
         shader_outline->set_uniform("model", model);
         shader_outline->set_uniform("modelNormal", modelNormal);
-        shader_outline->set_uniform("view", renderer_context.camera->getMatrix());
+        shader_outline->set_uniform("view", _camera_info.view_matrix());
         shader_outline->set_uniform("projection", renderer_context.projection);
 
         shader_outline->bind();
@@ -193,6 +206,7 @@ auto Scene::draw_nodes_outline() -> void {
 }
 
 auto Scene::draw_nodes_normals() -> void {
+    auto const& _camera_info = camera_info();
     auto shader_cache = entt::locator<ShaderCache>::value();
     auto shader_normal = shader_cache["normal"_hs];
 
@@ -211,7 +225,7 @@ auto Scene::draw_nodes_normals() -> void {
         // MVP
         shader_normal->set_uniform("model", model);
         shader_normal->set_uniform("modelNormal", modelNormal);
-        shader_normal->set_uniform("view", renderer_context.camera->getMatrix());
+        shader_normal->set_uniform("view", _camera_info.view_matrix());
         shader_normal->set_uniform("projection", renderer_context.projection);
 
         shader_normal->bind();
@@ -221,6 +235,7 @@ auto Scene::draw_nodes_normals() -> void {
 }
 
 auto Scene::draw_skybox() -> void {
+    auto const& _camera_info = camera_info();
     glDepthFunc(GL_LEQUAL);
 
     auto skyboxes = registry.view<NameComponent, SkyboxComponent>();
@@ -234,7 +249,7 @@ auto Scene::draw_skybox() -> void {
     cubemap->activate_as(0);
     shader->set_uniform("skybox", 0);
 
-    auto view = renderer_context.camera->getMatrix();
+    auto view = _camera_info.view_matrix();
     // Remove translation from the view matrix.
     // For the skybox, only rotation is needed.
     view = glm::mat4(glm::mat3(view));

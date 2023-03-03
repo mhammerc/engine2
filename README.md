@@ -2,9 +2,9 @@
 
 ## TODO
 
-- camera: refactor
 - Quaternions in transforms
 - Inspector of objects which allow to view and edit transforms (with euler angles for humans)
+- rewrite input like breakout
 
 ## Development Environment
 

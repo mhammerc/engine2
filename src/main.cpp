@@ -11,7 +11,6 @@
 #include "graphics/shader_program.h"
 #include "graphics/texture_cache.h"
 #include "platform/glfw.h"
-#include "scene/camera.h"
 #include "scene/scene.h"
 #include "spdlog/spdlog.h"
 #include "stb_image/stb_image.h"
@@ -90,8 +89,6 @@ auto main() -> int {
     );
 
     Scene scene(registry);
-    scene.camera = std::make_shared<Camera>(window);
-    renderer_context.camera = scene.camera.get();
 
     {
         auto const pointLight = Light {
@@ -119,7 +116,7 @@ auto main() -> int {
 
         ui_prepare_frame();
 
-        process_inputs(delta_time, window, *scene.camera);
+        process_inputs(delta_time, window, scene.camera_info());
 
         ui_draw(delta_time, &scene, window, registry, frame_buffer_postprocess.get());
 
@@ -143,7 +140,7 @@ auto main() -> int {
             glClearColor(0.1F, 0.1F, 0.1F, 1.0F);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-            scene.draw(window, delta_time);
+            scene.draw(delta_time);
 
             frame_buffer->unbind();
         }

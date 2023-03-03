@@ -5,7 +5,7 @@
 #include <memory>
 #include <vector>
 
-#include "camera.h"
+#include "components/camera_component.h"
 #include "light.h"
 
 #define POST_PROCESS_INVERSE (1 << 0)
@@ -24,7 +24,7 @@ namespace engine {
 class Scene {
   public:
     Scene(entt::registry& registry);
-    auto draw(GLFWwindow* window, float delta_time) -> void;
+    auto draw(float delta_time) -> void;
     auto draw_nodes() -> void;
     auto draw_nodes_outline() -> void;
     auto draw_nodes_normals() -> void;
@@ -34,7 +34,8 @@ class Scene {
 
     std::array<Light, 10> lights {};
 
-    std::shared_ptr<Camera> camera;
+    entt::entity camera;
+    [[nodiscard]] auto camera_info() -> CameraComponent&;
 
     bool flashlight = true;
     bool wireframe = false;

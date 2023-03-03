@@ -46,7 +46,7 @@ static auto on_property(entt::meta_any& instance, entt::meta_data const& member)
 
     if (auto any = member.get(instance)) {
         if (auto* value = any.try_cast<float>(); value) {
-            bool edited = ImGui::DragFloat(property_name, value);
+            bool edited = ImGui::DragFloat(property_name, value, 0.25F);
 
             if (edited) {
                 member.set(instance, *value);
@@ -54,7 +54,7 @@ static auto on_property(entt::meta_any& instance, entt::meta_data const& member)
         }
 
         if (auto* value = any.try_cast<vec3>(); value) {
-            bool edited = ImGui::DragFloat3(property_name, &value->x);
+            bool edited = ImGui::DragFloat3(property_name, &value->x, 0.25F);
 
             if (edited) {
                 member.set(instance, *value);
@@ -95,6 +95,10 @@ static auto on_property(entt::meta_any& instance, entt::meta_data const& member)
                 }
                 ImGui::EndCombo();
             }
+        }
+
+        if (auto* value = any.try_cast<std::map<i32, std::shared_ptr<Texture>>>(); value) {
+            ImGui::Text("texture");
         }
     }
 }
