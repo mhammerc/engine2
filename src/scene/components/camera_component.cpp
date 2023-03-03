@@ -29,6 +29,7 @@ auto reflection::register_camera_component() -> void {
     factory.data<&CameraComponent::up_axis>("up_axis"_hs).prop("name"_hs, "up_axis");
     factory.data<&CameraComponent::yaw>("yaw"_hs).prop("name"_hs, "yaw");
     factory.data<&CameraComponent::pitch>("pitch"_hs).prop("name"_hs, "pitch");
+    factory.data<&CameraComponent::fov>("fov"_hs).prop("name"_hs, "fov");
     factory.func<&CameraComponent::update_front_direction>("update_front_direction"_hs)
         .prop("name"_hs, "update_front_direction");
     factory.func<&CameraComponent::view_matrix>("view_matrix"_hs).prop("name"_hs, "view_matrix");

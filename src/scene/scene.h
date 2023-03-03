@@ -37,7 +37,6 @@ class Scene {
     entt::entity camera;
     [[nodiscard]] auto camera_info() -> CameraComponent&;
 
-    bool flashlight = true;
     bool wireframe = false;
     bool outline = false;
     bool inverse = false;
@@ -48,9 +47,6 @@ class Scene {
     bool edge_dectection = false;
     bool show_normals = false;
     float explosion = 0.F;
-
-    // std::shared_ptr<ShaderProgram> outline_shader;
-    // std::shared_ptr<ShaderProgram> normal_shader;
 };
 
 }  // namespace engine

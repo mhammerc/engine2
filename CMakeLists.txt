@@ -50,6 +50,8 @@ set(SOURCES
         src/scene/components/material_component.h
         src/scene/components/name_component.cpp
         src/scene/components/name_component.h
+        src/scene/components/player_component.cpp
+        src/scene/components/player_component.h
         src/scene/components/skybox_component.cpp
         src/scene/components/transform_component.cpp
         src/scene/components/transform_component.h

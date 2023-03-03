@@ -22,6 +22,12 @@ static auto on_property_float3(const char* name, vec3* value) -> bool {
     return edited;
 }
 
+static auto on_property_boolean(const char* name, bool* value) -> bool {
+    bool edited = ImGui::Checkbox(name, value);
+
+    return edited;
+}
+
 static auto on_property_shader(const char* name, std::shared_ptr<ShaderProgram>* value)
     -> std::shared_ptr<ShaderProgram> {
     auto shader_cache = entt::locator<ShaderCache>::value();
@@ -78,7 +84,13 @@ auto ui::internal::on_property(entt::meta_any& instance, entt::meta_data const& 
         return;
     }
 
-    if (auto* value = any.try_cast<float>(); value) {
+    if (auto* value = any.try_cast<bool>(); value) {
+        bool edited = on_property_boolean(property_name, value);
+
+        if (edited) {
+            member.set(instance, *value);
+        }
+    } else if (auto* value = any.try_cast<float>(); value) {
         bool edited = on_property_float(property_name, value);
 
         if (edited) {

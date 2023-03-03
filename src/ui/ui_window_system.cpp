@@ -32,9 +32,6 @@ auto ui::internal::ui_draw_window_system(Scene* scene, float delta_time, GLFWwin
     glfwGetFramebufferSize(window, &width, &height);
     ImGui::Text("Rendered Resolution: %dx%d", width, height);
 
-    ImGui::SeparatorText("Lighting");
-    ImGui::Checkbox("Flashlight", &scene->flashlight);
-
     ImGui::SeparatorText("Shaders");
     ImGui::Checkbox("Wireframe", &scene->wireframe);
     ImGui::Checkbox("Objects Outline", &scene->outline);

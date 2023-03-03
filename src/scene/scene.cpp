@@ -12,6 +12,7 @@
 #include "components/camera_component.h"
 #include "components/material_component.h"
 #include "components/name_component.h"
+#include "components/player_component.h"
 #include "components/skybox_component.h"
 #include "components/transform_component.h"
 #include "entity_from_model.h"
@@ -38,8 +39,9 @@ Scene::Scene(entt::registry& registry) : registry(registry) {
     }
 
     camera = registry.create();
+    registry.emplace<NameComponent>(camera, "player");
     registry.emplace<CameraComponent>(camera);
-    registry.emplace<NameComponent>(camera, "camera");
+    registry.emplace<PlayerComponent>(camera);
 }
 
 auto Scene::camera_info() -> CameraComponent& {
@@ -50,9 +52,10 @@ auto Scene::camera_info() -> CameraComponent& {
 
 auto Scene::draw(float /*delta_time*/) -> void {
     auto const& _camera_info = camera_info();
+    auto const& player_info = registry.get<PlayerComponent>(camera);
 
     lights.at(9) = Light {
-        .type = flashlight ? Light::Spot : Light::Unset,
+        .type = player_info.flashlight ? Light::Spot : Light::Unset,
         .position = _camera_info.position,
         .direction = _camera_info.front_direction,
         .innerCutOff = glm::cos(glm::radians(12.5F)),

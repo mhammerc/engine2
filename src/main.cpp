@@ -124,9 +124,9 @@ auto main() -> int {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
         auto size = frame_buffer_postprocess->size();
+        auto const& camera = scene.camera_info();
         renderer_context.projection = glm::perspective(
-            // TODO: slider in UI to change fov
-            glm::radians(45.0F),
+            glm::radians(camera.fov),
             static_cast<float>(size.x) / static_cast<float>(size.y),
             0.1F,
             100.0F

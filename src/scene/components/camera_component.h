@@ -14,6 +14,8 @@ struct CameraComponent {
 
     float yaw = -90.F;
     float pitch = 0.F;
+
+    float fov = 45.F;
 };
 
 namespace reflection {
