@@ -1,6 +1,3 @@
-[submodule "vendors/glm"]
-	path = vendors/glm
-	url = https://github.com/g-truc/glm.git
 [submodule "vendors/spdlog"]
 	path = vendors/spdlog
 	url = https://github.com/gabime/spdlog.git

@@ -257,6 +257,7 @@ auto Scene::draw_skybox() -> void {
     shader->set_uniform("projection", renderer_context.projection);
 
     shader->bind();
+    glCullFace(GL_FRONT);
 
     for (auto [entity, name] : skyboxes.each()) {
         if (!name.enabled) {
@@ -266,6 +267,7 @@ auto Scene::draw_skybox() -> void {
         cube->draw();
     }
 
+    glCullFace(GL_BACK);
     shader->unbind();
     cubemap->activate_as(0, true);
 
