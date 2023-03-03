@@ -58,9 +58,10 @@ set(SOURCES
         src/scene/light.h
         src/scene/scene.cpp
         src/scene/scene.h
+        src/ui/entity_editor/entity_property_editor.cpp
+        src/ui/entity_editor/ui_window_entity_editor.cpp
         src/ui/ui.cpp
         src/ui/ui.h
-        src/ui/ui_window_entity_editor.cpp
         src/ui/ui_window_hierarchy.cpp
         src/ui/ui_window_scene.cpp
         src/ui/ui_window_system.cpp
