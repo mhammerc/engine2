@@ -1,6 +1,10 @@
 #include "glfw.h"
 
+#include <entt/entt.hpp>
+
+#include "../core/input.hpp"
 #include "../utils/platform_info.h"
+#include "GLFW/glfw3.h"
 #include "opengl.h"
 #include "spdlog/spdlog.h"
 
@@ -15,86 +19,23 @@ static auto framebuffer_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-auto process_inputs(float delta_time, GLFWwindow* window, engine::CameraComponent& camera) -> void {
-    // KEYBOARD
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, true);
-    }
+static auto key_callback(GLFWwindow* /*window*/, int key, int /*scancode*/, int action, int /*mode*/) {
+    auto& input = entt::locator<engine::Input>::value();
 
-    static bool first_mouse = true;
-    static bool mouse_captured = false;
+    input.on_key(key, action == GLFW_PRESS || action == GLFW_REPEAT);
+}
 
-    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
-        first_mouse = true;
-        mouse_captured = true;
+static auto mouse_button_callback(GLFWwindow* /*window*/, int key, int action, int /*mode*/) {
+    auto& input = entt::locator<engine::Input>::value();
 
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    }
+    input.on_key(key, action == GLFW_PRESS || action == GLFW_REPEAT);
+}
 
-    if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS) {
-        first_mouse = true;
-        mouse_captured = false;
+static auto mouse_position_callback(GLFWwindow* /*window*/, double xpos, double ypos) {
+    auto& input = entt::locator<engine::Input>::value();
+    auto position = vec2(static_cast<float>(xpos), static_cast<float>(ypos));
 
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-    }
-
-    if (mouse_captured) {
-        const float cameraSpeed = 7.F * delta_time;
-        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-            camera.position += cameraSpeed * camera.front_direction;
-        }
-
-        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-            camera.position -= cameraSpeed * camera.front_direction;
-        }
-
-        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-            camera.position -= glm::normalize(glm::cross(camera.front_direction, camera.up_axis)) * cameraSpeed;
-        }
-
-        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-            camera.position += glm::normalize(glm::cross(camera.front_direction, camera.up_axis)) * cameraSpeed;
-        }
-
-        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-            camera.position += camera.up_axis * cameraSpeed;
-        }
-
-        if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
-            camera.position -= camera.up_axis * cameraSpeed;
-        }
-    }
-
-    if (mouse_captured) {
-        static glm::vec<2, double> previous_cursor_position(0);
-        glm::vec<2, double> cursor_position(0);
-
-        glfwGetCursorPos(window, &cursor_position.x, &cursor_position.y);
-
-        if (first_mouse) {
-            previous_cursor_position = cursor_position;
-            first_mouse = false;
-        }
-
-        glm::vec2 cursor_delta = cursor_position - previous_cursor_position;
-
-        float const sensitivity = 0.1F;
-        cursor_delta *= sensitivity;
-
-        camera.yaw += cursor_delta.x;
-        camera.pitch += -cursor_delta.y;
-
-        auto const maxPitch = 89.F;
-        if (camera.pitch > maxPitch) {
-            camera.pitch = maxPitch;
-        }
-        if (camera.pitch < -maxPitch) {
-            camera.pitch = -maxPitch;
-        }
-
-        camera.update_front_direction();
-        previous_cursor_position = cursor_position;
-    }
+    input.on_mouse_position(position);
 }
 
 auto init_glfw_and_opengl() -> GLFWwindow* {
@@ -130,6 +71,10 @@ auto init_glfw_and_opengl() -> GLFWwindow* {
 
     glViewport(0, 0, framebuffer_width, framebuffer_height);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+    glfwSetKeyCallback(window, key_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
+    glfwSetCursorPosCallback(window, mouse_position_callback);
 
     glEnable(GL_DEPTH_TEST);
 

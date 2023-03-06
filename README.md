@@ -2,10 +2,6 @@
 
 ## TODO
 
-- Quaternions in transforms
-- Inspector of objects which allow to view and edit transforms (with euler angles for humans)
-- rewrite input like breakout
-
 ## Development Environment
 
 As of 2023 February, we use Visual Studio Code with the following extensions :

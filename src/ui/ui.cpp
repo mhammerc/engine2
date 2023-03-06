@@ -3,6 +3,7 @@
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_opengl3.h>
+#include <spdlog/spdlog.h>
 
 #include "ui_internal.h"
 
@@ -61,6 +62,9 @@ auto engine::ui_draw(
 ) -> void {
     ImGui::BeginMainMenuBar();
 
+    static entt::entity selected_entity = entt::null;
+    static bool input_debugger = false;
+
     if (ImGui::BeginMenu("Options")) {
         if (ImGui::BeginMenu("Colors")) {
             if (ImGui::MenuItem("Light")) {
@@ -78,6 +82,10 @@ auto engine::ui_draw(
             ImGui::EndMenu();
         }
 
+        if (ImGui::MenuItem("Input Debugger")) {
+            input_debugger = true;
+        }
+
         ImGui::EndMenu();
     }
 
@@ -87,10 +95,9 @@ auto engine::ui_draw(
 
     ImGui::ShowDemoWindow();
 
-    static entt::entity currently_selected = entt::null;
-
+    ui::internal::ui_draw_input_debugger(&input_debugger);
     ui::internal::ui_draw_window_system(scene, delta_time, window);
-    ui::internal::ui_draw_window_hierarchy(registry, currently_selected);
+    ui::internal::ui_draw_window_hierarchy(registry, selected_entity);
     ui::internal::ui_draw_window_scene(scene_texture);
-    ui::internal::ui_draw_window_entity_editor(registry, currently_selected);
+    ui::internal::ui_draw_window_entity_editor(registry, selected_entity);
 }

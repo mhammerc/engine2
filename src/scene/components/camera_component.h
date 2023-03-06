@@ -16,6 +16,9 @@ struct CameraComponent {
     float pitch = 0.F;
 
     float fov = 45.F;
+
+    float speed = 7.F;
+    float cursor_sensivity = 0.1F;
 };
 
 namespace reflection {

@@ -13,6 +13,8 @@ set(SOURCES
         src/core/entity.h
         src/core/game_loop.cpp
         src/core/game_loop.h
+        src/core/input.cpp
+        src/core/input.hpp
         src/core/reflection.cpp
         src/core/reflection.h
         src/graphics/cube_map.cpp
@@ -60,11 +62,15 @@ set(SOURCES
         src/scene/light.h
         src/scene/scene.cpp
         src/scene/scene.h
+        src/systems/camera_system.cpp
+        src/systems/should_close_system.cpp
+        src/systems/systems.h
         src/ui/entity_editor/entity_property_editor.cpp
         src/ui/entity_editor/ui_window_entity_editor.cpp
         src/ui/ui.cpp
         src/ui/ui.h
         src/ui/ui_window_hierarchy.cpp
+        src/ui/ui_window_input_debugger.cpp
         src/ui/ui_window_scene.cpp
         src/ui/ui_window_system.cpp
         src/ui/utils.cpp

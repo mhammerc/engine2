@@ -1,6 +1,7 @@
 #include <entt/entt.hpp>
 
 #include "core/game_loop.h"
+#include "core/input.hpp"
 #include "core/reflection.h"
 #include "entt/entity/fwd.hpp"
 #include "graphics/cube_map_cache.h"
@@ -14,12 +15,14 @@
 #include "scene/scene.h"
 #include "spdlog/spdlog.h"
 #include "stb_image/stb_image.h"
+#include "systems/systems.h"
 #include "ui/ui.h"
 
 using namespace engine;
 
 auto main() -> int {
     reflection::register_all();
+
     auto registry = entt::registry();
 
     auto* window = init_glfw_and_opengl();
@@ -27,6 +30,8 @@ auto main() -> int {
         spdlog::critical("Could not initialize GLFW3 or OpenGL.");
         return 1;
     }
+
+    entt::locator<GLFWwindow*>::emplace(window);
 
     if (!ui_init(window)) {
         spdlog::critical("Could not initialize GUI.");
@@ -39,6 +44,8 @@ auto main() -> int {
     auto& cubemap_cache = entt::locator<engine::CubeMapCache>::emplace();
 
     auto& renderer_context = entt::locator<engine::RendererContext>::emplace();
+
+    entt::locator<engine::Input>::emplace();
 
     auto [diffuse_shader, _] = shader_cache.load("diffuse"_hs, "diffuse");
     if (diffuse_shader->second.handle() == nullptr) {
@@ -114,10 +121,10 @@ auto main() -> int {
             should_quit = true;
         }
 
+        systems::should_close_system();
+        systems::camera_system(delta_time, registry);
+
         ui_prepare_frame();
-
-        process_inputs(delta_time, window, scene.camera_info());
-
         ui_draw(delta_time, &scene, window, registry, frame_buffer_postprocess.get());
 
         glClearColor(0.2F, 0.3F, 0.3F, 1.0F);
