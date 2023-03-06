@@ -1,6 +1,6 @@
 #include "../core/input.hpp"
+#include "../scene/components/base_component.h"
 #include "../scene/components/camera_component.h"
-#include "../scene/components/name_component.h"
 #include "../utils/glfw3.h"
 #include "systems.h"
 
@@ -10,10 +10,10 @@ auto systems::camera_system(float delta_time, entt::registry& registry) -> void 
     auto const& input = entt::locator<Input>::value();
     auto* window = entt::locator<GLFWwindow*>::value();
 
-    auto view = registry.view<NameComponent, CameraComponent>();
+    auto view = registry.view<BaseComponent, CameraComponent>();
 
-    for (auto [entity, name, camera] : view.each()) {
-        if (!name.enabled) {
+    for (auto [entity, base, camera] : view.each()) {
+        if (!base.enabled) {
             continue;
         }
 

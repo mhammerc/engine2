@@ -30,7 +30,6 @@ auto main() -> int {
         spdlog::critical("Could not initialize GLFW3 or OpenGL.");
         return 1;
     }
-
     entt::locator<GLFWwindow*>::emplace(window);
 
     if (!ui_init(window)) {
@@ -38,8 +37,8 @@ auto main() -> int {
         return 1;
     }
 
-    auto& shader_cache = entt::locator<engine::ShaderCache>::emplace();
     entt::locator<engine::TextureCache>::emplace();
+    auto& shader_cache = entt::locator<engine::ShaderCache>::emplace();
     auto& mesh_cache = entt::locator<engine::MeshCache>::emplace();
     auto& cubemap_cache = entt::locator<engine::CubeMapCache>::emplace();
 

@@ -30,7 +30,7 @@ static auto on_property_boolean(const char* name, bool* value) -> bool {
     return edited;
 }
 
-static auto on_property_quaternion(const char* name, glm::quat* value) -> bool {
+auto ui::internal::on_property_quaternion(const char* name, glm::quat* value) -> bool {
     auto radians_euler_angles = glm::eulerAngles(*value);
     auto degree_euler_angles = glm::degrees(radians_euler_angles);
 

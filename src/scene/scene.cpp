@@ -5,16 +5,16 @@
 
 #include <entt/entt.hpp>
 
+#include "../core/entity.h"
 #include "../graphics/cube_map_cache.h"
 #include "../graphics/mesh_cache.h"
 #include "../graphics/renderer_context.h"
 #include "../graphics/shader_cache.h"
+#include "components/base_component.h"
 #include "components/camera_component.h"
 #include "components/material_component.h"
-#include "components/name_component.h"
 #include "components/player_component.h"
 #include "components/skybox_component.h"
-#include "components/transform_component.h"
 #include "entity_from_model.h"
 
 using namespace engine;
@@ -22,24 +22,29 @@ using namespace engine;
 Scene::Scene(entt::registry& registry) : registry(registry) {
     auto backpacks = entity_from_model("../assets/backpack/backpack.obj", registry);
     for (auto& backpack : backpacks) {
-        registry.emplace<NameComponent>(backpack, "backpack");
-        registry.get_or_emplace<TransformComponent>(backpack).position = vec3(0.F, 0.F, -5.F);
+        auto& base = registry.emplace<BaseComponent>(backpack, "backpack 1");
+        base.position = vec3(0.F, 0.F, -5.F);
     }
+
+    auto duplicated_backpack = duplicate_entity(registry, backpacks[0]);
+    registry.get<BaseComponent>(duplicated_backpack).name = "backpack 2";
+    registry.get<BaseComponent>(duplicated_backpack).parent = backpacks[0];
+    registry.get<BaseComponent>(backpacks[0]).first_child = duplicated_backpack;
 
     auto floors = entity_from_model("../assets/plane/plane.obj", registry);
     for (auto& floor : floors) {
-        registry.emplace<NameComponent>(floor, "floor");
-        registry.get_or_emplace<TransformComponent>(floor).position = vec3(0.F, -5.F, 0.F);
+        auto& base = registry.emplace<BaseComponent>(floor, "floor");
+        base.position = vec3(0.F, -5.F, 0.F);
     }
 
     auto skybox = registry.create();
     {
-        registry.emplace<NameComponent>(skybox, "skybox");
+        registry.emplace<BaseComponent>(skybox, "skybox");
         registry.emplace<SkyboxComponent>(skybox);
     }
 
     camera = registry.create();
-    registry.emplace<NameComponent>(camera, "player");
+    registry.emplace<BaseComponent>(camera, "player");
     registry.emplace<CameraComponent>(camera);
     registry.emplace<PlayerComponent>(camera);
 }
@@ -98,7 +103,7 @@ auto Scene::draw(float /*delta_time*/) -> void {
 }
 
 auto Scene::draw_nodes() -> void {
-    auto drawables = registry.view<NameComponent, TransformComponent, MaterialComponent>();
+    auto drawables = registry.view<BaseComponent, MaterialComponent>();
 
     auto& cubemap_cache = entt::locator<CubeMapCache>::value();
     auto skybox = cubemap_cache["skybox"_hs];
@@ -106,14 +111,14 @@ auto Scene::draw_nodes() -> void {
 
     auto const& _camera_info = camera_info();
 
-    for (auto [entity, name, transform, material] : drawables.each()) {
-        if (!name.enabled) {
+    for (auto [entity, base, material] : drawables.each()) {
+        if (!base.enabled) {
             continue;
         }
 
         auto const& renderer_context = entt::locator<RendererContext>::value();
 
-        auto const model = transform.matrix();
+        auto const model = base.transform_matrix(registry);
         auto const modelNormal = mat3(glm::transpose(glm::inverse(model)));
 
         // MVP
@@ -175,21 +180,21 @@ auto Scene::draw_nodes_outline() -> void {
     auto shader_cache = entt::locator<ShaderCache>::value();
     auto shader_outline = shader_cache["outline"_hs];
 
-    auto drawables = registry.view<NameComponent, TransformComponent, MaterialComponent>();
+    auto drawables = registry.view<BaseComponent, MaterialComponent>();
 
     glEnable(GL_STENCIL_TEST);
     glStencilMask(0x00);
     glDisable(GL_DEPTH_TEST);
     glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 
-    for (auto [entity, name, transform, material] : drawables.each()) {
-        if (!name.enabled) {
+    for (auto [entity, base, material] : drawables.each()) {
+        if (!base.enabled) {
             continue;
         }
 
         auto const& renderer_context = entt::locator<RendererContext>::value();
 
-        auto const model = transform.matrix();
+        auto const model = base.transform_matrix(registry);
         auto const modelNormal = mat3(glm::transpose(glm::inverse(model)));
 
         // MVP
@@ -215,14 +220,14 @@ auto Scene::draw_nodes_normals() -> void {
 
     auto const& renderer_context = entt::locator<RendererContext>::value();
 
-    auto drawables = registry.view<NameComponent, TransformComponent, MaterialComponent>();
+    auto drawables = registry.view<BaseComponent, MaterialComponent>();
 
-    for (auto [entity, name, transform, material] : drawables.each()) {
-        if (!name.enabled) {
+    for (auto [entity, base, material] : drawables.each()) {
+        if (!base.enabled) {
             continue;
         }
 
-        auto const model = transform.matrix();
+        auto const model = base.transform_matrix(registry);
         auto const modelNormal = mat3(glm::transpose(glm::inverse(model)));
 
         // MVP
@@ -241,7 +246,7 @@ auto Scene::draw_skybox() -> void {
     auto const& _camera_info = camera_info();
     glDepthFunc(GL_LEQUAL);
 
-    auto skyboxes = registry.view<NameComponent, SkyboxComponent>();
+    auto skyboxes = registry.view<BaseComponent, SkyboxComponent>();
 
     auto const& renderer_context = entt::locator<RendererContext>::value();
 

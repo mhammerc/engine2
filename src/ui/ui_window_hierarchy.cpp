@@ -3,7 +3,7 @@
 #include <entt/entt.hpp>
 
 #include "../core/entity.h"
-#include "../scene/components/name_component.h"
+#include "../scene/components/base_component.h"
 #include "ui_internal.h"
 
 using namespace engine;
@@ -11,7 +11,7 @@ using namespace engine;
 static auto hierarchy_item(
     entt::registry& registry,
     entt::entity entity,
-    NameComponent const& name,
+    BaseComponent const& base,
     entt::entity& currently_selected
 ) -> void {
     ImGuiTreeNodeFlags const tree_base_flags =
@@ -19,14 +19,20 @@ static auto hierarchy_item(
     ImGuiTreeNodeFlags const tree_leaf_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
     ImGuiTreeNodeFlags const tree_selected_flags = ImGuiTreeNodeFlags_Selected;
 
-    ImGuiTreeNodeFlags flags = tree_base_flags | tree_leaf_flags;
+    ImGuiTreeNodeFlags flags = tree_base_flags;
+    bool is_leaf = false;
+
+    if (base.first_child == entt::null) {
+        flags |= tree_leaf_flags;
+        is_leaf = true;
+    }
 
     if (entity == currently_selected) {
         flags |= tree_selected_flags;
     }
 
-    // ImGui::TreeNodeEx((void*)(intptr_t)entity, flags, "%s", name.name.c_str());
-    ImGui::TreeNodeEx(reinterpret_cast<void*>(entity), flags, "%s", name.name.c_str());
+    bool is_open = ImGui::TreeNodeEx(reinterpret_cast<void*>(entity), flags, "%s", base.name.c_str());
+
     if (ImGui::BeginPopupContextItem()) {
         if (ImGui::Selectable("Duplicate")) {
             currently_selected = duplicate_entity(registry, entity);
@@ -38,15 +44,35 @@ static auto hierarchy_item(
     if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) {
         currently_selected = entity;
     }
+
+    if (is_open && !is_leaf) {
+        entt::entity child = base.first_child;
+
+        while (child != entt::null) {
+            auto& child_base = registry.get<BaseComponent>(child);
+
+            hierarchy_item(registry, child, child_base, currently_selected);
+
+            child = child_base.next_sibling;
+        }
+
+        ImGui::TreePop();
+    }
 }
 
 auto ui::internal::ui_draw_window_hierarchy(entt::registry& registry, entt::entity& currently_selected) -> void {
     ImGui::Begin("Hierarchy");
 
-    auto view = registry.view<NameComponent>();
+    auto view = registry.view<BaseComponent>();
 
-    for (auto [entity, name] : view.each()) {
-        hierarchy_item(registry, entity, name, currently_selected);
+    for (auto [entity, base] : view.each()) {
+        if (base.parent != entt::null) {
+            // We show only top-level entities
+            // child entities will be shown later.
+            continue;
+        }
+
+        hierarchy_item(registry, entity, base, currently_selected);
     }
 
     ImGui::End();

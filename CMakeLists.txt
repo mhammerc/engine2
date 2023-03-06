@@ -46,17 +46,17 @@ set(SOURCES
         src/platform/glfw.h
         src/platform/opengl.cpp
         src/platform/opengl.h
+        src/scene/components/base_component.cpp
+        src/scene/components/base_component.h
         src/scene/components/camera_component.cpp
         src/scene/components/camera_component.h
+        src/scene/components/light_component.cpp
+        src/scene/components/light_component.h
         src/scene/components/material_component.cpp
         src/scene/components/material_component.h
-        src/scene/components/name_component.cpp
-        src/scene/components/name_component.h
         src/scene/components/player_component.cpp
         src/scene/components/player_component.h
         src/scene/components/skybox_component.cpp
-        src/scene/components/transform_component.cpp
-        src/scene/components/transform_component.h
         src/scene/entity_from_model.cpp
         src/scene/entity_from_model.h
         src/scene/light.h

@@ -2,6 +2,8 @@
 
 #include <entt/entt.hpp>
 
+#include "../../common.h"
+
 namespace engine::ui::internal {
 auto on_property(entt::meta_any& instance, entt::meta_data const& member) -> void;
 
@@ -20,5 +22,7 @@ auto prop(std::string_view name, meta const& type) -> T {
 
     return nullptr;
 }
+
+auto on_property_quaternion(const char* name, glm::quat* value) -> bool;
 
 }  // namespace engine::ui::internal

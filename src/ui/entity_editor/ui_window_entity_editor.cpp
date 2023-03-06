@@ -2,7 +2,7 @@
 #include <spdlog/fmt/fmt.h>
 #include <spdlog/spdlog.h>
 
-#include "../../scene/components/name_component.h"
+#include "../../scene/components/base_component.h"
 #include "../ui_internal.h"
 #include "../utils.h"
 #include "entity_editor.h"
@@ -10,13 +10,17 @@
 using namespace engine;
 
 static auto header(entt::registry& registry, entt::entity entity) -> void {
-    auto* name = registry.try_get<NameComponent>(entity);
+    auto* name = registry.try_get<BaseComponent>(entity);
 
     if (name) {
         ImGui::Checkbox("##enabled", &name->enabled);
         ImGui::SameLine();
         ImGui::SetNextItemWidth(-FLT_MIN);
         ui::internal::input_text("##name", &name->name);
+
+        ImGui::DragFloat3("Position", &name->position.x, 0.25F);
+        ui::internal::on_property_quaternion("Rotation", &name->rotation);
+        ImGui::DragFloat3("Scale", &name->scale.x, 0.25F);
     }
 }
 
@@ -24,7 +28,7 @@ static auto on_component(entt::meta_any& instance, entt::meta_type& type) -> voi
     bool open = false;
 
     if (auto const* name = ui::internal::prop<char const*>("name", type); name) {
-        if (strcmp("NameComponent", name) == 0) {
+        if (strcmp("BaseComponent", name) == 0) {
             return;
         }
 

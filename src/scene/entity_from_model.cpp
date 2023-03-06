@@ -16,7 +16,6 @@
 #include "../graphics/texture_cache.h"
 #include "assimp/material.h"
 #include "components/material_component.h"
-#include "components/transform_component.h"
 
 using namespace engine;
 
@@ -141,7 +140,6 @@ static auto on_node(
     std::vector<entt::entity>& entities
 ) -> void {
     auto entity = entities.emplace_back(registry.create());
-    registry.emplace<TransformComponent>(entity);
     registry.emplace<MaterialComponent>(entity);
 
     std::span<u32> const raw_mesh_indexes {node->mMeshes, node->mNumMeshes};
