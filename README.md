@@ -2,6 +2,14 @@
 
 ## TODO
 
+- Refacto light (use components)
+- no more renderer context
+- ability to view different frame_buffers
+  - before post process
+  - depth buffer of the scene
+  - the refacto that goes with it
+- Shadows
+
 ## Development Environment
 
 As of 2023 February, we use Visual Studio Code with the following extensions :

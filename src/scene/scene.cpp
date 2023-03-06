@@ -45,8 +45,12 @@ Scene::Scene(entt::registry& registry) : registry(registry) {
 
     camera = registry.create();
     registry.emplace<BaseComponent>(camera, "player");
-    registry.emplace<CameraComponent>(camera);
+    auto& player = registry.emplace<CameraComponent>(camera);
     registry.emplace<PlayerComponent>(camera);
+    player.position = vec3(-9.F, 0.F, -1.F);
+    player.pitch = 0.F;
+    player.yaw = -35.F;
+    player.update_front_direction();
 }
 
 auto Scene::camera_info() -> CameraComponent& {
