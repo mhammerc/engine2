@@ -1,10 +1,72 @@
+#include "../common.h"
 #include "../core/input.hpp"
 #include "../scene/components/base_component.h"
 #include "../scene/components/camera_component.h"
-#include "../utils/glfw3.h"
+#include "GLFW/glfw3.h"
 #include "systems.h"
 
 using namespace engine;
+
+static auto move_position(float delta_time, Input const& input, BaseComponent& base, CameraComponent& camera) -> void {
+    const float camera_movement = camera.speed * delta_time;
+
+    if (input.keys[GLFW_KEY_W]) {
+        base.position += camera_movement * base.direction();
+    }
+
+    if (input.keys[GLFW_KEY_S]) {
+        base.position -= camera_movement * base.direction();
+    }
+
+    if (input.keys[GLFW_KEY_A]) {
+        base.position -= glm::normalize(glm::cross(base.direction(), camera.up_axis)) * camera_movement;
+    }
+
+    if (input.keys[GLFW_KEY_D]) {
+        base.position += glm::normalize(glm::cross(base.direction(), camera.up_axis)) * camera_movement;
+    }
+
+    if (input.keys[GLFW_KEY_SPACE]) {
+        base.position += camera.up_axis * camera_movement;
+    }
+
+    if (input.keys[GLFW_KEY_LEFT_CONTROL]) {
+        base.position -= camera.up_axis * camera_movement;
+    }
+}
+
+static auto
+rotate_camera(Input const& input, BaseComponent& base, CameraComponent& camera, bool& first_frame_mouse_captured)
+    -> void {
+    static vec2 previous_cursor_position(0.F);
+    vec2 cursor_position = input.mouse_position();
+
+    if (first_frame_mouse_captured && previous_cursor_position != cursor_position) {
+        previous_cursor_position = cursor_position;
+        first_frame_mouse_captured = false;
+    }
+
+    // angle_to_rotate.x is the yaw
+    // angle_to_rotate.y is the pitch
+    vec2 angle_to_rotate = (cursor_position - previous_cursor_position) * vec2(-1.F, 1.F);
+
+    angle_to_rotate *= camera.cursor_sensivity;
+
+    camera.yaw += angle_to_rotate.x;
+    camera.pitch += angle_to_rotate.y;
+
+    const float maxPitch = 89.F;
+    if (camera.pitch > maxPitch) {
+        camera.pitch = maxPitch;
+    }
+    if (camera.pitch < -maxPitch) {
+        camera.pitch = -maxPitch;
+    }
+
+    camera.update_base_rotation(base);
+
+    previous_cursor_position = cursor_position;
+}
 
 auto systems::camera_system(float delta_time, entt::registry& registry) -> void {
     auto const& input = entt::locator<Input>::value();
@@ -17,76 +79,26 @@ auto systems::camera_system(float delta_time, entt::registry& registry) -> void 
             continue;
         }
 
-        static bool first_mouse = true;
         static bool mouse_captured = false;
+        static bool first_frame_mouse_captured = false;
 
         if (input.keys[GLFW_KEY_R]) {
-            first_mouse = true;
             mouse_captured = true;
+            first_frame_mouse_captured = true;
 
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         }
 
         if (input.keys[GLFW_KEY_T]) {
-            first_mouse = true;
             mouse_captured = false;
 
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         }
 
         if (mouse_captured) {
-            const float camera_movement = camera.speed * delta_time;
+            move_position(delta_time, input, base, camera);
 
-            if (input.keys[GLFW_KEY_W]) {
-                camera.position += camera_movement * camera.front_direction;
-            }
-
-            if (input.keys[GLFW_KEY_S]) {
-                camera.position -= camera_movement * camera.front_direction;
-            }
-
-            if (input.keys[GLFW_KEY_A]) {
-                camera.position -= glm::normalize(glm::cross(camera.front_direction, camera.up_axis)) * camera_movement;
-            }
-
-            if (input.keys[GLFW_KEY_D]) {
-                camera.position += glm::normalize(glm::cross(camera.front_direction, camera.up_axis)) * camera_movement;
-            }
-
-            if (input.keys[GLFW_KEY_SPACE]) {
-                camera.position += camera.up_axis * camera_movement;
-            }
-
-            if (input.keys[GLFW_KEY_LEFT_CONTROL]) {
-                camera.position -= camera.up_axis * camera_movement;
-            }
-        }
-
-        if (mouse_captured) {
-            static vec2 previous_cursor_position(0);
-
-            if (first_mouse) {
-                previous_cursor_position = input.mouse_position();
-                first_mouse = false;
-            }
-
-            vec2 cursor_delta = input.mouse_position() - previous_cursor_position;
-
-            cursor_delta *= camera.cursor_sensivity;
-
-            camera.yaw += cursor_delta.x;
-            camera.pitch += -cursor_delta.y;
-
-            auto const maxPitch = 89.F;
-            if (camera.pitch > maxPitch) {
-                camera.pitch = maxPitch;
-            }
-            if (camera.pitch < -maxPitch) {
-                camera.pitch = -maxPitch;
-            }
-
-            camera.update_front_direction();
-            previous_cursor_position = input.mouse_position();
+            rotate_camera(input, base, camera, first_frame_mouse_captured);
         }
     }
 }

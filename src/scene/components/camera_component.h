@@ -1,15 +1,15 @@
 #pragma once
 
+#include <entt/entt.hpp>
+
 #include "../../common.h"
+#include "base_component.h"
 
 namespace engine {
 
 struct CameraComponent {
-    auto update_front_direction() -> vec3;
-    [[nodiscard]] auto view_matrix() const -> mat4;
+    [[nodiscard]] auto view_matrix(BaseComponent& base) const -> mat4;
 
-    vec3 position = vec3(0.F, 0.F, 3.F);
-    vec3 front_direction = vec3(0.F, 0.F, -1.F);
     vec3 up_axis = vec3(0.F, 1.F, 0.F);
 
     float yaw = -90.F;
@@ -19,6 +19,8 @@ struct CameraComponent {
 
     float speed = 7.F;
     float cursor_sensivity = 0.1F;
+
+    auto update_base_rotation(BaseComponent& base) const -> void;
 };
 
 namespace reflection {

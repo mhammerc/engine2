@@ -8,6 +8,23 @@ using namespace engine;
 
 BaseComponent::BaseComponent(std::string_view const& name) : name(name) {}
 
+auto BaseComponent::direction() const -> vec3 {
+    auto constexpr forward = vec3(0.F, 0.F, 1.F);
+
+    auto static previous_rotation = rotation;
+    auto static direction = glm::normalize(rotation * forward);
+
+    if (previous_rotation != rotation) {
+        // If BaseComponent::rotation member have changed since last call,
+        // compute the new direction.
+
+        previous_rotation = rotation;
+        direction = glm::normalize(rotation * forward);
+    }
+
+    return direction;
+}
+
 auto BaseComponent::transform_matrix(entt::registry const& registry) const -> mat4 {
     mat4 transform = mat4(1.0F);
 

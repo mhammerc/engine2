@@ -76,6 +76,10 @@ auto init_glfw_and_opengl() -> GLFWwindow* {
     glfwSetMouseButtonCallback(window, mouse_button_callback);
     glfwSetCursorPosCallback(window, mouse_position_callback);
 
+    if (glfwRawMouseMotionSupported()) {
+        glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+    }
+
     glEnable(GL_DEPTH_TEST);
 
     glEnable(GL_CULL_FACE);

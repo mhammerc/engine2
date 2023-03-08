@@ -3,8 +3,10 @@
 #include <array>
 #include <entt/entt.hpp>
 #include <memory>
+#include <tuple>
 #include <vector>
 
+#include "components/base_component.h"
 #include "components/camera_component.h"
 #include "light.h"
 
@@ -35,7 +37,7 @@ class Scene {
     std::array<Light, 10> lights {};
 
     entt::entity camera;
-    [[nodiscard]] auto camera_info() -> CameraComponent&;
+    [[nodiscard]] auto camera_info() -> std::tuple<BaseComponent&, CameraComponent&>;
 
     bool wireframe = false;
     bool outline = false;
