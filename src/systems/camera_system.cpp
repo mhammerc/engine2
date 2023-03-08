@@ -11,27 +11,29 @@ static auto move_position(float delta_time, Input const& input, BaseComponent& b
     const float camera_movement = camera.speed * delta_time;
 
     if (input.keys[GLFW_KEY_W]) {
-        base.position += camera_movement * base.direction();
+        base.transform.position += camera_movement * base.transform.direction();
     }
 
     if (input.keys[GLFW_KEY_S]) {
-        base.position -= camera_movement * base.direction();
+        base.transform.position -= camera_movement * base.transform.direction();
     }
 
     if (input.keys[GLFW_KEY_A]) {
-        base.position -= glm::normalize(glm::cross(base.direction(), camera.up_axis)) * camera_movement;
+        base.transform.position -=
+            glm::normalize(glm::cross(base.transform.direction(), camera.up_axis)) * camera_movement;
     }
 
     if (input.keys[GLFW_KEY_D]) {
-        base.position += glm::normalize(glm::cross(base.direction(), camera.up_axis)) * camera_movement;
+        base.transform.position +=
+            glm::normalize(glm::cross(base.transform.direction(), camera.up_axis)) * camera_movement;
     }
 
     if (input.keys[GLFW_KEY_SPACE]) {
-        base.position += camera.up_axis * camera_movement;
+        base.transform.position += camera.up_axis * camera_movement;
     }
 
     if (input.keys[GLFW_KEY_LEFT_CONTROL]) {
-        base.position -= camera.up_axis * camera_movement;
+        base.transform.position -= camera.up_axis * camera_movement;
     }
 }
 

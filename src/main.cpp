@@ -12,6 +12,8 @@
 #include "graphics/shader_program.h"
 #include "graphics/texture_cache.h"
 #include "platform/glfw.h"
+#include "scene/components/base_component.h"
+#include "scene/components/light_component.h"
 #include "scene/scene.h"
 #include "spdlog/spdlog.h"
 #include "stb_image/stb_image.h"
@@ -96,18 +98,16 @@ auto main() -> int {
 
     Scene scene(registry);
 
-    {
-        auto const pointLight = Light {
-            .type = Light::Point,
-            .position = glm::vec3(0.F, 0.F, -2.F),
-            .linear = 0.09F,
-            .quadratic = 0.032F,
-            .ambient = glm::vec3(0.35F, 0.35F, 0.35F),
-            .diffuse = glm::vec3(0.8F, 0.8F, 0.8F),
-            .specular = glm::vec3(1.F, 1.F, 1.F),
-        };
-        scene.lights.at(0) = pointLight;
-    }
+    auto light1 = registry.create();
+    auto& light1_base = registry.emplace<BaseComponent>(light1, "light1");
+    auto& light1_light = registry.emplace<LightComponent>(light1);
+    light1_base.transform.position = vec3(0.F, 0.F, -2.F);
+    light1_light.type = LightComponent::Point;
+    light1_light.linear = 0.09F;
+    light1_light.quadratic = 0.032F;
+    light1_light.ambient = glm::vec3(0.35F, 0.35F, 0.35F);
+    light1_light.diffuse = glm::vec3(0.8F, 0.8F, 0.8F);
+    light1_light.specular = glm::vec3(1.F, 1.F, 1.F);
 
     auto frame_buffer = FrameBuffer::create({1, 1});
     auto frame_buffer_postprocess = FrameBuffer::create({1, 1});
@@ -147,6 +147,8 @@ auto main() -> int {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
             scene.draw(delta_time);
+
+            systems::draw_light_gizmo(registry);
 
             frame_buffer->unbind();
         }

@@ -2,7 +2,9 @@
 
 ## TODO
 
-- Refacto light (use components)
+- Antialiasing
+- Refactor draw functions into systems
+- Gizmos (like unreal engine)
 - no more renderer context
 - ability to view different frame_buffers
   - before post process

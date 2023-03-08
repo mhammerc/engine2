@@ -6,14 +6,17 @@
 using namespace engine;
 
 auto CameraComponent::view_matrix(BaseComponent& base) const -> mat4 {
-    return glm::lookAt(base.position, base.position + base.direction(), up_axis);
+    // TODO: this is local space transform
+    auto transform = base.transform;
+
+    return glm::lookAt(transform.position, transform.position + transform.direction(), up_axis);
 }
 
 auto CameraComponent::update_base_rotation(BaseComponent& base) const -> void {
     auto rotation_yaw = glm::angleAxis(glm::radians(yaw), vec3(0.F, 1.F, 0.F));
     auto rotation_pitch = glm::angleAxis(glm::radians(pitch), vec3(1.F, 0.F, 0.F));
 
-    base.rotation = rotation_yaw * rotation_pitch;
+    base.transform.rotation = rotation_yaw * rotation_pitch;
 }
 
 auto reflection::register_camera_component() -> void {

@@ -1,6 +1,7 @@
 #include "base_component.h"
 
 #include <entt/entt.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
 
 #include "../../common.h"
 
@@ -8,54 +9,38 @@ using namespace engine;
 
 BaseComponent::BaseComponent(std::string_view const& name) : name(name) {}
 
-auto BaseComponent::direction() const -> vec3 {
-    auto constexpr forward = vec3(0.F, 0.F, 1.F);
-
-    auto static previous_rotation = rotation;
-    auto static direction = glm::normalize(rotation * forward);
-
-    if (previous_rotation != rotation) {
-        // If BaseComponent::rotation member have changed since last call,
-        // compute the new direction.
-
-        previous_rotation = rotation;
-        direction = glm::normalize(rotation * forward);
-    }
-
-    return direction;
-}
-
-auto BaseComponent::transform_matrix(entt::registry const& registry) const -> mat4 {
-    mat4 transform = mat4(1.0F);
-
-    {
-        transform = glm::translate(transform, position);
-
-        transform = transform * glm::mat4_cast(rotation);
-
-        transform = glm::scale(transform, scale);
-    }
+auto BaseComponent::world_matrix(entt::registry& registry) const -> mat4 {
+    mat4 matrix = transform.matrix();
 
     if (parent != entt::null) {
         // If we have a parent, our transform "inherit" the parent transform
         auto const& parent_base = registry.get<BaseComponent>(parent);
-        auto parent_transform = parent_base.transform_matrix(registry);
+        auto parent_matrix = parent_base.world_matrix(registry);
 
-        transform = parent_transform * transform;
+        matrix = parent_matrix * matrix;
     }
 
-    return transform;
+    return matrix;
 }
 
-auto reflection::register_name_component() -> void {
+auto BaseComponent::world_transform(entt::registry& registry) const -> Transform {
+    mat4 matrix = world_matrix(registry);
+
+    Transform world;
+    vec3 _skew;
+    vec4 _perspective;
+    glm::decompose(matrix, world.scale, world.rotation, world.position, _skew, _perspective);
+
+    return world;
+}
+
+auto reflection::register_base_component() -> void {
     auto factory = entt::meta<BaseComponent>();
     factory.prop("name"_hs, "BaseComponent");
 
     factory.data<&BaseComponent::name>("name"_hs).prop("name"_hs, "name");
     factory.data<&BaseComponent::enabled>("enabled"_hs).prop("name"_hs, "enabled");
+    factory.data<&BaseComponent::transform>("transform"_hs).prop("name"_hs, "transform");
 
-    factory.data<&BaseComponent::position>("position"_hs).prop("name"_hs, "position");
-    factory.data<&BaseComponent::rotation>("rotation"_hs).prop("name"_hs, "rotation");
-    factory.data<&BaseComponent::scale>("scale"_hs).prop("name"_hs, "scale");
-    factory.func<&BaseComponent::transform_matrix>("transform_matrix"_hs).prop("name"_hs, "transform_matrix");
+    factory.func<&BaseComponent::world_transform>("world_transform"_hs).prop("name"_hs, "world_transform");
 }

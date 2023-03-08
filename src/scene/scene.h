@@ -8,7 +8,6 @@
 
 #include "components/base_component.h"
 #include "components/camera_component.h"
-#include "light.h"
 
 #define POST_PROCESS_INVERSE (1 << 0)
 #define POST_PROCESS_GRAYSCALE (1 << 1)
@@ -33,8 +32,6 @@ class Scene {
     auto draw_skybox() -> void;
 
     entt::registry& registry;
-
-    std::array<Light, 10> lights {};
 
     entt::entity camera;
     [[nodiscard]] auto camera_info() -> std::tuple<BaseComponent&, CameraComponent&>;

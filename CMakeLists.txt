@@ -16,6 +16,8 @@ set(SOURCES
         src/core/input.cpp
         src/core/input.hpp
         src/core/reflection.cpp
+        src/core/transform.cpp
+        src/core/transform.h
         src/core/reflection.h
         src/graphics/cube_map.cpp
         src/graphics/cube_map.h
@@ -59,10 +61,10 @@ set(SOURCES
         src/scene/components/skybox_component.cpp
         src/scene/entity_from_model.cpp
         src/scene/entity_from_model.h
-        src/scene/light.h
         src/scene/scene.cpp
         src/scene/scene.h
         src/systems/camera_system.cpp
+        src/systems/draw_light_gizmo.cpp
         src/systems/should_close_system.cpp
         src/systems/systems.h
         src/ui/entity_editor/entity_property_editor.cpp

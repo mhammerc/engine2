@@ -6,7 +6,8 @@ in vec2 TexCoord;
 in vec3 Normal;
 in vec3 FragPos;
 
-void main()
-{
-    FragColor = vec4(1.0);
+uniform vec3 color;
+
+void main() {
+    FragColor = vec4(normalize(color) * 3, 1.);
 }

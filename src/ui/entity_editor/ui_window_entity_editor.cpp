@@ -18,9 +18,9 @@ static auto header(entt::registry& registry, entt::entity entity) -> void {
         ImGui::SetNextItemWidth(-FLT_MIN);
         ui::internal::input_text("##name", &name->name);
 
-        ImGui::DragFloat3("Position", &name->position.x, 0.25F);
-        ui::internal::on_property_quaternion("Rotation", &name->rotation);
-        ImGui::DragFloat3("Scale", &name->scale.x, 0.25F);
+        ImGui::DragFloat3("Position", &name->transform.position.x, 0.25F);
+        ui::internal::on_property_quaternion("Rotation", &name->transform.rotation);
+        ImGui::DragFloat3("Scale", &name->transform.scale.x, 0.25F);
     }
 }
 

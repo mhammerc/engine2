@@ -12,6 +12,7 @@
 #include "../graphics/shader_cache.h"
 #include "components/base_component.h"
 #include "components/camera_component.h"
+#include "components/light_component.h"
 #include "components/material_component.h"
 #include "components/player_component.h"
 #include "components/skybox_component.h"
@@ -23,7 +24,7 @@ Scene::Scene(entt::registry& registry) : registry(registry) {
     auto backpacks = entity_from_model("../assets/backpack/backpack.obj", registry);
     for (auto& backpack : backpacks) {
         auto& base = registry.emplace<BaseComponent>(backpack, "backpack 1");
-        base.position = vec3(0.F, 0.F, -5.F);
+        base.transform.position = vec3(0.F, 0.F, -5.F);
     }
 
     auto duplicated_backpack = duplicate_entity(registry, backpacks[0]);
@@ -34,7 +35,7 @@ Scene::Scene(entt::registry& registry) : registry(registry) {
     auto floors = entity_from_model("../assets/plane/plane.obj", registry);
     for (auto& floor : floors) {
         auto& base = registry.emplace<BaseComponent>(floor, "floor");
-        base.position = vec3(0.F, -5.F, 0.F);
+        base.transform.position = vec3(0.F, -5.F, 0.F);
     }
 
     auto skybox = registry.create();
@@ -47,10 +48,21 @@ Scene::Scene(entt::registry& registry) : registry(registry) {
     auto& base = registry.emplace<BaseComponent>(camera, "player");
     auto& player = registry.emplace<CameraComponent>(camera);
     registry.emplace<PlayerComponent>(camera);
-    base.position = vec3(-8.3F, 0.F, 2.3F);
+    base.transform.position = vec3(-8.3F, 0.F, 2.3F);
     player.pitch = 0.F;
     player.yaw = 140.F;
     player.update_base_rotation(base);
+
+    auto& spotlight = registry.emplace<LightComponent>(camera);
+    spotlight.type = LightComponent::Spot;
+    spotlight.inner_cut_off = glm::cos(glm::radians(12.5F));
+    spotlight.outer_cut_off = glm::cos(glm::radians(17.5F));
+    spotlight.linear = 0.09F;
+    spotlight.quadratic = 0.032F;
+    spotlight.ambient = glm::vec3(0.2F, 0.2F, 0.2F);
+    spotlight.diffuse = glm::vec3(0.5F, 0.5F, 0.5F);
+    spotlight.specular = glm::vec3(0.0F, 0.0F, 0.0F);
+    spotlight.draw_gizmo = false;
 }
 
 auto Scene::camera_info() -> std::tuple<engine::BaseComponent&, engine::CameraComponent&> {
@@ -58,21 +70,6 @@ auto Scene::camera_info() -> std::tuple<engine::BaseComponent&, engine::CameraCo
 }
 
 auto Scene::draw(float /*delta_time*/) -> void {
-    auto [camera_base, camera_config] = camera_info();
-    auto const& player_info = registry.get<PlayerComponent>(camera);
-
-    lights.at(9) = Light {
-        .type = player_info.flashlight ? Light::Spot : Light::Unset,
-        .position = camera_base.position,
-        .direction = camera_base.direction(),
-        .innerCutOff = glm::cos(glm::radians(12.5F)),
-        .outerCutOff = glm::cos(glm::radians(17.5F)),
-        .linear = 0.09F,
-        .quadratic = 0.032F,
-        .ambient = glm::vec3(0.2F, 0.2F, 0.2F),
-        .diffuse = glm::vec3(0.5F, 0.5F, 0.5F),
-        .specular = glm::vec3(0.0F, 0.0F, 0.0F)};
-
     if (outline) {
         glEnable(GL_STENCIL_TEST);
         glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
@@ -84,8 +81,6 @@ auto Scene::draw(float /*delta_time*/) -> void {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     }
 
-    auto& renderer_context = entt::locator<RendererContext>::value();
-    renderer_context.lights = lights;
     draw_nodes();
 
     if (show_normals) {
@@ -106,6 +101,7 @@ auto Scene::draw(float /*delta_time*/) -> void {
 
 auto Scene::draw_nodes() -> void {
     auto drawables = registry.view<BaseComponent, MaterialComponent>();
+    auto lights = registry.view<BaseComponent, LightComponent>();
 
     auto& cubemap_cache = entt::locator<CubeMapCache>::value();
     auto skybox = cubemap_cache["skybox"_hs];
@@ -120,7 +116,7 @@ auto Scene::draw_nodes() -> void {
 
         auto const& renderer_context = entt::locator<RendererContext>::value();
 
-        auto const model = base.transform_matrix(registry);
+        auto const model = base.world_matrix(registry);
         auto const modelNormal = mat3(glm::transpose(glm::inverse(model)));
 
         // MVP
@@ -129,22 +125,32 @@ auto Scene::draw_nodes() -> void {
         material.shader->set_uniform("view", camera_config.view_matrix(camera_base));
         material.shader->set_uniform("projection", renderer_context.projection);
 
-        material.shader->set_uniform("cameraPosition", camera_base.position);
+        material.shader->set_uniform("cameraPosition", camera_base.world_transform(registry).position);
 
-        for (size_t i = 0; i < 10; ++i) {
-            Light const& light = renderer_context.lights.at(i);
+        int light_index = 0;
+        for (auto [entity, base, light] : lights.each()) {
+            if (!base.enabled) {
+                continue;
+            }
 
-            material.shader->set_uniform(fmt::format("lights[{}].type", i), static_cast<int>(light.type));
-            material.shader->set_uniform(fmt::format("lights[{}].position", i), light.position);
-            material.shader->set_uniform(fmt::format("lights[{}].direction", i), glm::normalize(light.direction));
-            material.shader->set_uniform(fmt::format("lights[{}].innerCutOff", i), light.innerCutOff);
-            material.shader->set_uniform(fmt::format("lights[{}].outerCutOff", i), light.outerCutOff);
-            material.shader->set_uniform(fmt::format("lights[{}].constant", i), light.constant);
-            material.shader->set_uniform(fmt::format("lights[{}].linear", i), light.linear);
-            material.shader->set_uniform(fmt::format("lights[{}].quadratic", i), light.quadratic);
-            material.shader->set_uniform(fmt::format("lights[{}].ambient", i), light.ambient);
-            material.shader->set_uniform(fmt::format("lights[{}].diffuse", i), light.diffuse);
-            material.shader->set_uniform(fmt::format("lights[{}].specular", i), light.specular);
+            material.shader->set_uniform(fmt::format("lights[{}].type", light_index), static_cast<int>(light.type));
+            material.shader->set_uniform(
+                fmt::format("lights[{}].position", light_index),
+                base.world_transform(registry).position
+            );
+            material.shader->set_uniform(
+                fmt::format("lights[{}].direction", light_index),
+                base.world_transform(registry).direction()
+            );
+            material.shader->set_uniform(fmt::format("lights[{}].innerCutOff", light_index), light.inner_cut_off);
+            material.shader->set_uniform(fmt::format("lights[{}].outerCutOff", light_index), light.outer_cut_off);
+            material.shader->set_uniform(fmt::format("lights[{}].constant", light_index), light.constant);
+            material.shader->set_uniform(fmt::format("lights[{}].linear", light_index), light.linear);
+            material.shader->set_uniform(fmt::format("lights[{}].quadratic", light_index), light.quadratic);
+            material.shader->set_uniform(fmt::format("lights[{}].ambient", light_index), light.ambient);
+            material.shader->set_uniform(fmt::format("lights[{}].diffuse", light_index), light.diffuse);
+            material.shader->set_uniform(fmt::format("lights[{}].specular", light_index), light.specular);
+            light_index += 1;
         }
 
         material.shader->set_uniform("material.shininess", material.shininess);
@@ -196,7 +202,7 @@ auto Scene::draw_nodes_outline() -> void {
 
         auto const& renderer_context = entt::locator<RendererContext>::value();
 
-        auto const model = base.transform_matrix(registry);
+        auto const model = base.world_matrix(registry);
         auto const modelNormal = mat3(glm::transpose(glm::inverse(model)));
 
         // MVP
@@ -229,7 +235,7 @@ auto Scene::draw_nodes_normals() -> void {
             continue;
         }
 
-        auto const model = base.transform_matrix(registry);
+        auto const model = base.world_matrix(registry);
         auto const modelNormal = mat3(glm::transpose(glm::inverse(model)));
 
         // MVP

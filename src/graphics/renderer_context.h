@@ -3,7 +3,6 @@
 #include <array>
 
 #include "../common.h"
-#include "../scene/light.h"
 
 namespace engine {
 /**
@@ -11,6 +10,5 @@ namespace engine {
  */
 struct RendererContext {
     mat4 projection;
-    std::array<Light, 10> lights;
 };
 }  // namespace engine
