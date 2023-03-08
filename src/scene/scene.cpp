@@ -14,7 +14,6 @@
 #include "components/camera_component.h"
 #include "components/light_component.h"
 #include "components/material_component.h"
-#include "components/player_component.h"
 #include "components/skybox_component.h"
 #include "entity_from_model.h"
 
@@ -47,7 +46,6 @@ Scene::Scene(entt::registry& registry) : registry(registry) {
     camera = registry.create();
     auto& base = registry.emplace<BaseComponent>(camera, "player");
     auto& player = registry.emplace<CameraComponent>(camera);
-    registry.emplace<PlayerComponent>(camera);
     base.transform.position = vec3(-8.3F, 0.F, 2.3F);
     player.pitch = 0.F;
     player.yaw = 140.F;
@@ -151,6 +149,13 @@ auto Scene::draw_nodes() -> void {
             material.shader->set_uniform(fmt::format("lights[{}].diffuse", light_index), light.diffuse);
             material.shader->set_uniform(fmt::format("lights[{}].specular", light_index), light.specular);
             light_index += 1;
+        }
+        while (light_index < 10) {
+            material.shader->set_uniform(
+                fmt::format("lights[{}].type", light_index),
+                static_cast<int>(LightComponent::Unset)
+            );
+            ++light_index;
         }
 
         material.shader->set_uniform("material.shininess", material.shininess);

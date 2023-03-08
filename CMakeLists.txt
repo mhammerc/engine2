@@ -56,8 +56,6 @@ set(SOURCES
         src/scene/components/light_component.h
         src/scene/components/material_component.cpp
         src/scene/components/material_component.h
-        src/scene/components/player_component.cpp
-        src/scene/components/player_component.h
         src/scene/components/skybox_component.cpp
         src/scene/entity_from_model.cpp
         src/scene/entity_from_model.h
