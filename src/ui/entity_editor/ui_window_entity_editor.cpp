@@ -3,6 +3,8 @@
 #include <spdlog/spdlog.h>
 
 #include "../../scene/components/base_component.h"
+#include "../../scene/components/outline_component.h"
+#include "../../scene/components/skybox_component.h"
 #include "../ui_internal.h"
 #include "../utils.h"
 #include "entity_editor.h"
@@ -67,6 +69,30 @@ static auto iterate_components(entt::registry& registry, entt::entity entity) ->
     }
 }
 
+/**
+ * Empty components are treated differently because they are optimized away by EnTT.
+ *
+ * Because of this, we can not iterate on them like we do in `iterate_components`.
+ *
+ * For now this mean checking for hard-coded components.
+ */
+template<typename T>
+static auto empty_component(entt::registry& registry, entt::entity entity) -> void {
+    if (registry.all_of<T>(entity)) {
+        auto reflection = entt::resolve<T>();
+
+        if (auto const* name = ui::internal::prop<char const*>("name", reflection); name) {
+            ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+            ImGui::CollapsingHeader(name);
+        }
+    }
+}
+
+static auto iterate_empty_components(entt::registry& registry, entt::entity entity) -> void {
+    empty_component<SkyboxComponent>(registry, entity);
+    empty_component<OutlineComponent>(registry, entity);
+}
+
 auto ui::internal::ui_draw_window_entity_editor(entt::registry& registry, entt::entity entity) -> void {
     ImGui::Begin("Entity");
 
@@ -74,6 +100,7 @@ auto ui::internal::ui_draw_window_entity_editor(entt::registry& registry, entt::
         header(registry, entity);
 
         iterate_components(registry, entity);
+        iterate_empty_components(registry, entity);
     }
 
     ImGui::End();

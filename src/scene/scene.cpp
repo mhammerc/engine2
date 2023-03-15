@@ -14,6 +14,7 @@
 #include "components/camera_component.h"
 #include "components/light_component.h"
 #include "components/material_component.h"
+#include "components/outline_component.h"
 #include "components/skybox_component.h"
 #include "entity_from_model.h"
 
@@ -24,6 +25,8 @@ Scene::Scene(entt::registry& registry) : registry(registry) {
     for (auto& backpack : backpacks) {
         auto& base = registry.emplace<BaseComponent>(backpack, "backpack 1");
         base.transform.position = vec3(0.F, 0.F, -5.F);
+
+        registry.emplace<OutlineComponent>(backpack);
     }
 
     auto duplicated_backpack = duplicate_entity(registry, backpacks[0]);
@@ -68,13 +71,6 @@ auto Scene::camera_info() -> std::tuple<engine::BaseComponent&, engine::CameraCo
 }
 
 auto Scene::draw(float /*delta_time*/) -> void {
-    if (outline) {
-        glEnable(GL_STENCIL_TEST);
-        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-        glStencilFunc(GL_ALWAYS, 1, 0xFF);
-        glStencilMask(0xFF);
-    }
-
     if (wireframe) {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     }
@@ -89,12 +85,7 @@ auto Scene::draw(float /*delta_time*/) -> void {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 
-    glDisable(GL_STENCIL_TEST);
     draw_skybox();
-
-    if (outline) {
-        draw_nodes_outline();
-    }
 }
 
 auto Scene::draw_nodes() -> void {
@@ -186,44 +177,6 @@ auto Scene::draw_nodes() -> void {
     }
 
     skybox->activate_as(10, true);
-}
-
-auto Scene::draw_nodes_outline() -> void {
-    auto [camera_base, camera_config] = camera_info();
-    auto shader_cache = entt::locator<ShaderCache>::value();
-    auto shader_outline = shader_cache["outline"_hs];
-
-    auto drawables = registry.view<BaseComponent, MaterialComponent>();
-
-    glEnable(GL_STENCIL_TEST);
-    glStencilMask(0x00);
-    glDisable(GL_DEPTH_TEST);
-    glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-
-    for (auto [entity, base, material] : drawables.each()) {
-        if (!base.enabled) {
-            continue;
-        }
-
-        auto const& renderer_context = entt::locator<RendererContext>::value();
-
-        auto const model = base.world_matrix(registry);
-        auto const modelNormal = mat3(glm::transpose(glm::inverse(model)));
-
-        // MVP
-        shader_outline->set_uniform("model", model);
-        shader_outline->set_uniform("modelNormal", modelNormal);
-        shader_outline->set_uniform("view", camera_config.view_matrix(camera_base));
-        shader_outline->set_uniform("projection", renderer_context.projection);
-
-        shader_outline->bind();
-        material.mesh->draw();
-        shader_outline->unbind();
-    }
-
-    glEnable(GL_DEPTH_TEST);
-    glDisable(GL_STENCIL_TEST);
-    glStencilMask(0xFF);
 }
 
 auto Scene::draw_nodes_normals() -> void {

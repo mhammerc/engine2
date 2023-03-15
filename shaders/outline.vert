@@ -1,24 +1,11 @@
 #version 410 core
 
-layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec3 aNormal;
-layout (location = 2) in vec2 aTexCoord;
+layout(location = 0) in vec2 aPos;
+layout(location = 2) in vec2 aTexCoords;
 
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
-uniform mat3 modelNormal;
+out vec2 TexCoords;
 
-void main()
-{
-    vec3 Normal = modelNormal * aNormal;
-
-    vec3 FragmentPosition = vec3(model * vec4(aPos, 1.0));
-
-    // To make the outline, we "scale up" the vertex slightly toward the Normal.
-    // This way of doing works quite well but will still have visual bugs where the outline
-    // is missing.
-    gl_Position = projection * view * vec4(FragmentPosition + Normal * 0.05, 1.0);
-
-    vec2 TexCoord = aTexCoord;
+void main() {
+    gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0);
+    TexCoords = aTexCoords;
 }

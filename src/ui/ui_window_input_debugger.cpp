@@ -5,7 +5,7 @@
 
 using namespace engine;
 
-auto ui::internal::ui_draw_input_debugger(bool* is_open) -> void {
+auto ui::internal::ui_draw_window_input_debugger(bool* is_open) -> void {
     if (!*is_open) {
         return;
     }

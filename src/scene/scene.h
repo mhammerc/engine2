@@ -27,7 +27,6 @@ class Scene {
     Scene(entt::registry& registry);
     auto draw(float delta_time) -> void;
     auto draw_nodes() -> void;
-    auto draw_nodes_outline() -> void;
     auto draw_nodes_normals() -> void;
     auto draw_skybox() -> void;
 
@@ -37,7 +36,6 @@ class Scene {
     [[nodiscard]] auto camera_info() -> std::tuple<BaseComponent&, CameraComponent&>;
 
     bool wireframe = false;
-    bool outline = false;
     bool inverse = false;
     bool black_and_white = false;
     bool sepia = false;

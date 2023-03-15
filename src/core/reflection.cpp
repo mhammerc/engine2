@@ -4,6 +4,7 @@
 #include "../scene/components/camera_component.h"
 #include "../scene/components/light_component.h"
 #include "../scene/components/material_component.h"
+#include "../scene/components/outline_component.h"
 #include "../scene/components/skybox_component.h"
 #include "transform.h"
 
@@ -15,6 +16,7 @@ auto reflection::register_all() -> void {
     reflection::register_material_component();
     reflection::register_base_component();
     reflection::register_skybox_component();
+    reflection::register_outline_component();
 
     reflection::register_transorm();
 }

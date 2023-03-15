@@ -6,6 +6,7 @@
 #include "entt/entity/fwd.hpp"
 #include "graphics/cube_map_cache.h"
 #include "graphics/framebuffer.h"
+#include "graphics/framebuffer_cache.h"
 #include "graphics/mesh_cache.h"
 #include "graphics/renderer_context.h"
 #include "graphics/shader_cache.h"
@@ -43,6 +44,7 @@ auto main() -> int {
     auto& shader_cache = entt::locator<engine::ShaderCache>::emplace();
     auto& mesh_cache = entt::locator<engine::MeshCache>::emplace();
     auto& cubemap_cache = entt::locator<engine::CubeMapCache>::emplace();
+    auto& framebuffer_cache = entt::locator<engine::FrameBufferCache>::emplace();
 
     auto& renderer_context = entt::locator<engine::RendererContext>::emplace();
 
@@ -84,6 +86,12 @@ auto main() -> int {
         return 1;
     }
 
+    auto [unlit_single_color_shader, _8] = shader_cache.load("unlit_single_color"_hs, "unlit_single_color");
+    if (unlit_single_color_shader->second.handle() == nullptr) {
+        spdlog::critical("could not create shader program.");
+        return 1;
+    }
+
     cubemap_cache.load(
         "skybox"_hs,
         std::array<std::filesystem::path, 6>({
@@ -109,8 +117,9 @@ auto main() -> int {
     light1_light.diffuse = glm::vec3(0.8F, 0.8F, 0.8F);
     light1_light.specular = glm::vec3(1.F, 1.F, 1.F);
 
-    auto frame_buffer = FrameBuffer::create({1, 1});
-    auto frame_buffer_postprocess = FrameBuffer::create({1, 1});
+    framebuffer_cache.load("color"_hs, "color", vec2i {1, 1});
+    framebuffer_cache.load("outline"_hs, "outline", vec2i {1, 1});
+    framebuffer_cache.load("postprocess"_hs, "postprocess", vec2i {1, 1});
 
     mesh_cache.load("quad"_hs, Mesh::from_quad());
     mesh_cache.load("cube"_hs, Mesh::from_cube());
@@ -120,11 +129,15 @@ auto main() -> int {
             should_quit = true;
         }
 
+        auto* frame_buffer = &framebuffer_cache["color"_hs]->second;
+        auto* frame_buffer_postprocess = &framebuffer_cache["postprocess"_hs]->second;
+        auto* frame_buffer_outline = &framebuffer_cache["outline"_hs]->second;
+
         systems::should_close_system();
         systems::camera_system(delta_time, registry);
 
         ui_prepare_frame();
-        ui_draw(delta_time, &scene, window, registry, frame_buffer_postprocess.get());
+        ui_draw(delta_time, &scene, window, registry, frame_buffer_postprocess);
 
         glClearColor(0.2F, 0.3F, 0.3F, 1.0F);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -138,9 +151,12 @@ auto main() -> int {
             100.0F
         );
 
+        // Resize framebuffers according to scene size
+        frame_buffer->resize(size);
+        frame_buffer_outline->resize(size);
+
         // Render scene
         {
-            frame_buffer->resize(size);
             frame_buffer->bind();
 
             glClearColor(0.1F, 0.1F, 0.1F, 1.0F);
@@ -192,6 +208,9 @@ auto main() -> int {
 
             glEnable(GL_DEPTH_TEST);
         }
+
+        // Render outline intermediate buffer
+        systems::draw_outline(registry);
 
         ui_end_frame();
         glfwPollEvents();

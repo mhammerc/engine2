@@ -16,15 +16,17 @@ set(SOURCES
         src/core/input.cpp
         src/core/input.hpp
         src/core/reflection.cpp
+        src/core/reflection.h
         src/core/transform.cpp
         src/core/transform.h
-        src/core/reflection.h
         src/graphics/cube_map.cpp
         src/graphics/cube_map.h
         src/graphics/cube_map_cache.cpp
         src/graphics/cube_map_cache.h
         src/graphics/framebuffer.cpp
         src/graphics/framebuffer.h
+        src/graphics/framebuffer_cache.cpp
+        src/graphics/framebuffer_cache.h
         src/graphics/mesh.cpp
         src/graphics/mesh.h
         src/graphics/mesh_cache.cpp
@@ -56,6 +58,8 @@ set(SOURCES
         src/scene/components/light_component.h
         src/scene/components/material_component.cpp
         src/scene/components/material_component.h
+        src/scene/components/outline_component.cpp
+        src/scene/components/outline_component.h
         src/scene/components/skybox_component.cpp
         src/scene/entity_from_model.cpp
         src/scene/entity_from_model.h
@@ -63,12 +67,14 @@ set(SOURCES
         src/scene/scene.h
         src/systems/camera_system.cpp
         src/systems/draw_light_gizmo.cpp
+        src/systems/draw_outline.cpp
         src/systems/should_close_system.cpp
         src/systems/systems.h
         src/ui/entity_editor/entity_property_editor.cpp
         src/ui/entity_editor/ui_window_entity_editor.cpp
         src/ui/ui.cpp
         src/ui/ui.h
+        src/ui/ui_window_framebuffer_viewer.cpp
         src/ui/ui_window_hierarchy.cpp
         src/ui/ui_window_input_debugger.cpp
         src/ui/ui_window_scene.cpp

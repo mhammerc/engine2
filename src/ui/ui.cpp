@@ -63,7 +63,9 @@ auto engine::ui_draw(
     ImGui::BeginMainMenuBar();
 
     static entt::entity selected_entity = entt::null;
+    static bool demo_window = false;
     static bool input_debugger = false;
+    static bool framebuffer_viewer = false;
 
     if (ImGui::BeginMenu("Options")) {
         if (ImGui::BeginMenu("Colors")) {
@@ -82,8 +84,16 @@ auto engine::ui_draw(
             ImGui::EndMenu();
         }
 
+        if (ImGui::MenuItem("Widgets Documentation")) {
+            demo_window = true;
+        }
+
         if (ImGui::MenuItem("Input Debugger")) {
             input_debugger = true;
+        }
+
+        if (ImGui::MenuItem("Framebuffer Viewer")) {
+            framebuffer_viewer = true;
         }
 
         ImGui::EndMenu();
@@ -93,9 +103,13 @@ auto engine::ui_draw(
 
     ImGui::DockSpaceOverViewport();
 
-    ImGui::ShowDemoWindow();
+    if (demo_window) {
+        ImGui::ShowDemoWindow(&demo_window);
+    }
 
-    ui::internal::ui_draw_input_debugger(&input_debugger);
+    ui::internal::ui_draw_window_input_debugger(&input_debugger);
+    ui::internal::ui_draw_window_framebuffer_viewer(&framebuffer_viewer);
+
     ui::internal::ui_draw_window_system(scene, delta_time, window);
     ui::internal::ui_draw_window_hierarchy(registry, selected_entity);
     ui::internal::ui_draw_window_scene(scene_texture);
