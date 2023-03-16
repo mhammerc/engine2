@@ -7,33 +7,67 @@ in vec2 TexCoords;
 uniform sampler2D outline_texture;
 
 // Lookups in all 8 diagonals directions, up to a distance of two
-const ivec2 offsets[24] = ivec2[](
+const ivec2 offsets[48] = ivec2[](
+    // Distance 1
     ivec2(0, 1),
-    ivec2(0, -1),
-    ivec2(1, 0),
-    ivec2(-1, 0),
     ivec2(1, 1),
     ivec2(-1, 1),
+
+    ivec2(0, -1),
     ivec2(1, -1),
     ivec2(-1, -1),
 
+    ivec2(1, 0),
+    ivec2(-1, 0),
+
+    // Distance 2
     ivec2(0, 2),
-    ivec2(0, -2),
     ivec2(1, 2),
-    ivec2(1, -2),
     ivec2(-1, 2),
-    ivec2(-1, -2),
     ivec2(2, 2),
-    ivec2(2, -2),
     ivec2(-2, 2),
+
+    ivec2(0, -2),
+    ivec2(1, -2),
+    ivec2(-1, -2),
+    ivec2(2, -2),
     ivec2(-2, -2),
 
     ivec2(2, 0),
-    ivec2(-2, 0),
     ivec2(2, 1),
-    ivec2(-2, 1),
     ivec2(2, -1),
-    ivec2(-2, -1)
+
+    ivec2(-2, 0),
+    ivec2(-2, 1),
+    ivec2(-2, -1),
+
+    // Distance 3
+    ivec2(0, 3),
+    ivec2(1, 3),
+    ivec2(2, 3),
+    ivec2(3, 3),
+    ivec2(-1, 3),
+    ivec2(-2, 3),
+    ivec2(-3, 3),
+
+    ivec2(0, -3),
+    ivec2(1, -3),
+    ivec2(2, -3),
+    ivec2(3, -3),
+    ivec2(-1, -3),
+    ivec2(-2, -3),
+    ivec2(-3, -3),
+
+    ivec2(3, 0),
+    ivec2(3, 1),
+    ivec2(3, 2),
+    ivec2(3, -1),
+    ivec2(3, -2),
+    ivec2(-3, 0),
+    ivec2(-3, 1),
+    ivec2(-3, 2),
+    ivec2(-3, -1),
+    ivec2(-3, -2)
 );
 
 void main() {
@@ -72,6 +106,30 @@ void main() {
     alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[21]).r;
     alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[22]).r;
     alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[23]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[24]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[25]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[26]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[27]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[28]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[29]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[30]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[31]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[32]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[33]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[34]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[35]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[36]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[37]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[38]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[39]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[40]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[41]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[42]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[43]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[44]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[45]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[46]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[47]).r;
 
     alpha = min(alpha, 1.) * on_object;
 
