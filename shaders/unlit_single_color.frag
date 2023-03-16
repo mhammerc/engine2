@@ -2,7 +2,8 @@
 
 out vec4 FragColor;
 
+uniform vec4 color;
+
 void main() {
-    // Just return white
-    FragColor = vec4(1., 1., 1., 1.);
+    FragColor = color;
 }

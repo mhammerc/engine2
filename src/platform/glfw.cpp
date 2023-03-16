@@ -64,6 +64,7 @@ auto init_glfw_and_opengl() -> GLFWwindow* {
     }
 
     spdlog::info(get_platform_info());
+    // list_extensions();
 
     int framebuffer_width = 0;
     int framebuffer_height = 0;

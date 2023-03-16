@@ -2,6 +2,8 @@
 
 ## TODO
 
+- `GL_ARB_shading_language_include`
+- `GL_ARB_separate_shader_objects`
 - Antialiasing
 - Refactor draw functions into systems
 - Gizmos (like unreal engine)

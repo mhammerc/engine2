@@ -42,9 +42,6 @@ static auto draw_framebuffer(FrameBufferCache const& framebuffer_cache, u32& cur
         size = {window_size.y * ratio, window_size.y};
     }
 
-    float dpi_scale = ImGui::GetWindowDpiScale();
-    size *= dpi_scale;
-
     ImGui::Image(framebuffer_texture_handle, {size.x, size.y}, ImVec2(0, 1), ImVec2(1, 0));
 }
 

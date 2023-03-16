@@ -15,6 +15,7 @@
 #include "platform/glfw.h"
 #include "scene/components/base_component.h"
 #include "scene/components/light_component.h"
+#include "scene/components/outline_component.h"
 #include "scene/scene.h"
 #include "spdlog/spdlog.h"
 #include "stb_image/stb_image.h"
@@ -120,6 +121,7 @@ auto main() -> int {
     framebuffer_cache.load("color"_hs, "color", vec2i {1, 1});
     framebuffer_cache.load("outline"_hs, "outline", vec2i {1, 1});
     framebuffer_cache.load("postprocess"_hs, "postprocess", vec2i {1, 1});
+    framebuffer_cache.load("identify"_hs, "identify", vec2i {1, 1});
 
     mesh_cache.load("quad"_hs, Mesh::from_quad());
     mesh_cache.load("cube"_hs, Mesh::from_cube());
@@ -132,6 +134,9 @@ auto main() -> int {
         auto* frame_buffer = &framebuffer_cache["color"_hs]->second;
         auto* frame_buffer_postprocess = &framebuffer_cache["postprocess"_hs]->second;
         auto* frame_buffer_outline = &framebuffer_cache["outline"_hs]->second;
+        auto* frame_buffer_identify = &framebuffer_cache["identify"_hs]->second;
+
+        registry.clear<OutlineComponent>();
 
         systems::should_close_system();
         systems::camera_system(delta_time, registry);
@@ -154,6 +159,7 @@ auto main() -> int {
         // Resize framebuffers according to scene size
         frame_buffer->resize(size);
         frame_buffer_outline->resize(size);
+        frame_buffer_identify->resize(size);
 
         // Render scene
         {
@@ -211,6 +217,9 @@ auto main() -> int {
 
         // Render outline intermediate buffer
         systems::draw_outline(registry);
+
+        // Render the framebuffer with a unique color per object
+        systems::draw_identify(registry);
 
         ui_end_frame();
         glfwPollEvents();

@@ -12,4 +12,6 @@ auto draw_light_gizmo(entt::registry& registry) -> void;
 
 auto draw_outline(entt::registry& registry) -> void;
 
+auto draw_identify(entt::registry& registry) -> void;
+
 }  // namespace engine::systems

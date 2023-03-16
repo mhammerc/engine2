@@ -66,6 +66,7 @@ set(SOURCES
         src/scene/scene.cpp
         src/scene/scene.h
         src/systems/camera_system.cpp
+        src/systems/draw_identify.cpp
         src/systems/draw_light_gizmo.cpp
         src/systems/draw_outline.cpp
         src/systems/should_close_system.cpp
@@ -124,8 +125,6 @@ add_subdirectory(vendors/entt)
 target_link_libraries(opengl_engine PUBLIC EnTT)
 
 # GLM
-# set(glm_DIR vendors/glm/cmake/glm)
-# find_package(glm REQUIRED)
 add_subdirectory(vendors/glm)
 target_link_libraries(opengl_engine PUBLIC glm::glm)
 

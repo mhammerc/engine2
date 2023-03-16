@@ -38,6 +38,7 @@ static auto draw_intermediate_buffer(entt::registry& registry, FrameBuffer& fram
         shader->set_uniform("model", model);
         shader->set_uniform("view", camera_config.view_matrix(camera_base));
         shader->set_uniform("projection", renderer_context.projection);
+        shader->set_uniform("color", vec4(1.F, 1.F, 1.F, 1.F));
 
         shader->bind();
         material.mesh->draw();

@@ -5,6 +5,7 @@
 #include <imgui/imgui_impl_opengl3.h>
 #include <spdlog/spdlog.h>
 
+#include "../scene/components/outline_component.h"
 #include "ui_internal.h"
 
 using namespace engine;
@@ -112,6 +113,15 @@ auto engine::ui_draw(
 
     ui::internal::ui_draw_window_system(scene, delta_time, window);
     ui::internal::ui_draw_window_hierarchy(registry, selected_entity);
-    ui::internal::ui_draw_window_scene(scene_texture);
+
+    if (entt::entity new_selected_entity = ui::internal::ui_draw_window_scene(registry, scene_texture);
+        new_selected_entity != entt::null) {
+        selected_entity = new_selected_entity;
+    }
+
     ui::internal::ui_draw_window_entity_editor(registry, selected_entity);
+
+    if (selected_entity != entt::null) {
+        registry.get_or_emplace<OutlineComponent>(selected_entity);
+    }
 }

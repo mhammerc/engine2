@@ -6,8 +6,8 @@ in vec2 TexCoords;
 
 uniform sampler2D outline_texture;
 
-// Lookups in all 8 diagonals directions
-const ivec2 offsets[8] = ivec2[](
+// Lookups in all 8 diagonals directions, up to a distance of two
+const ivec2 offsets[24] = ivec2[](
     ivec2(0, 1),
     ivec2(0, -1),
     ivec2(1, 0),
@@ -15,7 +15,25 @@ const ivec2 offsets[8] = ivec2[](
     ivec2(1, 1),
     ivec2(-1, 1),
     ivec2(1, -1),
-    ivec2(-1, -1)
+    ivec2(-1, -1),
+
+    ivec2(0, 2),
+    ivec2(0, -2),
+    ivec2(1, 2),
+    ivec2(1, -2),
+    ivec2(-1, 2),
+    ivec2(-1, -2),
+    ivec2(2, 2),
+    ivec2(2, -2),
+    ivec2(-2, 2),
+    ivec2(-2, -2),
+
+    ivec2(2, 0),
+    ivec2(-2, 0),
+    ivec2(2, 1),
+    ivec2(-2, 1),
+    ivec2(2, -1),
+    ivec2(-2, -1)
 );
 
 void main() {
@@ -38,6 +56,22 @@ void main() {
     alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[5]).r;
     alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[6]).r;
     alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[7]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[8]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[9]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[10]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[11]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[12]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[13]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[14]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[15]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[16]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[17]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[18]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[19]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[20]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[21]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[22]).r;
+    alpha += 1. - textureOffset(outline_texture, TexCoords, offsets[23]).r;
 
     alpha = min(alpha, 1.) * on_object;
 
