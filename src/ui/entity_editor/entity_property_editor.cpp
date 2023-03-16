@@ -24,6 +24,12 @@ static auto on_property_float3(const char* name, vec3* value) -> bool {
     return edited;
 }
 
+static auto on_property_float3_color(const char* name, vec3* value) -> bool {
+    bool edited = ImGui::ColorEdit3(name, &value->x);
+
+    return edited;
+}
+
 static auto on_property_boolean(const char* name, bool* value) -> bool {
     bool edited = ImGui::Checkbox(name, value);
 
@@ -116,7 +122,16 @@ auto ui::internal::on_property(entt::meta_any& instance, entt::meta_data const& 
             member.set(instance, *value);
         }
     } else if (auto* value = any.try_cast<vec3>(); value) {
-        bool edited = on_property_float3(property_name, value);
+        bool edited = false;
+        char const* type = prop<char const*>("type", member);
+
+        if (type && std::strcmp("color", type) == 0) {
+            // color vec3
+            edited = on_property_float3_color(property_name, value);
+        } else {
+            // regular vec3
+            edited = on_property_float3(property_name, value);
+        }
 
         if (edited) {
             member.set(instance, *value);

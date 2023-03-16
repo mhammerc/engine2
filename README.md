@@ -2,16 +2,10 @@
 
 ## TODO
 
-- `GL_ARB_shading_language_include`
-- `GL_ARB_separate_shader_objects`
 - Antialiasing
 - Refactor draw functions into systems
 - Gizmos (like unreal engine)
 - no more renderer context
-- ability to view different frame_buffers
-  - before post process
-  - depth buffer of the scene
-  - the refacto that goes with it
 - Shadows
 
 ## Development Environment
