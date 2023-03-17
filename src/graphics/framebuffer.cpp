@@ -6,22 +6,31 @@
 
 using namespace engine;
 
-auto FrameBuffer::create(vec2i size) -> std::unique_ptr<FrameBuffer> {
+/**
+ * To create a complete framebuffer we need:
+ *  - at least a color buffer is attached or `glDrawBuffer(GL_NONE); glReadBuffer(GL_NONE);`
+ *    - the latter will make the framebuffer render only depth/stencil
+ *  - all buffers are complete
+ *    - Looks like each buffer must be a square or smth.
+ *  - each buffers must be of the same size as the framebuffer
+ */
+
+auto FrameBuffer::create(vec2i size, Type type) -> std::unique_ptr<FrameBuffer> {
     GLuint handle = 0;
     glGenFramebuffers(1, &handle);
 
     glBindFramebuffer(GL_FRAMEBUFFER, handle);
 
-    // To complete the framebuffer we need
-    // - at least a color buffer is attached
-    // - all buffers are complete
-    // - each buffers must be of the same size as the framebuffer
+    std::unique_ptr<Texture> color_buffer = nullptr;
+    if (type == Type::ColorDepthStencil) {
+        color_buffer = Texture::from_empty("fb_color", Texture::Type::Color, size, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, color_buffer->handle(), 0);
+    } else {
+        glDrawBuffer(GL_NONE);
+        glReadBuffer(GL_NONE);
+    }
 
-    auto color_buffer = Texture::from_empty(Texture::Type::Color, size, 0);
-    auto depth_stencil_buffer = Texture::from_empty(Texture::Type::DepthStencil, size, 0);
-
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, color_buffer->handle(), 0);
-
+    auto depth_stencil_buffer = Texture::from_empty("fb_depth", Texture::Type::DepthStencil, size, 0);
     glFramebufferTexture2D(
         GL_FRAMEBUFFER,
         GL_DEPTH_STENCIL_ATTACHMENT,
@@ -39,7 +48,7 @@ auto FrameBuffer::create(vec2i size) -> std::unique_ptr<FrameBuffer> {
 
     auto frame_buffer = std::make_unique<FrameBuffer>(FrameBuffer());
     frame_buffer->_handle = handle;
-    frame_buffer->_type = Type::ColorDepthStencil;
+    frame_buffer->_type = type;
     frame_buffer->_size = size;
     frame_buffer->_color = std::move(color_buffer);
     frame_buffer->_depth_stencil = std::move(depth_stencil_buffer);
@@ -53,7 +62,7 @@ auto FrameBuffer::resize(vec2i size) -> void {
         return;
     }
 
-    auto new_frame_buffer = FrameBuffer::create(size);
+    auto new_frame_buffer = FrameBuffer::create(size, _type);
 
     std::swap(*this, *new_frame_buffer);
 }

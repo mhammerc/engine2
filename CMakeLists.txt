@@ -75,11 +75,15 @@ set(SOURCES
         src/ui/entity_editor/ui_window_entity_editor.cpp
         src/ui/ui.cpp
         src/ui/ui.h
-        src/ui/ui_window_framebuffer_viewer.cpp
         src/ui/ui_window_hierarchy.cpp
         src/ui/ui_window_input_debugger.cpp
         src/ui/ui_window_scene.cpp
         src/ui/ui_window_system.cpp
+        src/ui/ui_window_texture_viewer/cubemap_viewer.cpp
+        src/ui/ui_window_texture_viewer/framebuffer_viewer.cpp
+        src/ui/ui_window_texture_viewer/texture_viewer.cpp
+        src/ui/ui_window_texture_viewer/ui_window_texture_viewer.cpp
+        src/ui/ui_window_texture_viewer/ui_window_texture_viewer.h
         src/ui/utils.cpp
         src/ui/utils.h
         src/utils/platform_info.cpp

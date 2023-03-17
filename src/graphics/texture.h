@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "../common.h"
 
@@ -13,7 +14,7 @@ class Texture {
     enum Type { Diffuse, Specular, Color, DepthStencil };
 
     static auto from_file(const std::filesystem::path& path, Type type, bool flip = true) -> std::unique_ptr<Texture>;
-    static auto from_empty(Type type, vec2i size, int multisample) -> std::unique_ptr<Texture>;
+    static auto from_empty(const std::string& name, Type type, vec2i size, int multisample) -> std::unique_ptr<Texture>;
 
     auto activate_as(u32 index, bool disable = false) -> void;
 
@@ -26,16 +27,20 @@ class Texture {
     auto operator=(Texture&&) noexcept -> Texture&;
 
     [[nodiscard]] auto handle() const -> u32;
+    [[nodiscard]] auto size() const -> vec2i;
     [[nodiscard]] auto type() const -> Type;
+    [[nodiscard]] auto name() -> std::string&;
 
   private:
-    explicit Texture(u32 handle, Type type);
+    explicit Texture(u32 handle, vec2i size, Type type, std::string name);
 
     auto release() -> void;
 
   private:
     u32 _handle = 0;
+    vec2i _size;
     Type _type;
+    std::string _name;
 };
 
 }  // namespace engine

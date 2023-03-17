@@ -6,7 +6,8 @@
 
 using namespace engine;
 
-auto CubeMap::from_files(const std::array<std::filesystem::path, 6>& files) -> std::unique_ptr<CubeMap> {
+auto CubeMap::from_files(std::string const& name, const std::array<std::filesystem::path, 6>& files)
+    -> std::unique_ptr<CubeMap> {
     GLuint handle = 0;
     glGenTextures(1, &handle);
     glBindTexture(GL_TEXTURE_CUBE_MAP, handle);
@@ -41,7 +42,7 @@ auto CubeMap::from_files(const std::array<std::filesystem::path, 6>& files) -> s
 
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
-    return std::make_unique<CubeMap>(CubeMap(handle));
+    return std::make_unique<CubeMap>(CubeMap(handle, name));
 }
 
 auto CubeMap::activate_as(u32 index, bool disable) -> void {
@@ -60,7 +61,7 @@ CubeMap::~CubeMap() noexcept {
     release();
 }
 
-CubeMap::CubeMap(CubeMap&& from) noexcept : _handle(from._handle) {
+CubeMap::CubeMap(CubeMap&& from) noexcept : _handle(from._handle), _name(std::move(from._name)) {
     from._handle = 0;
 }
 
@@ -68,9 +69,15 @@ auto CubeMap::operator=(CubeMap&& from) noexcept -> CubeMap& {
     release();
 
     _handle = from._handle;
+    _name = std::move(from._name);
+
     from._handle = 0;
 
     return *this;
 }
 
-CubeMap::CubeMap(u32 handle) : _handle(handle) {}
+CubeMap::CubeMap(u32 handle, std::string name) : _handle(handle), _name(std::move(name)) {}
+
+auto CubeMap::name() -> std::string& {
+    return _name;
+}

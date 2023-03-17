@@ -93,7 +93,7 @@ auto engine::ui_draw(
             input_debugger = true;
         }
 
-        if (ImGui::MenuItem("Framebuffer Viewer")) {
+        if (ImGui::MenuItem("Texture Viewer")) {
             framebuffer_viewer = true;
         }
 
@@ -109,7 +109,7 @@ auto engine::ui_draw(
     }
 
     ui::internal::ui_draw_window_input_debugger(&input_debugger);
-    ui::internal::ui_draw_window_framebuffer_viewer(&framebuffer_viewer);
+    ui::internal::ui_draw_window_texture_viewer(&framebuffer_viewer);
 
     ui::internal::ui_draw_window_system(scene, delta_time, window);
     ui::internal::ui_draw_window_hierarchy(registry, selected_entity);

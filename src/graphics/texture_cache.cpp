@@ -9,8 +9,9 @@ auto TextureLoader::operator()(const std::filesystem::path& path, Texture::Type 
     return std::move(texture);
 }
 
-auto TextureLoader::operator()(Texture::Type type, vec2i size, int multisample) const -> TextureLoader::result_type {
-    auto texture = Texture::from_empty(type, size, multisample);
+auto TextureLoader::operator()(std::string const& name, Texture::Type type, vec2i size, int multisample) const
+    -> TextureLoader::result_type {
+    auto texture = Texture::from_empty(name, type, size, multisample);
 
     return std::move(texture);
 }

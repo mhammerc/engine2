@@ -41,10 +41,10 @@ auto Texture::from_file(const std::filesystem::path& path, Type type, bool flip)
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    return std::make_unique<Texture>(Texture(texture, type));
+    return std::make_unique<Texture>(Texture(texture, image->size(), type, path.string()));
 }
 
-auto Texture::from_empty(Type type, vec2i size, int multisample) -> std::unique_ptr<Texture> {
+auto Texture::from_empty(const std::string& name, Type type, vec2i size, int multisample) -> std::unique_ptr<Texture> {
     GLuint handle = 0;
 
     int const target = multisample == 0 ? GL_TEXTURE_2D : GL_TEXTURE_2D_MULTISAMPLE;
@@ -73,7 +73,7 @@ auto Texture::from_empty(Type type, vec2i size, int multisample) -> std::unique_
 
     glBindTexture(target, 0);
 
-    return std::make_unique<Texture>(Texture(handle, type));
+    return std::make_unique<Texture>(Texture(handle, size, type, name));
 }
 
 auto Texture::activate_as(u32 index, bool disable) -> void {
@@ -92,27 +92,47 @@ auto Texture::release() -> void {
     }
 }
 
-Texture::Texture(Texture&& from) noexcept : _handle(from._handle), _type(from._type) {
+Texture::Texture(Texture&& from) noexcept :
+    _handle(from._handle),
+    _size(from._size),
+    _type(from._type),
+    _name(std::move(from._name)) {
     from._handle = 0;
+    from._size = {0, 0};
 }
 
 auto Texture::operator=(Texture&& from) noexcept -> Texture& {
     release();
 
     _handle = from._handle;
+    _size = from._size;
     _type = from._type;
+    _name = std::move(from._name);
 
     from._handle = 0;
+    from._size = {0, 0};
 
     return *this;
 }
 
-Texture::Texture(GLuint handle, Type type) : _handle(handle), _type(type) {}
+Texture::Texture(GLuint handle, vec2i size, Type type, std::string name) :
+    _handle(handle),
+    _size(size),
+    _type(type),
+    _name(std::move(name)) {}
 
 auto Texture::handle() const -> GLuint {
     return _handle;
 }
 
+auto Texture::size() const -> vec2i {
+    return _size;
+}
+
 auto Texture::type() const -> Type {
     return _type;
+}
+
+auto Texture::name() -> std::string& {
+    return _name;
 }

@@ -18,9 +18,9 @@ class FrameBuffer {
     FrameBuffer(FrameBuffer&&) noexcept;
     auto operator=(FrameBuffer&&) noexcept -> FrameBuffer&;
 
-    enum Type { Color, ColorDepthStencil };
+    enum Type { ColorDepthStencil, Depth };
 
-    static auto create(vec2i size) -> std::unique_ptr<FrameBuffer>;
+    static auto create(vec2i size, Type type) -> std::unique_ptr<FrameBuffer>;
 
     // Methods
     auto resize(vec2i size) -> void;

@@ -93,8 +93,15 @@ auto main() -> int {
         return 1;
     }
 
+    auto [cubemap_viewer_shader, _10] = shader_cache.load("cubemap_viewer"_hs, "cubemap_viewer");
+    if (cubemap_viewer_shader->second.handle() == nullptr) {
+        spdlog::critical("could not create shader program.");
+        return 1;
+    }
+
     cubemap_cache.load(
         "skybox"_hs,
+        "skybox",
         std::array<std::filesystem::path, 6>({
             "../assets/skybox/right.jpg",
             "../assets/skybox/left.jpg",
