@@ -84,6 +84,10 @@ auto FrameBuffer::color_texture() const -> Texture* {
     return _color.get();
 }
 
+auto FrameBuffer::depth_stencil_texture() const -> Texture* {
+    return _depth_stencil.get();
+}
+
 FrameBuffer::FrameBuffer(FrameBuffer&& from) noexcept :
     _handle(from._handle),
     _type(from._type),

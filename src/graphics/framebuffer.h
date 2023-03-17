@@ -32,6 +32,7 @@ class FrameBuffer {
     [[nodiscard]] auto type() const -> Type;
     [[nodiscard]] auto size() const -> vec2i;
     [[nodiscard]] auto color_texture() const -> Texture*;
+    [[nodiscard]] auto depth_stencil_texture() const -> Texture*;
 
   private:
     explicit FrameBuffer() = default;
