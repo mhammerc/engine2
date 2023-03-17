@@ -68,7 +68,7 @@ static auto aimesh_to_mesh(aiMesh const* mesh, path const& name) -> std::unique_
         }
     }
 
-    auto _mesh = std::make_unique<Mesh>(std::string(name.c_str()), std::move(vertices), std::move(indices));
+    auto _mesh = std::make_unique<Mesh>(name.string(), std::move(vertices), std::move(indices));
 
     return _mesh;
 }
@@ -91,8 +91,11 @@ static auto aimaterial_to_textures(aiMaterial const* mat, aiScene const* /*scene
 
         auto texture_path = working_directory / filename.C_Str();
 
-        auto texture =
-            texture_cache.load(entt::hashed_string(texture_path.c_str()), texture_path, Texture::Type::Diffuse);
+        auto texture = texture_cache.load(
+            entt::hashed_string(texture_path.string().c_str()),
+            texture_path,
+            Texture::Type::Diffuse
+        );
         textures.insert({1, texture.first->second.handle()});
     }
 
@@ -103,8 +106,11 @@ static auto aimaterial_to_textures(aiMaterial const* mat, aiScene const* /*scene
 
         auto texture_path = working_directory / filename.C_Str();
 
-        auto texture =
-            texture_cache.load(entt::hashed_string(texture_path.c_str()), texture_path, Texture::Type::Specular);
+        auto texture = texture_cache.load(
+            entt::hashed_string(texture_path.string().c_str()),
+            texture_path,
+            Texture::Type::Specular
+        );
         textures.insert({2, texture.first->second.handle()});
     }
 
@@ -120,7 +126,7 @@ on_mesh(entt::entity entity, entt::registry& registry, aiMesh const* aimesh, aiS
     auto& mesh_cache = entt::locator<MeshCache>::value();
 
     auto _mesh = aimesh_to_mesh(aimesh, filename);
-    auto [mesh, _] = mesh_cache.load(entt::hashed_string(filename.c_str()), std::move(_mesh));
+    auto [mesh, _] = mesh_cache.load(entt::hashed_string(filename.string().c_str()), std::move(_mesh));
 
     material.mesh = mesh->second.handle();
     material.shader = shader_cache["diffuse"_hs].handle();
@@ -161,19 +167,16 @@ static auto on_node(
 auto engine::entity_from_model(const path& path, entt::registry& registry) -> std::vector<entt::entity> {
     std::vector<entt::entity> entities;
 
-    // auto directory = path;
-    // directory.remove_filename();
-
     Assimp::Importer importer;
 
     aiScene const* scene = importer.ReadFile(
-        path.c_str(),
+        path.string().c_str(),
         aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_SplitLargeMeshes | aiProcess_OptimizeMeshes
             | aiProcess_OptimizeGraph
     );
 
     if (scene == nullptr || (scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) != 0U || scene->mRootNode == nullptr) {
-        spdlog::error("Could not load model '{}'. Error: '{}'.", path.c_str(), importer.GetErrorString());
+        spdlog::error("Could not load model '{}'. Error: '{}'.", path.string().c_str(), importer.GetErrorString());
         return entities;
     }
 
