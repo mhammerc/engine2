@@ -19,6 +19,8 @@ auto systems::draw_light_gizmo(entt::registry& registry) -> void {
     // TODO: refactor how to access camera
     auto [entity, camera_base, camera] = *registry.view<BaseComponent, CameraComponent>().each().begin();
 
+    shader->bind();
+
     for (auto [entity, base, light] : lights.each()) {
         if (!base.enabled) {
             continue;
@@ -39,4 +41,6 @@ auto systems::draw_light_gizmo(entt::registry& registry) -> void {
 
         cube->draw();
     }
+
+    shader->unbind();
 }

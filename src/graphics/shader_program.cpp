@@ -158,8 +158,7 @@ void ShaderProgram::set_uniform(const std::string& name, i32 value) {
         return;
     }
 
-    glUseProgram(_handle);
-    glUniform1i(uniformLocation, value);
+    glProgramUniform1i(_handle, uniformLocation, value);
 
     GLenum const error = glGetError();
 
@@ -176,8 +175,7 @@ void ShaderProgram::set_uniform(const std::string& name, float value) {
         return;
     }
 
-    glUseProgram(_handle);
-    glUniform1f(uniformLocation, value);
+    glProgramUniform1f(_handle, uniformLocation, value);
 
     GLenum const error = glGetError();
 
@@ -194,8 +192,7 @@ void ShaderProgram::set_uniform(const std::string& name, glm::vec4 value) {
         return;
     }
 
-    glUseProgram(_handle);
-    glUniform4f(uniformLocation, value.x, value.y, value.z, value.w);
+    glProgramUniform4f(_handle, uniformLocation, value.x, value.y, value.z, value.w);
 
     GLenum const error = glGetError();
 
@@ -212,8 +209,7 @@ void ShaderProgram::set_uniform(const std::string& name, glm::vec3 value) {
         return;
     }
 
-    glUseProgram(_handle);
-    glUniform3f(uniformLocation, value.x, value.y, value.z);
+    glProgramUniform3f(_handle, uniformLocation, value.x, value.y, value.z);
 
     GLenum const error = glGetError();
 
@@ -230,8 +226,7 @@ void ShaderProgram::set_uniform(const std::string& name, glm::mat4 value) {
         return;
     }
 
-    glUseProgram(_handle);
-    glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(value));
+    glProgramUniformMatrix4fv(_handle, uniformLocation, 1, GL_FALSE, glm::value_ptr(value));
 
     GLenum const error = glGetError();
 
@@ -248,8 +243,7 @@ void ShaderProgram::set_uniform(const std::string& name, glm::mat3 value) {
         return;
     }
 
-    glUseProgram(_handle);
-    glUniformMatrix3fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(value));
+    glProgramUniformMatrix3fv(_handle, uniformLocation, 1, GL_FALSE, glm::value_ptr(value));
 
     GLenum const error = glGetError();
 
