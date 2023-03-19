@@ -131,6 +131,10 @@ auto Texture::from_empty(std::string const& name, Type type, Format format, vec2
         internalformat = GL_DEPTH24_STENCIL8;
         gl_format = GL_DEPTH_STENCIL;
         gl_type = GL_UNSIGNED_INT_24_8;
+    } else if (format == Format::Depth) {
+        internalformat = GL_DEPTH_COMPONENT;
+        gl_format = GL_DEPTH_COMPONENT;
+        gl_type = GL_FLOAT;
     } else {
         SPDLOG_ERROR("[source %s] [function %!] [line %#] Missing match in pattern matching");
         return nullptr;

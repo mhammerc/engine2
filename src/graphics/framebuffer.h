@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
 #include "../common.h"
 #include "texture.h"
@@ -17,9 +18,10 @@ class Framebuffer {
     Framebuffer(Framebuffer&&) noexcept;
     auto operator=(Framebuffer&&) noexcept -> Framebuffer&;
 
-    enum Type { ColorDepthStencil, Depth };
+    enum Format { Color, Depth, DepthStencil, ColorDepthStencil, ColorDepth };
+    using Type = Texture::Type;
 
-    static auto create(vec2i size, Type type) -> std::unique_ptr<Framebuffer>;
+    static auto create(std::string const& name, vec2i size, Format format, Type type) -> std::unique_ptr<Framebuffer>;
 
     // Methods
     auto resize(vec2i size) -> void;
@@ -28,18 +30,24 @@ class Framebuffer {
     auto unbind() -> void;
 
     [[nodiscard]] auto handle() const -> GLuint;
-    [[nodiscard]] auto type() const -> Type;
     [[nodiscard]] auto size() const -> vec2i;
+    [[nodiscard]] auto format() const -> Format;
+    [[nodiscard]] auto type() const -> Type;
     [[nodiscard]] auto color_texture() const -> Texture*;
     [[nodiscard]] auto depth_stencil_texture() const -> Texture*;
+    [[nodiscard]] auto name() -> std::string&;
 
   private:
     explicit Framebuffer() = default;
     auto release() -> void;
 
     GLuint _handle = 0;
-    Type _type = Type::ColorDepthStencil;
+
     vec2i _size = {0, 0};
+    Format _format = Format::ColorDepthStencil;
+    Type _type = Type::Texture2D;
+
+    std::string _name;
 
     std::unique_ptr<Texture> _color;
     std::unique_ptr<Texture> _depth_stencil;

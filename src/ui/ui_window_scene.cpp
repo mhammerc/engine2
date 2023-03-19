@@ -50,13 +50,13 @@ auto ui::internal::ui_draw_window_scene(entt::registry& registry, Framebuffer* s
     }
 
     // Get the identify framebuffer and identify which object it is
-    auto& framebuffer_identify = entt::locator<FrameBufferCache>::value()["identify"_hs]->second;
+    auto framebuffer_identify = entt::locator<FramebufferCache>::value()["identify"_hs];
 
     vec2 pixel_position = {mouse_over_scene.x, 1.F - mouse_over_scene.y};
-    pixel_position *= framebuffer_identify.size();
+    pixel_position *= framebuffer_identify->size();
 
     vec4 pixel_color;
-    framebuffer_identify.bind();
+    framebuffer_identify->bind();
     glReadPixels(
         static_cast<int>(pixel_position.x),
         static_cast<int>(pixel_position.y),
@@ -66,14 +66,14 @@ auto ui::internal::ui_draw_window_scene(entt::registry& registry, Framebuffer* s
         GL_FLOAT,
         &pixel_color
     );
-    framebuffer_identify.unbind();
+    framebuffer_identify->unbind();
 
-    bool is_over_object = pixel_color.b <= 0.1F;
+    bool const is_over_object = pixel_color.b <= 0.1F;
     if (!is_over_object) {
         return entt::null;
     }
 
-    u32 entity_id = static_cast<int>(pixel_color.r * 255.F);
+    u32 const entity_id = static_cast<int>(pixel_color.r * 255.F);
     auto entity = static_cast<entt::entity>(entity_id);
 
     if (!registry.valid(entity)) {

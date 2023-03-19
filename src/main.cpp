@@ -43,7 +43,7 @@ auto main() -> int {
     auto& texture_cache = entt::locator<engine::TextureCache>::emplace();
     auto& shader_cache = entt::locator<engine::ShaderCache>::emplace();
     auto& mesh_cache = entt::locator<engine::MeshCache>::emplace();
-    auto& framebuffer_cache = entt::locator<engine::FrameBufferCache>::emplace();
+    auto& framebuffer_cache = entt::locator<engine::FramebufferCache>::emplace();
 
     auto& renderer_context = entt::locator<engine::RendererContext>::emplace();
 
@@ -125,10 +125,22 @@ auto main() -> int {
     light1_light.diffuse = glm::vec3(0.8F, 0.8F, 0.8F);
     light1_light.specular = glm::vec3(1.F, 1.F, 1.F);
 
-    framebuffer_cache.load("color"_hs, "color", vec2i {1, 1}, Framebuffer::Type::ColorDepthStencil);
-    framebuffer_cache.load("outline"_hs, "outline", vec2i {1, 1}, Framebuffer::Type::ColorDepthStencil);
-    framebuffer_cache.load("postprocess"_hs, "postprocess", vec2i {1, 1}, Framebuffer::Type::ColorDepthStencil);
-    framebuffer_cache.load("identify"_hs, "identify", vec2i {1, 1}, Framebuffer::Type::ColorDepthStencil);
+    framebuffer_cache.load(
+        "color"_hs,
+        Framebuffer::create("color", vec2i {1, 1}, Framebuffer::Format::ColorDepth, Framebuffer::Type::Texture2D)
+    );
+    framebuffer_cache.load(
+        "outline"_hs,
+        Framebuffer::create("outline", vec2i {1, 1}, Framebuffer::Format::Color, Framebuffer::Type::Texture2D)
+    );
+    framebuffer_cache.load(
+        "postprocess"_hs,
+        Framebuffer::create("postprocess", vec2i {1, 1}, Framebuffer::Format::Color, Framebuffer::Type::Texture2D)
+    );
+    framebuffer_cache.load(
+        "identify"_hs,
+        Framebuffer::create("identify", vec2i {1, 1}, Framebuffer::Format::Color, Framebuffer::Type::Texture2D)
+    );
 
     mesh_cache.load("quad"_hs, Mesh::from_quad());
     mesh_cache.load("cube"_hs, Mesh::from_cube());
@@ -138,10 +150,10 @@ auto main() -> int {
             should_quit = true;
         }
 
-        auto* frame_buffer = &framebuffer_cache["color"_hs]->second;
-        auto* frame_buffer_postprocess = &framebuffer_cache["postprocess"_hs]->second;
-        auto* frame_buffer_outline = &framebuffer_cache["outline"_hs]->second;
-        auto* frame_buffer_identify = &framebuffer_cache["identify"_hs]->second;
+        Framebuffer& framebuffer = framebuffer_cache["color"_hs];
+        Framebuffer& framebuffer_postprocess = framebuffer_cache["postprocess"_hs];
+        Framebuffer& framebuffer_outline = framebuffer_cache["outline"_hs];
+        Framebuffer& framebuffer_identify = framebuffer_cache["identify"_hs];
 
         registry.clear<OutlineComponent>();
 
@@ -149,12 +161,12 @@ auto main() -> int {
         systems::camera_system(delta_time, registry);
 
         ui_prepare_frame();
-        ui_draw(delta_time, &scene, window, registry, frame_buffer_postprocess);
+        ui_draw(delta_time, &scene, window, registry, &framebuffer_postprocess);
 
         glClearColor(0.2F, 0.3F, 0.3F, 1.0F);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-        auto size = frame_buffer_postprocess->size();
+        auto size = framebuffer_postprocess.size();
         auto const& [camera_base, camera] = scene.camera_info();
         renderer_context.projection = glm::perspective(
             glm::radians(camera.fov),
@@ -164,13 +176,14 @@ auto main() -> int {
         );
 
         // Resize framebuffers according to scene size
-        frame_buffer->resize(size);
-        frame_buffer_outline->resize(size);
-        frame_buffer_identify->resize(size);
+        framebuffer.resize(size);
+        framebuffer_outline.resize(size);
+        framebuffer_identify.resize(size);
+
 
         // Render scene
         {
-            frame_buffer->bind();
+            framebuffer.bind();
 
             glClearColor(0.1F, 0.1F, 0.1F, 1.0F);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -179,14 +192,14 @@ auto main() -> int {
 
             systems::draw_light_gizmo(registry);
 
-            frame_buffer->unbind();
+            framebuffer.unbind();
         }
 
         // Render postprocess quad to another frame_buffer
         {
             glDisable(GL_DEPTH_TEST);
 
-            frame_buffer->color_texture()->activate_as(0);
+            framebuffer.color_texture()->activate_as(0);
             auto _postprocess_shader = shader_cache["postprocess"_hs];
 
             _postprocess_shader->set_uniform("screenTexture", 0);
@@ -214,9 +227,9 @@ auto main() -> int {
 
             _postprocess_shader->bind();
             auto mesh_quad = mesh_cache["quad"_hs];
-            frame_buffer_postprocess->bind();
+            framebuffer_postprocess.bind();
             mesh_quad->draw();
-            frame_buffer_postprocess->unbind();
+            framebuffer_postprocess.unbind();
             _postprocess_shader->unbind();
 
             glEnable(GL_DEPTH_TEST);

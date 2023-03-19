@@ -10,13 +10,13 @@ using namespace engine;
 
 auto systems::draw_identify(entt::registry& registry) -> void {
     auto shader = entt::locator<ShaderCache>::value()["unlit_single_color"_hs];
-    auto& [_1, framebuffer] = *entt::locator<FrameBufferCache>::value()["identify"_hs];
+    auto framebuffer = entt::locator<FramebufferCache>::value()["identify"_hs];
     auto const& renderer_context = entt::locator<RendererContext>::value();
 
     auto camera = *registry.view<BaseComponent, CameraComponent>().begin();
     auto const& [camera_base, camera_config] = registry.get<BaseComponent, CameraComponent>(camera);
 
-    framebuffer.bind();
+    framebuffer->bind();
 
     glClearColor(0.F, 0.F, 0.2F, 1.F);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -43,5 +43,5 @@ auto systems::draw_identify(entt::registry& registry) -> void {
         shader->unbind();
     }
 
-    framebuffer.unbind();
+    framebuffer->unbind();
 }

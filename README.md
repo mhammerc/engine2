@@ -10,15 +10,19 @@
 
 ## Development Environment
 
-As of 2023 February, we use Visual Studio Code with the following extensions :
+As of 2023 March, we use the following tools.
+
+Either Visual Studio Code:
 
 - `C/C++` from `Microsoft`
-  - Used only for debugging.
+    - Used only for debugging.
 - `CMake Tools` from `Microsoft`
 - `clangd` from `LLVM`
-  - Accept to disable Intellisense
-  - Run `clangd: download language server` to have a proper clangd
+    - Accept to disable Intellisense
+    - Run `clangd: download language server` to have a proper clangd
 - `Clang-Format`
+
+Or you can use CLion. Everything works out of the box with CLion.
 
 ## Build
 
@@ -28,22 +32,24 @@ We package every dependency as git-submodules. Therefore, after a clone you must
 
 ### Windows
 
-Not tested.
+Does not compile yet.
 
 ### Linux
 
 We need X11 or Wayland development packages installed for libGLFW. To that end:
 
 ```bash
-sudo apt install xorg-dev # For Debian/Ubuntu on X11
-sudo dnf install libXcursor-devel libXi-devel libXinerama-devel libXrandr-devel # For Fedora and derivatives on X11
-pkg install xorgproto # For FreeBSD on X11
+# If you are compiling for X11
+sudo apt install xorg-dev # Debian/Ubuntu and derivatives
+sudo dnf install libXcursor-devel libXi-devel libXinerama-devel libXrandr-devel # Fedora and derivatives
+pkg install xorgproto # FreeBSD
 
-sudo apt install libwayland-dev libxkbcommon-dev wayland-protocols extra-cmake-modules # For Debian/Ubuntu on Wayland
-sudo dnf install wayland-devel libxkbcommon-devel wayland-protocols-devel extra-cmake-modules # For Fedora and derivatives on Wayland
-pkg install wayland libxkbcommon wayland-protocols kf5-extra-cmake-modules # For FreeBSD on Wayland
+# If you are compiling for Wayland
+sudo apt install libwayland-dev libxkbcommon-dev wayland-protocols extra-cmake-modules # Debian/Ubuntu and derivatives
+sudo dnf install wayland-devel libxkbcommon-devel wayland-protocols-devel extra-cmake-modules # Fedora and derivatives
+pkg install wayland libxkbcommon wayland-protocols kf5-extra-cmake-modules # FreeBSD 
 ```
 
 ### MacOS
 
-Once Xcode and proper MacOS SDK are installed (which are the default with XCode), compilation should work as-is.
+Once Xcode and Xcode developer tools are installed, compilation should work as-is.

@@ -88,9 +88,9 @@ static auto draw(Framebuffer& framebuffer_color, Framebuffer& framebuffer_outlin
  * neighboring pixels.
  */
 auto systems::draw_outline(entt::registry& registry) -> void {
-    auto& framebuffer_cache = entt::locator<FrameBufferCache>::value();
-    auto& [_1, framebuffer_outline] = *framebuffer_cache["outline"_hs];
-    auto& [_2, framebuffer_color] = *framebuffer_cache["postprocess"_hs];
+    auto& framebuffer_cache = entt::locator<FramebufferCache>::value();
+    auto framebuffer_outline = framebuffer_cache["outline"_hs];
+    auto framebuffer_color = framebuffer_cache["postprocess"_hs];
 
     draw_intermediate_buffer(registry, framebuffer_outline);
 

@@ -11,18 +11,18 @@
 using namespace engine;
 
 auto ui::internal::framebuffer() -> void {
-    auto& framebuffer_cache = entt::locator<FrameBufferCache>::value();
+    auto& framebuffer_cache = entt::locator<FramebufferCache>::value();
     static u32 current_index = static_cast<u32>(-1);
 
     {
         auto current = framebuffer_cache.contains(current_index) ? std::make_optional(framebuffer_cache[current_index])
                                                                  : std::nullopt;
-        auto const* name = current.has_value() ? (*current)->first.c_str() : "Please select";
+        auto const* selected_name = current.has_value() ? current.value()->name().c_str() : "Please select";
 
-        if (ImGui::BeginCombo("Framebuffer", name)) {
+        if (ImGui::BeginCombo("Framebuffer", selected_name)) {
             for (auto framebuffer_pair : framebuffer_cache) {
                 auto index = framebuffer_pair.first;
-                auto const& name = framebuffer_pair.second->first;
+                auto const& name = framebuffer_pair.second->name();
 
                 if (ImGui::Selectable(name.c_str(), index == current_index)) {
                     current_index = index;
@@ -56,13 +56,13 @@ auto ui::internal::framebuffer() -> void {
         return;
     }
 
-    auto const& framebuffer = framebuffer_cache[current_index]->second;
+    auto const& framebuffer = framebuffer_cache[current_index];
 
     Texture* texture = nullptr;
     if (mode == Color) {
-        texture = framebuffer.color_texture();
+        texture = framebuffer->color_texture();
     } else if (mode == Depth) {
-        texture = framebuffer.depth_stencil_texture();
+        texture = framebuffer->depth_stencil_texture();
     }
 
     if (texture == nullptr) {
@@ -71,7 +71,7 @@ auto ui::internal::framebuffer() -> void {
 
     void* framebuffer_texture_handle = reinterpret_cast<void*>(texture->handle());
 
-    vec2 texture_size = framebuffer.size();
+    vec2 texture_size = framebuffer->size();
     auto window_size = ImGui::GetContentRegionAvail();
     vec2 size;
     if (window_size.x < (window_size.y + 70)) {

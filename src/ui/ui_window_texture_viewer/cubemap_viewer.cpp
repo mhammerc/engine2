@@ -11,20 +11,24 @@
 #include "../../graphics/texture_cache.h"
 #include "../imgui.h"
 #include "../ui_internal.h"
-#include "imgui/imgui.h"
 #include "ui_window_texture_viewer.h"
 
 using namespace engine;
 
 static auto get_framebuffer() -> Framebuffer* {
-    auto& framebuffer_cache = entt::locator<FrameBufferCache>::value();
+    auto& framebuffer_cache = entt::locator<FramebufferCache>::value();
 
     const vec2i size = {1024, 1024};
 
-    auto framebuffer =
-        framebuffer_cache.load("cubemap_viewer"_hs, "cubemap_viewer", size, Framebuffer::Type::ColorDepthStencil);
+    auto framebuffer_insertion = framebuffer_cache.load(
+        "cubemap_viewer"_hs,
+        Framebuffer::create("cubemap_viewer", size, Framebuffer::Format::Color, Framebuffer::Type::Texture2D)
+    );
 
-    return &framebuffer.first->second->second;
+    auto framebuffer_resource = framebuffer_insertion.first->second;
+    auto* framebuffer = framebuffer_resource.handle().get();
+
+    return framebuffer;
 }
 
 static auto draw_selector(u32& current_index, TextureCache& texture_cache) -> void {

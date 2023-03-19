@@ -16,7 +16,7 @@ namespace engine {
  */
 class Texture {
   public:
-    enum Format { Color, DepthStencil };
+    enum Format { Color, Depth, DepthStencil };
     enum Type { Texture2D = 0, CubeMap = 1 };
 
   public:
