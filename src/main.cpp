@@ -4,7 +4,6 @@
 #include "core/input.hpp"
 #include "core/reflection.h"
 #include "entt/entity/fwd.hpp"
-#include "graphics/cube_map_cache.h"
 #include "graphics/framebuffer.h"
 #include "graphics/framebuffer_cache.h"
 #include "graphics/mesh_cache.h"
@@ -41,10 +40,9 @@ auto main() -> int {
         return 1;
     }
 
-    entt::locator<engine::TextureCache>::emplace();
+    auto& texture_cache = entt::locator<engine::TextureCache>::emplace();
     auto& shader_cache = entt::locator<engine::ShaderCache>::emplace();
     auto& mesh_cache = entt::locator<engine::MeshCache>::emplace();
-    auto& cubemap_cache = entt::locator<engine::CubeMapCache>::emplace();
     auto& framebuffer_cache = entt::locator<engine::FrameBufferCache>::emplace();
 
     auto& renderer_context = entt::locator<engine::RendererContext>::emplace();
@@ -99,17 +97,19 @@ auto main() -> int {
         return 1;
     }
 
-    cubemap_cache.load(
+    texture_cache.load(
         "skybox"_hs,
-        "skybox",
-        std::array<std::filesystem::path, 6>({
-            "../assets/skybox/right.jpg",
-            "../assets/skybox/left.jpg",
-            "../assets/skybox/top.jpg",
-            "../assets/skybox/bottom.jpg",
-            "../assets/skybox/front.jpg",
-            "../assets/skybox/back.jpg",
-        })
+        Texture::from_files_cubemap(
+            "skybox",
+            std::array<std::filesystem::path, 6>({
+                "../assets/skybox/right.jpg",
+                "../assets/skybox/left.jpg",
+                "../assets/skybox/top.jpg",
+                "../assets/skybox/bottom.jpg",
+                "../assets/skybox/front.jpg",
+                "../assets/skybox/back.jpg",
+            })
+        )
     );
 
     Scene scene(registry);
@@ -125,10 +125,10 @@ auto main() -> int {
     light1_light.diffuse = glm::vec3(0.8F, 0.8F, 0.8F);
     light1_light.specular = glm::vec3(1.F, 1.F, 1.F);
 
-    framebuffer_cache.load("color"_hs, "color", vec2i {1, 1});
-    framebuffer_cache.load("outline"_hs, "outline", vec2i {1, 1});
-    framebuffer_cache.load("postprocess"_hs, "postprocess", vec2i {1, 1});
-    framebuffer_cache.load("identify"_hs, "identify", vec2i {1, 1});
+    framebuffer_cache.load("color"_hs, "color", vec2i {1, 1}, Framebuffer::Type::ColorDepthStencil);
+    framebuffer_cache.load("outline"_hs, "outline", vec2i {1, 1}, Framebuffer::Type::ColorDepthStencil);
+    framebuffer_cache.load("postprocess"_hs, "postprocess", vec2i {1, 1}, Framebuffer::Type::ColorDepthStencil);
+    framebuffer_cache.load("identify"_hs, "identify", vec2i {1, 1}, Framebuffer::Type::ColorDepthStencil);
 
     mesh_cache.load("quad"_hs, Mesh::from_quad());
     mesh_cache.load("cube"_hs, Mesh::from_cube());

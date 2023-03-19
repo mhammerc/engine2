@@ -23,6 +23,10 @@ auto ui::internal::texture() -> void {
 
         if (ImGui::BeginCombo("Texture", preview_name.c_str())) {
             for (auto texture : texture_cache) {
+                if (texture.second->type() != Texture::Type::Texture2D) {
+                    continue;
+                }
+
                 auto index = texture.first;
                 auto const name = texture.second->name();
 

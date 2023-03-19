@@ -1,6 +1,7 @@
 #pragma once
 
 #include <entt/entt.hpp>
+#include <memory>
 
 #include "texture.h"
 
@@ -9,8 +10,14 @@ namespace engine {
 struct TextureLoader {
     using result_type = std::shared_ptr<Texture>;
 
-    auto operator()(const std::filesystem::path& path, Texture::Type type, bool flip = true) const -> result_type;
-    auto operator()(std::string const& name, Texture::Type type, vec2i size, int multisample) const -> result_type;
+    /**
+     * Use as follow:
+     *
+     * ```cpp
+     * cache.load(Texture::from_XXX());
+     * ```
+     */
+    auto operator()(std::unique_ptr<Texture> from) const -> result_type;
 };
 
 using TextureCache = entt::resource_cache<Texture, TextureLoader>;

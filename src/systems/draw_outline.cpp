@@ -13,7 +13,7 @@ using namespace engine;
 /**
  * From a black framebuffer, draw all to-be-outlined objects as white.
  */
-static auto draw_intermediate_buffer(entt::registry& registry, FrameBuffer& frame_buffer) -> void {
+static auto draw_intermediate_buffer(entt::registry& registry, Framebuffer& frame_buffer) -> void {
     auto shader = entt::locator<ShaderCache>::value()["unlit_single_color"_hs];
 
     auto camera = *registry.view<BaseComponent, CameraComponent>().begin();
@@ -51,7 +51,7 @@ static auto draw_intermediate_buffer(entt::registry& registry, FrameBuffer& fram
 /**
  * Using the previous intermediate buffer as a texture, draw the outline on the existing color framebuffer.
  */
-static auto draw(FrameBuffer& framebuffer_color, FrameBuffer& framebuffer_outline) -> void {
+static auto draw(Framebuffer& framebuffer_color, Framebuffer& framebuffer_outline) -> void {
     auto quad = entt::locator<MeshCache>::value()["quad"_hs];
     auto shader = entt::locator<ShaderCache>::value()["outline"_hs];
 

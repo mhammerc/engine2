@@ -7,20 +7,19 @@
 
 namespace engine {
 
-class FrameBuffer {
-    // Constructors and destructors
+class Framebuffer {
   public:
-    virtual ~FrameBuffer() noexcept;
+    virtual ~Framebuffer() noexcept;
 
-    FrameBuffer(const FrameBuffer&) = delete;
-    auto operator=(const FrameBuffer&) -> FrameBuffer& = delete;
+    Framebuffer(const Framebuffer&) = delete;
+    auto operator=(const Framebuffer&) -> Framebuffer& = delete;
 
-    FrameBuffer(FrameBuffer&&) noexcept;
-    auto operator=(FrameBuffer&&) noexcept -> FrameBuffer&;
+    Framebuffer(Framebuffer&&) noexcept;
+    auto operator=(Framebuffer&&) noexcept -> Framebuffer&;
 
     enum Type { ColorDepthStencil, Depth };
 
-    static auto create(vec2i size, Type type) -> std::unique_ptr<FrameBuffer>;
+    static auto create(vec2i size, Type type) -> std::unique_ptr<Framebuffer>;
 
     // Methods
     auto resize(vec2i size) -> void;
@@ -35,7 +34,7 @@ class FrameBuffer {
     [[nodiscard]] auto depth_stencil_texture() const -> Texture*;
 
   private:
-    explicit FrameBuffer() = default;
+    explicit Framebuffer() = default;
     auto release() -> void;
 
     GLuint _handle = 0;

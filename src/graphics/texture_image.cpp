@@ -16,23 +16,34 @@ auto TextureImage::from_file(const std::filesystem::path& path, std::optional<Ch
     }
 
     stbi_set_flip_vertically_on_load(flip ? 1 : 0);
-    unsigned char* data = stbi_load(path.c_str(), &size.x, &size.y, &number_of_channels, desired_channels_numeric);
+    unsigned char* data =
+        stbi_load(path.string().c_str(), &size.x, &size.y, &number_of_channels, desired_channels_numeric);
 
     if (!data) {
         const auto* error = stbi_failure_reason();
-        spdlog::error("Could not load texture '{}' ({}).", path.c_str(), error);
+        spdlog::error("Could not load texture '{}' ({}).", path.string().c_str(), error);
 
         return nullptr;
     }
 
-    auto image = TextureImage(size, static_cast<Channels>(desired_channels.has_value() ? *desired_channels : number_of_channels), data);
+    auto image = TextureImage(
+        size,
+        static_cast<Channels>(desired_channels.has_value() ? *desired_channels : number_of_channels),
+        data
+    );
 
     return std::make_unique<TextureImage>(std::move(image));
 }
 
-TextureImage::TextureImage(vec2i size, Channels channels, u8 const* data) : _size(size), _channels(channels), _data(data) {}
+TextureImage::TextureImage(vec2i size, Channels channels, u8 const* data) :
+    _size(size),
+    _channels(channels),
+    _data(data) {}
 
-TextureImage::TextureImage(TextureImage&& from) noexcept : _size(from._size), _channels(from._channels), _data(from._data) {
+TextureImage::TextureImage(TextureImage&& from) noexcept :
+    _size(from._size),
+    _channels(from._channels),
+    _data(from._data) {
     from._data = nullptr;
 }
 

@@ -5,10 +5,10 @@
 #include <optional>
 
 #include "../../common.h"
-#include "../../graphics/cube_map_cache.h"
 #include "../../graphics/framebuffer_cache.h"
 #include "../../graphics/mesh_cache.h"
 #include "../../graphics/shader_cache.h"
+#include "../../graphics/texture_cache.h"
 #include "../imgui.h"
 #include "../ui_internal.h"
 #include "imgui/imgui.h"
@@ -16,25 +16,29 @@
 
 using namespace engine;
 
-static auto get_framebuffer() -> FrameBuffer* {
+static auto get_framebuffer() -> Framebuffer* {
     auto& framebuffer_cache = entt::locator<FrameBufferCache>::value();
 
     const vec2i size = {1024, 1024};
 
     auto framebuffer =
-        framebuffer_cache.load("cubemap_viewer"_hs, "cubemap_viewer", size, FrameBuffer::Type::ColorDepthStencil);
+        framebuffer_cache.load("cubemap_viewer"_hs, "cubemap_viewer", size, Framebuffer::Type::ColorDepthStencil);
 
     return &framebuffer.first->second->second;
 }
 
-static auto draw_selector(u32& current_index, CubeMapCache& cubemap_cache) -> void {
+static auto draw_selector(u32& current_index, TextureCache& texture_cache) -> void {
     auto current =
-        cubemap_cache.contains(current_index) ? std::make_optional(cubemap_cache[current_index]) : std::nullopt;
+        texture_cache.contains(current_index) ? std::make_optional(texture_cache[current_index]) : std::nullopt;
 
     auto const preview_name = current.has_value() ? (*current)->name() : "Please select";
 
     if (ImGui::BeginCombo("Texture", preview_name.c_str())) {
-        for (auto texture : cubemap_cache) {
+        for (auto texture : texture_cache) {
+            if (texture.second->type() != Texture::Type::CubeMap) {
+                continue;
+            }
+
             auto index = texture.first;
             auto const name = texture.second->name();
 
@@ -68,7 +72,7 @@ static auto draw_mode() -> UnfoldedOrEquirectangular {
     return mode;
 }
 
-static auto draw_cubemap_to_framebuffer(CubeMap& cubemap, UnfoldedOrEquirectangular mode) -> FrameBuffer* {
+static auto draw_cubemap_to_framebuffer(Texture& cubemap, UnfoldedOrEquirectangular mode) -> Framebuffer* {
     auto* framebuffer = get_framebuffer();
     auto shader = entt::locator<ShaderCache>::value()["cubemap_viewer"_hs];
     auto quad = entt::locator<MeshCache>::value()["quad"_hs];
@@ -97,7 +101,7 @@ static auto draw_cubemap_to_framebuffer(CubeMap& cubemap, UnfoldedOrEquirectangu
 }
 
 auto ui::internal::cubemap() -> void {
-    auto& cubemap_cache = entt::locator<CubeMapCache>::value();
+    auto& cubemap_cache = entt::locator<TextureCache>::value();
     static u32 current_index = static_cast<u32>(-1);
 
     draw_selector(current_index, cubemap_cache);

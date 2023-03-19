@@ -19,10 +19,6 @@ set(SOURCES
         src/core/reflection.h
         src/core/transform.cpp
         src/core/transform.h
-        src/graphics/cube_map.cpp
-        src/graphics/cube_map.h
-        src/graphics/cube_map_cache.cpp
-        src/graphics/cube_map_cache.h
         src/graphics/framebuffer.cpp
         src/graphics/framebuffer.h
         src/graphics/framebuffer_cache.cpp

@@ -59,7 +59,7 @@ auto engine::ui_draw(
     Scene* scene,
     GLFWwindow* window,
     entt::registry& registry,
-    FrameBuffer* scene_texture
+    Framebuffer* scene_texture
 ) -> void {
     ImGui::BeginMainMenuBar();
 

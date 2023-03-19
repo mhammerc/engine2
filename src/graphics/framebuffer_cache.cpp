@@ -6,8 +6,8 @@
 
 using namespace engine;
 
-auto FrameBufferLoader::operator()(std::string name, vec2i size, FrameBuffer::Type type) const -> result_type {
-    auto a = FrameBuffer::create(size, type);
+auto FrameBufferLoader::operator()(std::string name, vec2i size, Framebuffer::Type type) const -> result_type {
+    auto a = Framebuffer::create(size, type);
 
     return std::make_shared<FrameBufferCached>(std::make_pair(std::move(name), std::move(*a)));
 }

@@ -6,10 +6,10 @@
 #include <entt/entt.hpp>
 
 #include "../core/entity.h"
-#include "../graphics/cube_map_cache.h"
 #include "../graphics/mesh_cache.h"
 #include "../graphics/renderer_context.h"
 #include "../graphics/shader_cache.h"
+#include "../graphics/texture_cache.h"
 #include "components/base_component.h"
 #include "components/camera_component.h"
 #include "components/light_component.h"
@@ -92,8 +92,8 @@ auto Scene::draw_nodes() -> void {
     auto drawables = registry.view<BaseComponent, MaterialComponent>();
     auto lights = registry.view<BaseComponent, LightComponent>();
 
-    auto& cubemap_cache = entt::locator<CubeMapCache>::value();
-    auto skybox = cubemap_cache["skybox"_hs];
+    auto& texture_cache = entt::locator<TextureCache>::value();
+    auto skybox = texture_cache["skybox"_hs];
     skybox->activate_as(10);
 
     auto [camera_base, camera_config] = camera_info();
@@ -216,7 +216,7 @@ auto Scene::draw_skybox() -> void {
 
     auto const& renderer_context = entt::locator<RendererContext>::value();
 
-    auto cubemap = entt::locator<CubeMapCache>::value()["skybox"_hs];
+    auto cubemap = entt::locator<TextureCache>::value()["skybox"_hs];
     auto shader = entt::locator<ShaderCache>::value()["skybox"_hs];
     auto cube = entt::locator<MeshCache>::value()["cube"_hs];
 

@@ -93,8 +93,7 @@ static auto aimaterial_to_textures(aiMaterial const* mat, aiScene const* /*scene
 
         auto texture = texture_cache.load(
             entt::hashed_string(texture_path.string().c_str()),
-            texture_path,
-            Texture::Type::Diffuse
+            Texture::from_file_2d(texture_path, Texture::Format::Color)
         );
         textures.insert({1, texture.first->second.handle()});
     }
@@ -108,8 +107,7 @@ static auto aimaterial_to_textures(aiMaterial const* mat, aiScene const* /*scene
 
         auto texture = texture_cache.load(
             entt::hashed_string(texture_path.string().c_str()),
-            texture_path,
-            Texture::Type::Specular
+            Texture::from_file_2d(texture_path, Texture::Format::Color)
         );
         textures.insert({2, texture.first->second.handle()});
     }

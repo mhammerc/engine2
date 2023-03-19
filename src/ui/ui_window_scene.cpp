@@ -10,7 +10,7 @@
 using namespace engine;
 
 // return <image position, image size>
-static auto draw(FrameBuffer* scene_texture) -> std::tuple<vec2, vec2> {
+static auto draw(Framebuffer* scene_texture) -> std::tuple<vec2, vec2> {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 
     ImGui::Begin("Scene");
@@ -37,7 +37,7 @@ static auto draw(FrameBuffer* scene_texture) -> std::tuple<vec2, vec2> {
     return {image_pos, image_size};
 }
 
-auto ui::internal::ui_draw_window_scene(entt::registry& registry, FrameBuffer* scene_texture) -> entt::entity {
+auto ui::internal::ui_draw_window_scene(entt::registry& registry, Framebuffer* scene_texture) -> entt::entity {
     auto [image_pos, image_size] = draw(scene_texture);
 
     vec2 mouse_pos = ImGui::GetMousePos();

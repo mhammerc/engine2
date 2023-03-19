@@ -15,7 +15,7 @@ using namespace engine;
  *  - each buffers must be of the same size as the framebuffer
  */
 
-auto FrameBuffer::create(vec2i size, Type type) -> std::unique_ptr<FrameBuffer> {
+auto Framebuffer::create(vec2i size, Type type) -> std::unique_ptr<Framebuffer> {
     GLuint handle = 0;
     glGenFramebuffers(1, &handle);
 
@@ -23,14 +23,15 @@ auto FrameBuffer::create(vec2i size, Type type) -> std::unique_ptr<FrameBuffer> 
 
     std::unique_ptr<Texture> color_buffer = nullptr;
     if (type == Type::ColorDepthStencil) {
-        color_buffer = Texture::from_empty("fb_color", Texture::Type::Color, size, 0);
+        color_buffer = Texture::from_empty("fb_color", Texture::Type::Texture2D, Texture::Format::Color, size);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, color_buffer->handle(), 0);
     } else {
         glDrawBuffer(GL_NONE);
         glReadBuffer(GL_NONE);
     }
 
-    auto depth_stencil_buffer = Texture::from_empty("fb_depth", Texture::Type::DepthStencil, size, 0);
+    auto depth_stencil_buffer =
+        Texture::from_empty("fb_depth", Texture::Type::Texture2D, Texture::Format::DepthStencil, size);
     glFramebufferTexture2D(
         GL_FRAMEBUFFER,
         GL_DEPTH_STENCIL_ATTACHMENT,
@@ -46,7 +47,7 @@ auto FrameBuffer::create(vec2i size, Type type) -> std::unique_ptr<FrameBuffer> 
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    auto frame_buffer = std::make_unique<FrameBuffer>(FrameBuffer());
+    auto frame_buffer = std::make_unique<Framebuffer>(Framebuffer());
     frame_buffer->_handle = handle;
     frame_buffer->_type = type;
     frame_buffer->_size = size;
@@ -56,48 +57,48 @@ auto FrameBuffer::create(vec2i size, Type type) -> std::unique_ptr<FrameBuffer> 
     return frame_buffer;
 }
 
-auto FrameBuffer::resize(vec2i size) -> void {
+auto Framebuffer::resize(vec2i size) -> void {
     if (size == _size) {
         // Already the good size
         return;
     }
 
-    auto new_frame_buffer = FrameBuffer::create(size, _type);
+    auto new_frame_buffer = Framebuffer::create(size, _type);
 
     std::swap(*this, *new_frame_buffer);
 }
 
-auto FrameBuffer::bind() -> void {
+auto Framebuffer::bind() -> void {
     glBindFramebuffer(GL_FRAMEBUFFER, _handle);
 
     glViewport(0, 0, _size.x, _size.y);
 }
 
-auto FrameBuffer::unbind() -> void {
+auto Framebuffer::unbind() -> void {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-auto FrameBuffer::handle() const -> GLuint {
+auto Framebuffer::handle() const -> GLuint {
     return _handle;
 }
 
-auto FrameBuffer::type() const -> Type {
+auto Framebuffer::type() const -> Type {
     return _type;
 }
 
-auto FrameBuffer::size() const -> vec2i {
+auto Framebuffer::size() const -> vec2i {
     return _size;
 }
 
-auto FrameBuffer::color_texture() const -> Texture* {
+auto Framebuffer::color_texture() const -> Texture* {
     return _color.get();
 }
 
-auto FrameBuffer::depth_stencil_texture() const -> Texture* {
+auto Framebuffer::depth_stencil_texture() const -> Texture* {
     return _depth_stencil.get();
 }
 
-FrameBuffer::FrameBuffer(FrameBuffer&& from) noexcept :
+Framebuffer::Framebuffer(Framebuffer&& from) noexcept :
     _handle(from._handle),
     _type(from._type),
     _size(from._size),
@@ -106,7 +107,7 @@ FrameBuffer::FrameBuffer(FrameBuffer&& from) noexcept :
     from._handle = 0;
 }
 
-auto FrameBuffer::operator=(FrameBuffer&& from) noexcept -> FrameBuffer& {
+auto Framebuffer::operator=(Framebuffer&& from) noexcept -> Framebuffer& {
     release();
 
     _handle = from._handle;
@@ -120,11 +121,11 @@ auto FrameBuffer::operator=(FrameBuffer&& from) noexcept -> FrameBuffer& {
     return *this;
 }
 
-FrameBuffer::~FrameBuffer() noexcept {
+Framebuffer::~Framebuffer() noexcept {
     release();
 }
 
-auto FrameBuffer::release() -> void {
+auto Framebuffer::release() -> void {
     if (_handle != 0) {
         glDeleteFramebuffers(1, &_handle);
         _handle = 0;
