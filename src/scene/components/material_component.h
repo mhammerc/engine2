@@ -6,7 +6,7 @@
 #include "../../common.h"
 #include "../../graphics/mesh.h"
 #include "../../graphics/shader_program.h"
-#include "../../graphics/texture.h"
+#include "../../graphics/texture/texture.h"
 
 namespace engine {
 

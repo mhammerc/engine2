@@ -2,9 +2,6 @@
 
 #include <imgui/imgui.h>
 
-#include <entt/entt.hpp>
-#include <optional>
-
 #include "../ui_internal.h"
 
 using namespace engine;
@@ -18,19 +15,19 @@ auto ui::internal::ui_draw_window_texture_viewer(bool* is_open) -> void {
 
     if (ImGui::BeginTabBar("FramebufferViewerTabbar")) {
         if (ImGui::BeginTabItem("FrameBuffer")) {
-            framebuffer();
+            draw_framebuffer_viewer();
 
             ImGui::EndTabItem();
         }
 
         if (ImGui::BeginTabItem("Texture")) {
-            texture();
+            draw_texture_viewer();
 
             ImGui::EndTabItem();
         }
 
         if (ImGui::BeginTabItem("Cubemap")) {
-            cubemap();
+            draw_cubemap_viewer();
 
             ImGui::EndTabItem();
         }

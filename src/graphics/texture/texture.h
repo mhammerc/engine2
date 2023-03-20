@@ -5,7 +5,7 @@
 #include <memory>
 #include <string>
 
-#include "../common.h"
+#include "../../common.h"
 
 namespace engine {
 
@@ -16,8 +16,8 @@ namespace engine {
  */
 class Texture {
   public:
-    enum Format { Color, Depth, DepthStencil };
-    enum Type { Texture2D = 0, CubeMap = 1 };
+    enum class Format { RGB, SRGB, Depth, DepthStencil };
+    enum class Type { Texture2D, CubeMap };
 
   public:
     /**
@@ -48,7 +48,6 @@ class Texture {
   public:
     auto activate_as(u32 index, bool disable = false) -> void;
 
-  public:
     [[nodiscard]] auto handle() const -> u32;
     [[nodiscard]] auto size() const -> vec2i;
     [[nodiscard]] auto format() const -> Format;
@@ -73,9 +72,9 @@ class Texture {
      */
     vec2i _size {0, 0};
 
-    Format _format = Format::Color;
+    Format _format = Format::RGB;
 
-    Type _type = Texture2D;
+    Type _type = Type::Texture2D;
 
     std::string _name;
 };

@@ -19,6 +19,7 @@ set(SOURCES
         src/core/reflection.h
         src/core/transform.cpp
         src/core/transform.h
+        src/graphics/texture/texture_internal.cpp
         src/graphics/framebuffer.cpp
         src/graphics/framebuffer.h
         src/graphics/framebuffer_cache.cpp
@@ -35,12 +36,12 @@ set(SOURCES
         src/graphics/shader_program.h
         src/graphics/shader_source.cpp
         src/graphics/shader_source.h
-        src/graphics/texture.cpp
-        src/graphics/texture.h
-        src/graphics/texture_cache.cpp
-        src/graphics/texture_cache.h
-        src/graphics/texture_image.cpp
-        src/graphics/texture_image.h
+        src/graphics/texture/texture.cpp
+        src/graphics/texture/texture.h
+        src/graphics/texture/texture_cache.cpp
+        src/graphics/texture/texture_cache.h
+        src/graphics/texture/texture_image.cpp
+        src/graphics/texture/texture_image.h
         src/main.cpp
         src/platform/glfw.cpp
         src/platform/glfw.h
@@ -65,6 +66,7 @@ set(SOURCES
         src/systems/draw_identify.cpp
         src/systems/draw_light_gizmo.cpp
         src/systems/draw_outline.cpp
+        src/systems/draw_shadow_maps.cpp
         src/systems/should_close_system.cpp
         src/systems/systems.h
         src/ui/entity_editor/entity_property_editor.cpp

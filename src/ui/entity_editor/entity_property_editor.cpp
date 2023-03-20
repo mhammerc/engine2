@@ -6,7 +6,7 @@
 #include "../../graphics/mesh_cache.h"
 #include "../../graphics/shader_cache.h"
 #include "../../graphics/shader_program.h"
-#include "../../graphics/texture.h"
+#include "../../graphics/texture/texture.h"
 #include "entity_editor.h"
 #include "glm/gtc/quaternion.hpp"
 

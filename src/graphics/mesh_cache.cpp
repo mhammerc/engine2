@@ -2,11 +2,12 @@
 
 using namespace engine;
 
-auto MeshLoader::operator()(std::string const& name, std::vector<Mesh::Vertex>&& vertices, std::vector<u32>&& indices)
-    const -> result_type {
-    return std::make_shared<Mesh>(name, std::move(vertices), std::move(indices));
+auto MeshLoader::operator()(std::unique_ptr<Mesh> mesh) const -> result_type {
+    return std::move(mesh);
 }
 
-auto MeshLoader::operator()(std::shared_ptr<Mesh> mesh) const -> result_type {
-    return mesh;
+auto MeshLoader::operator()(std::function<std::unique_ptr<Mesh>(void)> const& deferred_loading) const -> result_type {
+    auto resource = deferred_loading();
+
+    return std::move(resource);
 }

@@ -1,12 +1,16 @@
 #include "texture.h"
 
 #include "texture_image.h"
+#include "texture_internal.h"
 
 using namespace engine;
-
-static constexpr std::array<int, 2> type_to_opengl {GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP};
+using namespace engine::internal::texture;
 
 auto Texture::from_file_2d(const std::filesystem::path& path, Format format, bool flip) -> std::unique_ptr<Texture> {
+    if (format != Format::RGB && format != Format::SRGB) {
+        ENGINE_CODE_ERROR("only Format::RGB and Format::SRGB are supported for now.");
+    }
+
     auto image = TextureImage::from_file(path, TextureImage::Channels::RGB, flip);
 
     if (!image) {
@@ -22,24 +26,8 @@ auto Texture::from_file_2d(const std::filesystem::path& path, Format format, boo
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    GLint internalformat = GL_RGB;
-
-    if (format == Format::Color) {
-        // TODO: currently, all color textures are GL_SRGB: albedo, specular, ...
-        internalformat = GL_SRGB;
-    }
-
-    glTexImage2D(
-        GL_TEXTURE_2D,
-        0,
-        internalformat,
-        image->size().x,
-        image->size().y,
-        0,
-        GL_RGB,
-        GL_UNSIGNED_BYTE,
-        image->data()
-    );
+    auto properties = OpenGLTextureProperties::from_texture_format(format);
+    tex_image_2d(GL_TEXTURE_2D, properties, image->size(), image->data());
     glGenerateMipmap(GL_TEXTURE_2D);
 
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -56,6 +44,9 @@ auto Texture::from_file_2d(const std::filesystem::path& path, Format format, boo
 
 auto Texture::from_files_cubemap(std::string const& name, std::array<std::filesystem::path, 6> const& files)
     -> std::unique_ptr<Texture> {
+    auto format = Format::RGB;
+    auto properties = OpenGLTextureProperties::from_texture_format(format);
+
     u32 handle = 0;
     glGenTextures(1, &handle);
     glBindTexture(GL_TEXTURE_CUBE_MAP, handle);
@@ -76,18 +67,7 @@ auto Texture::from_files_cubemap(std::string const& name, std::array<std::filesy
         }
 
         last_size = image->size();
-
-        glTexImage2D(
-            GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-            0,
-            GL_RGB,
-            image->size().x,
-            image->size().y,
-            0,
-            GL_RGB,
-            GL_UNSIGNED_BYTE,
-            image->data()
-        );
+        tex_image_2d(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, properties, image->size(), image->data());
     }
 
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -101,7 +81,7 @@ auto Texture::from_files_cubemap(std::string const& name, std::array<std::filesy
     auto texture = std::make_unique<Texture>(Texture());
     texture->_handle = handle;
     texture->_size = last_size;
-    texture->_format = Format::Color;
+    texture->_format = format;
     texture->_type = Type::CubeMap;
     texture->_name = name;
 
@@ -109,56 +89,24 @@ auto Texture::from_files_cubemap(std::string const& name, std::array<std::filesy
 }
 
 auto Texture::from_empty(std::string const& name, Type type, Format format, vec2i size) -> std::unique_ptr<Texture> {
-    int const target = type_to_opengl.at(type);
+    auto const target = opengl_target_from_type(type);
 
     u32 handle = 0;
     glGenTextures(1, &handle);
 
     glBindTexture(target, handle);
 
-    glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    GLint internalformat = 0;
-    GLenum gl_format = 0;
-    GLenum gl_type = 0;
-
-    if (format == Format::Color) {
-        internalformat = GL_RGB;
-        gl_format = GL_RGB;
-        gl_type = GL_UNSIGNED_BYTE;
-    } else if (format == Format::DepthStencil) {
-        internalformat = GL_DEPTH24_STENCIL8;
-        gl_format = GL_DEPTH_STENCIL;
-        gl_type = GL_UNSIGNED_INT_24_8;
-    } else if (format == Format::Depth) {
-        internalformat = GL_DEPTH_COMPONENT;
-        gl_format = GL_DEPTH_COMPONENT;
-        gl_type = GL_FLOAT;
-    } else {
-        SPDLOG_ERROR("[source %s] [function %!] [line %#] Missing match in pattern matching");
-        return nullptr;
-    }
+    auto properties = OpenGLTextureProperties::from_texture_format(format);
 
     if (type == Type::Texture2D) {
-        glTexImage2D(target, 0, internalformat, size.x, size.y, 0, gl_format, gl_type, nullptr);
+        tex_image_2d(target, properties, size, nullptr);
     } else if (type == Type::CubeMap) {
         // Create each sides of the cube map
         for (int i = 0; i < 6; ++i) {
-            glTexImage2D(
-                GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                0,
-                internalformat,
-                size.x,
-                size.y,
-                0,
-                gl_format,
-                gl_type,
-                nullptr
-            );
+            tex_image_2d(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, properties, size, nullptr);
         }
     } else {
-        SPDLOG_ERROR("[source %s] [function %!] [line %#] Missing match in pattern matching");
+        ENGINE_CODE_ERROR("missing case");
         return nullptr;
     }
 
@@ -210,7 +158,7 @@ auto Texture::operator=(Texture&& from) noexcept -> Texture& {
 }
 
 auto Texture::activate_as(u32 index, bool disable) -> void {
-    int const target = type_to_opengl.at(_type);
+    auto const target = opengl_target_from_type(_type);
 
     glActiveTexture(GL_TEXTURE0 + index);
     glBindTexture(target, disable ? 0 : _handle);

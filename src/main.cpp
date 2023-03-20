@@ -10,7 +10,7 @@
 #include "graphics/renderer_context.h"
 #include "graphics/shader_cache.h"
 #include "graphics/shader_program.h"
-#include "graphics/texture_cache.h"
+#include "graphics/texture/texture_cache.h"
 #include "platform/glfw.h"
 #include "scene/components/base_component.h"
 #include "scene/components/light_component.h"
@@ -49,50 +49,59 @@ auto main() -> int {
 
     entt::locator<engine::Input>::emplace();
 
-    auto [diffuse_shader, _] = shader_cache.load("diffuse"_hs, "diffuse");
+    auto [diffuse_shader, _] = shader_cache.load("diffuse"_hs, ShaderProgram::from_name("diffuse"));
     if (diffuse_shader->second.handle() == nullptr) {
         spdlog::critical("could not create shader program.");
         return 1;
     }
 
-    auto [light_source_shader, _2] = shader_cache.load("light"_hs, "light");
+    auto [light_source_shader, _2] = shader_cache.load("light"_hs, ShaderProgram::from_name("light"));
     if (light_source_shader->second.handle() == nullptr) {
         spdlog::critical("could not create shader program.");
         return 1;
     }
 
-    auto [outline_shader, _3] = shader_cache.load("outline"_hs, "outline");
+    auto [outline_shader, _3] = shader_cache.load("outline"_hs, ShaderProgram::from_name("outline"));
     if (outline_shader->second.handle() == nullptr) {
         spdlog::critical("could not create shader program.");
         return 1;
     }
 
-    auto [postprocess_shader, _4] = shader_cache.load("postprocess"_hs, "postprocess");
+    auto [postprocess_shader, _4] = shader_cache.load("postprocess"_hs, ShaderProgram::from_name("postprocess"));
     if (postprocess_shader->second.handle() == nullptr) {
         spdlog::critical("could not create shader program.");
         return 1;
     }
 
-    auto [normal_shader, _5] = shader_cache.load("normal"_hs, "normal");
+    auto [normal_shader, _5] = shader_cache.load("normal"_hs, ShaderProgram::from_name("normal"));
     if (normal_shader->second.handle() == nullptr) {
         spdlog::critical("could not create shader program.");
         return 1;
     }
 
-    auto [skybox_shader, _7] = shader_cache.load("skybox"_hs, "skybox");
+    auto [skybox_shader, _7] = shader_cache.load("skybox"_hs, ShaderProgram::from_name("skybox"));
     if (skybox_shader->second.handle() == nullptr) {
         spdlog::critical("could not create shader program.");
         return 1;
     }
 
-    auto [unlit_single_color_shader, _8] = shader_cache.load("unlit_single_color"_hs, "unlit_single_color");
+    auto [unlit_single_color_shader, _8] =
+        shader_cache.load("unlit_single_color"_hs, ShaderProgram::from_name("unlit_single_color"));
     if (unlit_single_color_shader->second.handle() == nullptr) {
         spdlog::critical("could not create shader program.");
         return 1;
     }
 
-    auto [cubemap_viewer_shader, _10] = shader_cache.load("cubemap_viewer"_hs, "cubemap_viewer");
+    auto [cubemap_viewer_shader, _10] =
+        shader_cache.load("cubemap_viewer"_hs, ShaderProgram::from_name("cubemap_viewer"));
     if (cubemap_viewer_shader->second.handle() == nullptr) {
+        spdlog::critical("could not create shader program.");
+        return 1;
+    }
+
+    auto [light_point_shadow_map_shader, _11] =
+        shader_cache.load("light_point_shadow_map"_hs, ShaderProgram::from_name("light_point_shadow_map"));
+    if (light_point_shadow_map_shader->second.handle() == nullptr) {
         spdlog::critical("could not create shader program.");
         return 1;
     }
@@ -127,19 +136,24 @@ auto main() -> int {
 
     framebuffer_cache.load(
         "color"_hs,
-        Framebuffer::create("color", vec2i {1, 1}, Framebuffer::Format::ColorDepth, Framebuffer::Type::Texture2D)
+        Framebuffer::create(
+            "color",
+            vec2i {1, 1},
+            Framebuffer::Content::ColorAndDepthStencil,
+            Framebuffer::Type::Texture2D
+        )
     );
     framebuffer_cache.load(
         "outline"_hs,
-        Framebuffer::create("outline", vec2i {1, 1}, Framebuffer::Format::Color, Framebuffer::Type::Texture2D)
+        Framebuffer::create("outline", vec2i {1, 1}, Framebuffer::Content::Color, Framebuffer::Type::Texture2D)
     );
     framebuffer_cache.load(
         "postprocess"_hs,
-        Framebuffer::create("postprocess", vec2i {1, 1}, Framebuffer::Format::Color, Framebuffer::Type::Texture2D)
+        Framebuffer::create("postprocess", vec2i {1, 1}, Framebuffer::Content::Color, Framebuffer::Type::Texture2D)
     );
     framebuffer_cache.load(
         "identify"_hs,
-        Framebuffer::create("identify", vec2i {1, 1}, Framebuffer::Format::Color, Framebuffer::Type::Texture2D)
+        Framebuffer::create("identify", vec2i {1, 1}, Framebuffer::Content::Color, Framebuffer::Type::Texture2D)
     );
 
     mesh_cache.load("quad"_hs, Mesh::from_quad());
@@ -180,6 +194,8 @@ auto main() -> int {
         framebuffer_outline.resize(size);
         framebuffer_identify.resize(size);
 
+        // Render shadow maps
+        systems::draw_shadow_maps(registry);
 
         // Render scene
         {

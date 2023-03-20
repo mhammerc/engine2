@@ -11,11 +11,14 @@ namespace engine {
 
 class ShaderProgram {
   public:
+    static auto from_name(std::string const& name) -> std::unique_ptr<ShaderProgram>;
+
     static auto from_vertex_and_fragment(
         const std::string& name,
         const std::filesystem::path& vertex,
         const std::filesystem::path& fragment
     ) -> std::unique_ptr<ShaderProgram>;
+
     static auto from_vertex_and_fragment_and_geometry(
         const std::string& name,
         const std::filesystem::path& vertex,

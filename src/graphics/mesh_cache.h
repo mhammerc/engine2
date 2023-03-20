@@ -1,18 +1,22 @@
 #pragma once
 
 #include <entt/entt.hpp>
-#include <string>
+#include <functional>
+#include <memory>
 
 #include "mesh.h"
 
 namespace engine {
 
+/**
+ * See TextureLoader for documentation on the loading paradigm.
+ */
 struct MeshLoader {
     using result_type = std::shared_ptr<Mesh>;
 
-    auto operator()(std::string const& name, std::vector<Mesh::Vertex>&& vertices, std::vector<u32>&& indices) const
-        -> result_type;
-    auto operator()(std::shared_ptr<Mesh> mesh) const -> result_type;
+    auto operator()(std::unique_ptr<Mesh> mesh) const -> result_type;
+
+    auto operator()(std::function<std::unique_ptr<Mesh>(void)> const& deferred_loading) const -> result_type;
 };
 
 using MeshCache = entt::resource_cache<Mesh, MeshLoader>;

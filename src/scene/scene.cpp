@@ -6,10 +6,11 @@
 #include <entt/entt.hpp>
 
 #include "../core/entity.h"
+#include "../graphics/framebuffer_cache.h"
 #include "../graphics/mesh_cache.h"
 #include "../graphics/renderer_context.h"
 #include "../graphics/shader_cache.h"
-#include "../graphics/texture_cache.h"
+#include "../graphics/texture/texture_cache.h"
 #include "components/base_component.h"
 #include "components/camera_component.h"
 #include "components/light_component.h"
@@ -54,16 +55,16 @@ Scene::Scene(entt::registry& registry) : registry(registry) {
     player.yaw = 140.F;
     player.update_base_rotation(base);
 
-    auto& spotlight = registry.emplace<LightComponent>(camera);
-    spotlight.type = LightComponent::Spot;
-    spotlight.inner_cut_off = glm::cos(glm::radians(12.5F));
-    spotlight.outer_cut_off = glm::cos(glm::radians(17.5F));
-    spotlight.linear = 0.09F;
-    spotlight.quadratic = 0.032F;
-    spotlight.ambient = glm::vec3(0.2F, 0.2F, 0.2F);
-    spotlight.diffuse = glm::vec3(0.5F, 0.5F, 0.5F);
-    spotlight.specular = glm::vec3(0.0F, 0.0F, 0.0F);
-    spotlight.draw_gizmo = false;
+    // auto& spotlight = registry.emplace<LightComponent>(camera);
+    // spotlight.type = LightComponent::Spot;
+    // spotlight.inner_cut_off = glm::cos(glm::radians(12.5F));
+    // spotlight.outer_cut_off = glm::cos(glm::radians(17.5F));
+    // spotlight.linear = 0.09F;
+    // spotlight.quadratic = 0.032F;
+    // spotlight.ambient = glm::vec3(0.2F, 0.2F, 0.2F);
+    // spotlight.diffuse = glm::vec3(0.5F, 0.5F, 0.5F);
+    // spotlight.specular = glm::vec3(0.0F, 0.0F, 0.0F);
+    // spotlight.draw_gizmo = false;
 }
 
 auto Scene::camera_info() -> std::tuple<engine::BaseComponent&, engine::CameraComponent&> {
@@ -96,6 +97,9 @@ auto Scene::draw_nodes() -> void {
     auto skybox = texture_cache["skybox"_hs];
     skybox->activate_as(10);
 
+    auto* shadow_map = entt::locator<FramebufferCache>::value()["shadow_fb"_hs]->depth_stencil_texture();
+    shadow_map->activate_as(20);
+
     auto [camera_base, camera_config] = camera_info();
 
     for (auto [entity, base, material] : drawables.each()) {
@@ -115,6 +119,9 @@ auto Scene::draw_nodes() -> void {
         material.shader->set_uniform("projection", renderer_context.projection);
 
         material.shader->set_uniform("cameraPosition", camera_base.world_transform(registry).position);
+
+        material.shader->set_uniform("shadow_map", 20);
+        material.shader->set_uniform("shadow_map_far_plane", 25.F);
 
         int light_index = 0;
         for (auto [entity, base, light] : lights.each()) {
@@ -177,6 +184,7 @@ auto Scene::draw_nodes() -> void {
     }
 
     skybox->activate_as(10, true);
+    shadow_map->activate_as(20, true);
 }
 
 auto Scene::draw_nodes_normals() -> void {

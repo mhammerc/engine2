@@ -22,6 +22,8 @@
 
 namespace engine {
 
+#define ENGINE_CODE_ERROR(message) SPDLOG_ERROR(message);
+
 using i8 = std::int8_t;
 using i16 = std::int16_t;
 using i32 = std::int32_t;

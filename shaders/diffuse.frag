@@ -62,6 +62,9 @@ struct Light {
     vec3 specular;
 };
 
+uniform samplerCube shadow_map;
+uniform float shadow_map_far_plane;
+
 #define NUMBER_OF_LIGHTS 10
 uniform Light lights[NUMBER_OF_LIGHTS];
 
@@ -86,6 +89,7 @@ uniform Material material;
 vec3 lightDirectional(Light light, vec3 normal, vec3 fragmentToCameraDirection);
 vec3 lightPoint(Light light, vec3 normal, vec3 fragmentToCameraDirection);
 vec3 lightSpot(Light light, vec3 normal, vec3 fragmentToCameraDirection);
+float shadow_calculation(Light light);
 
 void main() {
     // The normal vector comes from the vertex shader. Because of interpolation,
@@ -104,7 +108,7 @@ void main() {
         vec3 refraction = refract(-fragmentToCameraDirection, normal, ratio);
         fragColor += texture(material.texture_environment, refraction).xyz;
     } else {
-        for (int i = 0; i < NUMBER_OF_LIGHTS; ++i) {
+        for (int i = 0; i < /*NUMBER_OF_LIGHTS*/ 1; ++i) {
             Light light = lights[i];
 
             light.direction = normalize(light.direction);
@@ -120,6 +124,20 @@ void main() {
     }
 
     FragColor = vec4(fragColor, 1.);
+}
+
+float shadow_calculation(Light light) {
+    // FragmentPosition
+    vec3 light_to_fragment = FragmentPosition - light.position;
+    float closest_depth = texture(shadow_map, light_to_fragment).r;
+    closest_depth *= shadow_map_far_plane;
+
+    float current_depth = length(light_to_fragment);
+
+    float bias = 0.05;
+    float shadow = current_depth - bias > closest_depth ? 1.0 : 0.0;
+
+    return shadow;
 }
 
 vec3 lightDirectional(Light light, vec3 normal, vec3 fragmentToCameraDirection) {
@@ -170,7 +188,10 @@ vec3 lightPoint(Light light, vec3 normal, vec3 fragmentToCameraDirection) {
     diffuse *= attenuation;
     specular *= attenuation;
 
-    return (ambient + diffuse + specular);
+    float shadow = shadow_calculation(light);
+
+    // return (ambient + diffuse + specular);
+    return (ambient + (1.0 - shadow) * (diffuse + specular));
 }
 
 vec3 lightSpot(Light light, vec3 normal, vec3 fragmentToCameraDirection) {

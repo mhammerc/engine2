@@ -2,27 +2,27 @@
 
 ## TODO
 
+- Generize Shadows
 - Antialiasing
 - Refactor draw functions into systems
 - Gizmos (like unreal engine)
 - no more renderer context
-- Shadows
 
 ## Development Environment
 
 As of 2023 March, we use the following tools.
 
-Either Visual Studio Code:
+Either `Visual Studio Code`:
 
 - `C/C++` from `Microsoft`
-    - Used only for debugging.
+  - Used only for debugging.
 - `CMake Tools` from `Microsoft`
 - `clangd` from `LLVM`
-    - Accept to disable Intellisense
-    - Run `clangd: download language server` to have a proper clangd
+  - Accept to disable Intellisense
+  - Run `clangd: download language server` to have a proper clangd
 - `Clang-Format`
 
-Or you can use CLion. Everything works out of the box with CLion.
+Or you can use `CLion`. Everything works out of the box with CLion.
 
 ## Build
 
@@ -47,7 +47,7 @@ pkg install xorgproto # FreeBSD
 # If you are compiling for Wayland
 sudo apt install libwayland-dev libxkbcommon-dev wayland-protocols extra-cmake-modules # Debian/Ubuntu and derivatives
 sudo dnf install wayland-devel libxkbcommon-devel wayland-protocols-devel extra-cmake-modules # Fedora and derivatives
-pkg install wayland libxkbcommon wayland-protocols kf5-extra-cmake-modules # FreeBSD 
+pkg install wayland libxkbcommon wayland-protocols kf5-extra-cmake-modules # FreeBSD
 ```
 
 ### MacOS

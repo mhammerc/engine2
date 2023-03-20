@@ -4,7 +4,7 @@
 #include <string>
 
 #include "../common.h"
-#include "texture.h"
+#include "texture/texture.h"
 
 namespace engine {
 
@@ -18,10 +18,23 @@ class Framebuffer {
     Framebuffer(Framebuffer&&) noexcept;
     auto operator=(Framebuffer&&) noexcept -> Framebuffer&;
 
-    enum Format { Color, Depth, DepthStencil, ColorDepthStencil, ColorDepth };
+    enum class Content { Color, DepthStencil, ColorAndDepthStencil };
     using Type = Texture::Type;
+    enum class ColorFormat { RGB, SRGB };
+    enum class DepthFormat { Depth, DepthStencil };
 
-    static auto create(std::string const& name, vec2i size, Format format, Type type) -> std::unique_ptr<Framebuffer>;
+    static auto create(
+        std::string const& name,
+        vec2i size,
+        Content content,
+        Type type,
+        ColorFormat color_format = ColorFormat::RGB,
+        DepthFormat depth_format = DepthFormat::Depth
+    ) -> std::unique_ptr<Framebuffer>;
+
+    // Just an overload for easier creation of depth-only framebuffers
+    static auto create(std::string const& name, vec2i size, Content content, Type type, DepthFormat depth_format)
+        -> std::unique_ptr<Framebuffer>;
 
     // Methods
     auto resize(vec2i size) -> void;
@@ -31,8 +44,10 @@ class Framebuffer {
 
     [[nodiscard]] auto handle() const -> GLuint;
     [[nodiscard]] auto size() const -> vec2i;
-    [[nodiscard]] auto format() const -> Format;
+    [[nodiscard]] auto content() const -> Content;
     [[nodiscard]] auto type() const -> Type;
+    [[nodiscard]] auto color_format() const -> ColorFormat;
+    [[nodiscard]] auto depth_format() const -> DepthFormat;
     [[nodiscard]] auto color_texture() const -> Texture*;
     [[nodiscard]] auto depth_stencil_texture() const -> Texture*;
     [[nodiscard]] auto name() -> std::string&;
@@ -44,8 +59,10 @@ class Framebuffer {
     GLuint _handle = 0;
 
     vec2i _size = {0, 0};
-    Format _format = Format::ColorDepthStencil;
+    Content _content = Content::ColorAndDepthStencil;
     Type _type = Type::Texture2D;
+    ColorFormat _color_format = ColorFormat::RGB;
+    DepthFormat _depth_format = DepthFormat::Depth;
 
     std::string _name;
 

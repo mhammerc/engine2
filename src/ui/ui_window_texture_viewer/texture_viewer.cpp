@@ -4,40 +4,43 @@
 #include <optional>
 
 #include "../../common.h"
-#include "../../graphics/texture_cache.h"
+#include "../../graphics/texture/texture_cache.h"
 #include "../imgui.h"
 #include "../ui_internal.h"
 #include "ui_window_texture_viewer.h"
 
 using namespace engine;
 
-auto ui::internal::texture() -> void {
+static auto draw_texture_list(u32& current_index) -> void {
+    auto& texture_cache = entt::locator<TextureCache>::value();
+
+    auto current = texture_cache[current_index];
+    auto const preview_name = current ? current->name() : "Please select";
+
+    if (ImGui::BeginCombo("Texture", preview_name.c_str())) {
+        for (auto texture_pair : texture_cache) {
+            auto [index, texture] = texture_pair;
+
+            if (texture->type() != Texture::Type::Texture2D) {
+                continue;
+            }
+
+            auto selectable_name = fmt::format("{}##{}", texture->name(), index);
+
+            if (ImGui::Selectable(selectable_name.c_str(), index == current_index)) {
+                current_index = index;
+            }
+        }
+
+        ImGui::EndCombo();
+    }
+}
+
+auto ui::internal::draw_texture_viewer() -> void {
     auto& texture_cache = entt::locator<TextureCache>::value();
     static u32 current_index = static_cast<u32>(-1);
 
-    {
-        auto current =
-            texture_cache.contains(current_index) ? std::make_optional(texture_cache[current_index]) : std::nullopt;
-
-        auto const preview_name = current.has_value() ? (*current)->name() : "Please select";
-
-        if (ImGui::BeginCombo("Texture", preview_name.c_str())) {
-            for (auto texture : texture_cache) {
-                if (texture.second->type() != Texture::Type::Texture2D) {
-                    continue;
-                }
-
-                auto index = texture.first;
-                auto const name = texture.second->name();
-
-                if (ImGui::Selectable(fmt::format("{}##{}", name, index).c_str(), index == current_index)) {
-                    current_index = index;
-                }
-            }
-
-            ImGui::EndCombo();
-        }
-    }
+    draw_texture_list(current_index);
 
     if (current_index == static_cast<u32>(-1)) {
         return;

@@ -6,6 +6,34 @@
 
 using namespace engine;
 
+static auto color_format_to_texture_format(Framebuffer::ColorFormat format) -> Texture::Format {
+    if (format == Framebuffer::ColorFormat::RGB) {
+        return Texture::Format::RGB;
+    }
+
+    if (format == Framebuffer::ColorFormat::SRGB) {
+        return Texture::Format::SRGB;
+    }
+
+    ENGINE_CODE_ERROR("missing case");
+
+    return Texture::Format::RGB;
+}
+
+static auto depth_format_to_texture_format(Framebuffer::DepthFormat format) -> Texture::Format {
+    if (format == Framebuffer::DepthFormat::Depth) {
+        return Texture::Format::Depth;
+    }
+
+    if (format == Framebuffer::DepthFormat::DepthStencil) {
+        return Texture::Format::DepthStencil;
+    }
+
+    ENGINE_CODE_ERROR("missing case");
+
+    return Texture::Format::Depth;
+}
+
 /**
  * To create a complete framebuffer we need:
  *  - at least a color buffer is attached or `glDrawBuffer(GL_NONE); glReadBuffer(GL_NONE);`
@@ -15,8 +43,19 @@ using namespace engine;
  *  - each buffers must be of the same size as the framebuffer
  */
 
-auto Framebuffer::create(std::string const& name, vec2i size, Format format, Type type)
+auto Framebuffer::create(std::string const& name, vec2i size, Content content, Type type, DepthFormat depth_format)
     -> std::unique_ptr<Framebuffer> {
+    return Framebuffer::create(name, size, content, type, ColorFormat::RGB, depth_format);
+}
+
+auto Framebuffer::create(
+    std::string const& name,
+    vec2i size,
+    Content content,
+    Type type,
+    ColorFormat color_format,
+    DepthFormat depth_format
+) -> std::unique_ptr<Framebuffer> {
     GLuint handle = 0;
     glGenFramebuffers(1, &handle);
     glBindFramebuffer(GL_FRAMEBUFFER, handle);
@@ -24,26 +63,34 @@ auto Framebuffer::create(std::string const& name, vec2i size, Format format, Typ
     std::unique_ptr<Texture> color_buffer = nullptr;
     std::unique_ptr<Texture> depth_buffer = nullptr;
 
-    if (format == Format::Color || format == Format::ColorDepthStencil || format == Format::ColorDepth) {
-        color_buffer = Texture::from_empty("fb_color", Texture::Type::Texture2D, Texture::Format::Color, size);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, color_buffer->handle(), 0);
+    if (content == Content::Color || content == Content::ColorAndDepthStencil) {
+        auto texture_name = fmt::format("{}_fb_color", name);
+        color_buffer = Texture::from_empty(texture_name, type, color_format_to_texture_format(color_format), size);
+
+        if (type == Type::Texture2D) {
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, color_buffer->handle(), 0);
+        } else {
+            glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, color_buffer->handle(), 0);
+        }
     } else {
         glDrawBuffer(GL_NONE);
         glReadBuffer(GL_NONE);
     }
 
-    if (format == Format::Depth || format == Format::DepthStencil || format == Format::ColorDepthStencil
-        || format == Format::ColorDepth) {
-        Texture::Format tex_format = Texture::Format::Depth;
+    if (content == Content::DepthStencil || content == Content::ColorAndDepthStencil) {
         GLenum gl_attachment = GL_DEPTH_ATTACHMENT;
 
-        if (format == Format::DepthStencil || format == Format::ColorDepthStencil) {
-            tex_format = Texture::Format::DepthStencil;
+        if (depth_format == DepthFormat::DepthStencil) {
             gl_attachment = GL_DEPTH_STENCIL_ATTACHMENT;
         }
 
-        depth_buffer = Texture::from_empty("fb_depth", Texture::Type::Texture2D, tex_format, size);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, gl_attachment, GL_TEXTURE_2D, depth_buffer->handle(), 0);
+        depth_buffer = Texture::from_empty("fb_depth", type, depth_format_to_texture_format(depth_format), size);
+
+        if (type == Type::Texture2D) {
+            glFramebufferTexture2D(GL_FRAMEBUFFER, gl_attachment, GL_TEXTURE_2D, depth_buffer->handle(), 0);
+        } else {
+            glFramebufferTexture(GL_FRAMEBUFFER, gl_attachment, depth_buffer->handle(), 0);
+        }
     }
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
@@ -56,8 +103,10 @@ auto Framebuffer::create(std::string const& name, vec2i size, Format format, Typ
     auto framebuffer = std::make_unique<Framebuffer>(Framebuffer());
     framebuffer->_handle = handle;
     framebuffer->_size = size;
-    framebuffer->_format = format;
+    framebuffer->_content = content;
     framebuffer->_type = type;
+    framebuffer->_color_format = color_format;
+    framebuffer->_depth_format = depth_format;
     framebuffer->_color = std::move(color_buffer);
     framebuffer->_depth_stencil = std::move(depth_buffer);
     framebuffer->_name = name;
@@ -71,7 +120,7 @@ auto Framebuffer::resize(vec2i size) -> void {
         return;
     }
 
-    auto new_frame_buffer = Framebuffer::create(_name, size, _format, _type);
+    auto new_frame_buffer = Framebuffer::create(_name, size, _content, _type, _color_format, _depth_format);
 
     std::swap(*this, *new_frame_buffer);
 }
@@ -94,12 +143,20 @@ auto Framebuffer::size() const -> vec2i {
     return _size;
 }
 
-auto Framebuffer::format() const -> Format {
-    return _format;
+auto Framebuffer::content() const -> Content {
+    return _content;
 }
 
 auto Framebuffer::type() const -> Type {
     return _type;
+}
+
+auto Framebuffer::color_format() const -> ColorFormat {
+    return _color_format;
+}
+
+auto Framebuffer::depth_format() const -> DepthFormat {
+    return _depth_format;
 }
 
 auto Framebuffer::color_texture() const -> Texture* {
@@ -117,8 +174,10 @@ auto Framebuffer::name() -> std::string& {
 Framebuffer::Framebuffer(Framebuffer&& from) noexcept :
     _handle(from._handle),
     _size(from._size),
-    _format(from._format),
+    _content(from._content),
     _type(from._type),
+    _color_format(from._color_format),
+    _depth_format(from._depth_format),
     _name(std::move(from._name)),
     _color(std::move(from._color)),
     _depth_stencil(std::move(from._depth_stencil)) {
@@ -130,8 +189,10 @@ auto Framebuffer::operator=(Framebuffer&& from) noexcept -> Framebuffer& {
 
     _handle = from._handle;
     _size = from._size;
-    _format = from._format;
+    _content = from._content;
     _type = from._type;
+    _color_format = from._color_format;
+    _depth_format = from._depth_format;
     _name = std::move(from._name);
     _color = std::move(from._color);
     _depth_stencil = std::move(from._depth_stencil);

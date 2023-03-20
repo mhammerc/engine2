@@ -32,6 +32,22 @@ auto ShaderProgram::release() -> void {
     }
 }
 
+auto ShaderProgram::from_name(const std::string& name) -> std::unique_ptr<ShaderProgram> {
+    std::filesystem::path folder = "../shaders";
+
+    auto path = folder / name;
+
+    auto vertex = std::filesystem::path(path) += ".vert";
+    auto fragment = std::filesystem::path(path) += ".frag";
+    auto geometry = std::filesystem::path(path) += ".geo";
+
+    if (std::filesystem::exists(geometry)) {
+        return ShaderProgram::from_vertex_and_fragment_and_geometry(name, vertex, fragment, geometry);
+    }
+
+    return ShaderProgram::from_vertex_and_fragment(name, vertex, fragment);
+}
+
 auto ShaderProgram::from_vertex_and_fragment(
     const std::string& name,
     const std::filesystem::path& vertex_file,

@@ -12,8 +12,8 @@
 #include "../graphics/mesh.h"
 #include "../graphics/mesh_cache.h"
 #include "../graphics/shader_cache.h"
-#include "../graphics/texture.h"
-#include "../graphics/texture_cache.h"
+#include "../graphics/texture/texture.h"
+#include "../graphics/texture/texture_cache.h"
 #include "assimp/material.h"
 #include "components/material_component.h"
 
@@ -93,7 +93,7 @@ static auto aimaterial_to_textures(aiMaterial const* mat, aiScene const* /*scene
 
         auto texture = texture_cache.load(
             entt::hashed_string(texture_path.string().c_str()),
-            Texture::from_file_2d(texture_path, Texture::Format::Color)
+            Texture::from_file_2d(texture_path, Texture::Format::SRGB)
         );
         textures.insert({1, texture.first->second.handle()});
     }
@@ -107,7 +107,7 @@ static auto aimaterial_to_textures(aiMaterial const* mat, aiScene const* /*scene
 
         auto texture = texture_cache.load(
             entt::hashed_string(texture_path.string().c_str()),
-            Texture::from_file_2d(texture_path, Texture::Format::Color)
+            Texture::from_file_2d(texture_path, Texture::Format::RGB)
         );
         textures.insert({2, texture.first->second.handle()});
     }
