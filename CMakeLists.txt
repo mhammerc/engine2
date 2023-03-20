@@ -19,7 +19,6 @@ set(SOURCES
         src/core/reflection.h
         src/core/transform.cpp
         src/core/transform.h
-        src/graphics/texture/texture_internal.cpp
         src/graphics/framebuffer.cpp
         src/graphics/framebuffer.h
         src/graphics/framebuffer_cache.cpp
@@ -42,6 +41,7 @@ set(SOURCES
         src/graphics/texture/texture_cache.h
         src/graphics/texture/texture_image.cpp
         src/graphics/texture/texture_image.h
+        src/graphics/texture/texture_internal.cpp
         src/main.cpp
         src/platform/glfw.cpp
         src/platform/glfw.h
