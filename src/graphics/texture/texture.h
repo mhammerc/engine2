@@ -16,7 +16,7 @@ namespace engine {
  */
 class Texture {
   public:
-    enum class Format { RGB, SRGB, RGBA16F, RGBA32F, Depth, DepthStencil };
+    enum class Format { RGB, RGBA, SRGB, RGBA16F, RGBA32F, Depth, DepthStencil };
     enum class Type { Texture2D, CubeMap };
 
   public:

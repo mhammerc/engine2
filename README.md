@@ -1,5 +1,7 @@
 # engine2
 
+![Screenshot of the editor](assets/screenshot.png)
+
 ## TODO
 
 - Generize Shadows

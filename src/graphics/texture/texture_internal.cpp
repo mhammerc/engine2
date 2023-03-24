@@ -10,6 +10,10 @@ auto texture::OpenGLTextureProperties::from_texture_format(Texture::Format forma
         properties.internalformat = GL_RGB;
         properties.format = GL_RGB;
         properties.type = GL_UNSIGNED_BYTE;
+    } else if (format == Texture::Format::RGBA) {
+        properties.internalformat = GL_RGBA;
+        properties.format = GL_RGBA;
+        properties.type = GL_UNSIGNED_BYTE;
     } else if (format == Texture::Format::SRGB) {
         properties.internalformat = GL_SRGB;
         properties.format = GL_RGB;
@@ -17,7 +21,8 @@ auto texture::OpenGLTextureProperties::from_texture_format(Texture::Format forma
     } else if (format == Texture::Format::RGBA16F) {
         properties.internalformat = GL_RGBA16F;
         properties.format = GL_RGBA;
-        properties.type = GL_FLOAT;
+        // properties.type = GL_FLOAT;
+        properties.type = GL_HALF_FLOAT;
     } else if (format == Texture::Format::RGBA32F) {
         properties.internalformat = GL_RGBA32F;
         properties.format = GL_RGBA;
