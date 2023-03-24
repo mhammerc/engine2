@@ -94,7 +94,7 @@ static auto draw_cubemap_mode() -> UnfoldedOrEquirectangular {
 static auto draw_cubemap(Texture* texture) -> void {
     auto cubemap_mode = draw_cubemap_mode();
     auto* drawn_cubemap = ui::internal::draw_cubemap_to_framebuffer(*texture, cubemap_mode);
-    draw_texture_2d(drawn_cubemap, drawn_cubemap->color_texture());
+    draw_texture_2d(drawn_cubemap, drawn_cubemap->color());
 }
 
 auto ui::internal::draw_framebuffer_viewer() -> void {
@@ -113,16 +113,16 @@ auto ui::internal::draw_framebuffer_viewer() -> void {
 
     Texture* texture = nullptr;
     if (mode == Color) {
-        texture = framebuffer->color_texture();
+        texture = framebuffer->color();
     } else if (mode == Depth) {
-        texture = framebuffer->depth_stencil_texture();
+        texture = framebuffer->depth();
     }
 
     if (texture == nullptr) {
         return;
     }
 
-    if (framebuffer->type() == Framebuffer::Type::CubeMap) {
+    if (texture->type() == Texture::Type::CubeMap) {
         // render cubemap
         draw_cubemap(texture);
     } else {

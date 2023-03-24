@@ -18,13 +18,12 @@ static auto get_framebuffer() -> Framebuffer* {
     auto& framebuffer_cache = entt::locator<FramebufferCache>::value();
 
     auto framebuffer_insertion = framebuffer_cache.load("shadow_fb"_hs, []() {
-        return Framebuffer::create(
-            "shadow_fb",
-            SHADOW_SIZE,
-            Framebuffer::Content::DepthStencil,
-            Framebuffer::Type::CubeMap,
-            Framebuffer::DepthFormat::Depth
-        );
+        auto attachment = Framebuffer::AttachmentDescription {
+            Framebuffer::AttachmentDescription::Format::Depth,
+            Framebuffer::AttachmentDescription::Type::CubeMap,
+            Framebuffer::TargetBuffer::Depth};
+
+        return Framebuffer::create_with_attachments("shadow_fb", SHADOW_SIZE, singular_span(attachment));
     });
 
     auto framebuffer_resource = framebuffer_insertion.first->second;

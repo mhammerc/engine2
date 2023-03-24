@@ -17,6 +17,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <memory>
+#include <span>
 
 #include "conf.h"
 
@@ -47,6 +48,11 @@ using mat3 = glm::mat3;
 using mat4 = glm::mat4;
 
 using namespace entt::literals;  // so we can use '_hs' suffix on C strings for EnTT calls
+
+template<class T>
+auto singular_span(T& t) -> std::span<T, 1> {
+    return std::span<T, 1> {std::addressof(t), 1};
+}
 
 }  // namespace engine
 

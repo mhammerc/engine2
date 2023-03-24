@@ -97,7 +97,7 @@ auto Scene::draw_nodes() -> void {
     auto skybox = texture_cache["skybox"_hs];
     skybox->activate_as(10);
 
-    auto* shadow_map = entt::locator<FramebufferCache>::value()["shadow_fb"_hs]->depth_stencil_texture();
+    auto* shadow_map = entt::locator<FramebufferCache>::value()["shadow_fb"_hs]->depth();
     shadow_map->activate_as(20);
 
     auto [camera_base, camera_config] = camera_info();

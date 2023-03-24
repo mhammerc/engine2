@@ -22,7 +22,7 @@ static auto get_framebuffer() -> Framebuffer* {
     auto framebuffer_insertion = framebuffer_cache.load("cubemap_viewer"_hs, []() {
         const vec2i size = {1024, 1024};
 
-        return Framebuffer::create("cubemap_viewer", size, Framebuffer::Content::Color, Framebuffer::Type::Texture2D);
+        return Framebuffer::create_with_color("cubemap_viewer", size);
     });
 
     auto framebuffer_resource = framebuffer_insertion.first->second;
@@ -116,7 +116,7 @@ auto ui::internal::draw_cubemap_viewer() -> void {
 
     auto cubemap = texture_cache[current_index];
     auto* framebuffer = draw_cubemap_to_framebuffer(cubemap, mode);
-    auto* texture = framebuffer->color_texture();
+    auto* texture = framebuffer->color();
     auto* texture_handle = reinterpret_cast<void*>(texture->handle());
 
     vec2 texture_size = texture->size();

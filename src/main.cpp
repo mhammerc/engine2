@@ -134,27 +134,10 @@ auto main() -> int {
     light1_light.diffuse = glm::vec3(0.8F, 0.8F, 0.8F);
     light1_light.specular = glm::vec3(1.F, 1.F, 1.F);
 
-    framebuffer_cache.load(
-        "color"_hs,
-        Framebuffer::create(
-            "color",
-            vec2i {1, 1},
-            Framebuffer::Content::ColorAndDepthStencil,
-            Framebuffer::Type::Texture2D
-        )
-    );
-    framebuffer_cache.load(
-        "outline"_hs,
-        Framebuffer::create("outline", vec2i {1, 1}, Framebuffer::Content::Color, Framebuffer::Type::Texture2D)
-    );
-    framebuffer_cache.load(
-        "postprocess"_hs,
-        Framebuffer::create("postprocess", vec2i {1, 1}, Framebuffer::Content::Color, Framebuffer::Type::Texture2D)
-    );
-    framebuffer_cache.load(
-        "identify"_hs,
-        Framebuffer::create("identify", vec2i {1, 1}, Framebuffer::Content::Color, Framebuffer::Type::Texture2D)
-    );
+    framebuffer_cache.load("color"_hs, Framebuffer::create_with_color_and_depth("color", vec2i {1, 1}));
+    framebuffer_cache.load("outline"_hs, Framebuffer::create_with_color("outline", vec2i {1, 1}));
+    framebuffer_cache.load("postprocess"_hs, Framebuffer::create_with_color("postprocess", vec2i {1, 1}));
+    framebuffer_cache.load("identify"_hs, Framebuffer::create_with_color("identify", vec2i {1, 1}));
 
     mesh_cache.load("quad"_hs, Mesh::from_quad());
     mesh_cache.load("cube"_hs, Mesh::from_cube());
@@ -215,7 +198,7 @@ auto main() -> int {
         {
             glDisable(GL_DEPTH_TEST);
 
-            framebuffer.color_texture()->activate_as(0);
+            framebuffer.color()->activate_as(0);
             auto _postprocess_shader = shader_cache["postprocess"_hs];
 
             _postprocess_shader->set_uniform("screenTexture", 0);

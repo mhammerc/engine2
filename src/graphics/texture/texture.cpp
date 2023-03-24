@@ -158,6 +158,10 @@ auto Texture::operator=(Texture&& from) noexcept -> Texture& {
 }
 
 auto Texture::activate_as(u32 index, bool disable) -> void {
+    if (index > 31) {
+        spdlog::error("Texture::active_as index is out of range");
+    }
+
     auto const target = opengl_target_from_type(_type);
 
     glActiveTexture(GL_TEXTURE0 + index);

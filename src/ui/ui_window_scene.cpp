@@ -23,12 +23,7 @@ static auto draw(Framebuffer* scene_texture) -> std::tuple<vec2, vec2> {
 
     scene_texture->resize({image_size.x * dpi_scale, image_size.y * dpi_scale});
 
-    ImGui::Image(
-        reinterpret_cast<void*>(scene_texture->color_texture()->handle()),
-        {image_size},
-        ImVec2(0, 1),
-        ImVec2(1, 0)
-    );
+    ImGui::Image(reinterpret_cast<void*>(scene_texture->color()->handle()), {image_size}, ImVec2(0, 1), ImVec2(1, 0));
 
     ImGui::End();
 
@@ -57,6 +52,7 @@ auto ui::internal::ui_draw_window_scene(entt::registry& registry, Framebuffer* s
 
     vec4 pixel_color;
     framebuffer_identify->bind();
+    glReadBuffer(GL_COLOR_ATTACHMENT0);
     glReadPixels(
         static_cast<int>(pixel_position.x),
         static_cast<int>(pixel_position.y),

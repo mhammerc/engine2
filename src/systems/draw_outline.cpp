@@ -60,7 +60,7 @@ static auto draw(Framebuffer& framebuffer_color, Framebuffer& framebuffer_outlin
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     framebuffer_color.bind();
-    framebuffer_outline.color_texture()->activate_as(0);
+    framebuffer_outline.color()->activate_as(0);
 
     shader->set_uniform("outline_texture", 0);
 
@@ -68,7 +68,7 @@ static auto draw(Framebuffer& framebuffer_color, Framebuffer& framebuffer_outlin
     quad->draw();
     shader->unbind();
 
-    framebuffer_outline.color_texture()->activate_as(0, true);
+    framebuffer_outline.color()->activate_as(0, true);
     framebuffer_color.unbind();
 
     glDisable(GL_BLEND);

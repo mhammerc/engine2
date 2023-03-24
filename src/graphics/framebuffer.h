@@ -1,7 +1,10 @@
 #pragma once
 
 #include <memory>
+#include <span>
 #include <string>
+#include <tuple>
+#include <vector>
 
 #include "../common.h"
 #include "texture/texture.h"
@@ -9,6 +12,57 @@
 namespace engine {
 
 class Framebuffer {
+  public:
+    enum class TargetBuffer { Color0, Color1, Color2, Color3, Color4, Color5, Depth, Stencil, DepthStencil };
+    using Attachment = std::pair<TargetBuffer, std::unique_ptr<Texture>>;
+
+    /**
+     * FramebufferAttachment represent one attachment that can be created/attached to
+     * a framebuffer.
+     */
+    struct AttachmentDescription {
+        using Format = Texture::Format;
+        using Type = Texture::Type;
+        using TargetBuffer = Framebuffer::TargetBuffer;
+
+        Format format;
+        Type type;
+        TargetBuffer target_buffer;
+
+        [[nodiscard]] auto target_buffer_to_opengl() const -> GLenum;
+        [[nodiscard]] auto is_color() const -> bool;
+    };
+
+    /**
+     * Create a framebuffer with arbitrary attachments.
+     */
+    static auto create_with_attachments(
+        std::string const& name,
+        vec2i size,
+        std::span<AttachmentDescription> attachment_descriptions
+    ) -> std::unique_ptr<Framebuffer>;
+
+    /**
+     * Create a framebuffer with a usual color attachment and depth attachment.
+     *
+     * This function is just an easier alias of `create_with_attachments`.
+     */
+    static auto create_with_color_and_depth(std::string const& name, vec2i size) -> std::unique_ptr<Framebuffer>;
+
+    /**
+     * Create a framebuffer with a usual color attachment only.
+     *
+     * This function is just an easier alias of `create_with_attachments`.
+     */
+    static auto create_with_color(std::string const& name, vec2i size) -> std::unique_ptr<Framebuffer>;
+
+    /**
+     * Create a framebuffer with a depth attachment only.
+     *
+     * This function is just an easier alias of `create_with_attachments`.
+     */
+    static auto create_with_depth(std::string const& name, vec2i size) -> std::unique_ptr<Framebuffer>;
+
   public:
     virtual ~Framebuffer() noexcept;
 
@@ -18,25 +72,7 @@ class Framebuffer {
     Framebuffer(Framebuffer&&) noexcept;
     auto operator=(Framebuffer&&) noexcept -> Framebuffer&;
 
-    enum class Content { Color, DepthStencil, ColorAndDepthStencil };
-    using Type = Texture::Type;
-    enum class ColorFormat { RGB, SRGB };
-    enum class DepthFormat { Depth, DepthStencil };
-
-    static auto create(
-        std::string const& name,
-        vec2i size,
-        Content content,
-        Type type,
-        ColorFormat color_format = ColorFormat::RGB,
-        DepthFormat depth_format = DepthFormat::Depth
-    ) -> std::unique_ptr<Framebuffer>;
-
-    // Just an overload for easier creation of depth-only framebuffers
-    static auto create(std::string const& name, vec2i size, Content content, Type type, DepthFormat depth_format)
-        -> std::unique_ptr<Framebuffer>;
-
-    // Methods
+  public:
     auto resize(vec2i size) -> void;
 
     auto bind() -> void;
@@ -44,30 +80,32 @@ class Framebuffer {
 
     [[nodiscard]] auto handle() const -> GLuint;
     [[nodiscard]] auto size() const -> vec2i;
-    [[nodiscard]] auto content() const -> Content;
-    [[nodiscard]] auto type() const -> Type;
-    [[nodiscard]] auto color_format() const -> ColorFormat;
-    [[nodiscard]] auto depth_format() const -> DepthFormat;
-    [[nodiscard]] auto color_texture() const -> Texture*;
-    [[nodiscard]] auto depth_stencil_texture() const -> Texture*;
     [[nodiscard]] auto name() -> std::string&;
+
+    /**
+     * Return the first color attachment, if any.
+     *
+     * Do not use this function on framebuffers that have multiple color attachments as it is unpredictable which one
+     * will be returned. 
+     */
+    [[nodiscard]] auto color() const -> Texture*;
+
+    /**
+     * Return the first depth attachment, if any.
+     */
+    [[nodiscard]] auto depth() const -> Texture*;
 
   private:
     explicit Framebuffer() = default;
     auto release() -> void;
 
+  private:
     GLuint _handle = 0;
 
-    vec2i _size = {0, 0};
-    Content _content = Content::ColorAndDepthStencil;
-    Type _type = Type::Texture2D;
-    ColorFormat _color_format = ColorFormat::RGB;
-    DepthFormat _depth_format = DepthFormat::Depth;
-
     std::string _name;
+    vec2i _size = {0, 0};
 
-    std::unique_ptr<Texture> _color;
-    std::unique_ptr<Texture> _depth_stencil;
+    std::vector<Attachment> _attachments;
 };
 
 }  // namespace engine
