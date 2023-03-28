@@ -39,7 +39,7 @@ class Framebuffer {
     static auto create_with_attachments(
         std::string const& name,
         vec2i size,
-        std::span<AttachmentDescription> attachment_descriptions
+        std::span<const AttachmentDescription> attachment_descriptions
     ) -> std::unique_ptr<Framebuffer>;
 
     /**
@@ -81,6 +81,7 @@ class Framebuffer {
     [[nodiscard]] auto handle() const -> GLuint;
     [[nodiscard]] auto size() const -> vec2i;
     [[nodiscard]] auto name() -> std::string&;
+    [[nodiscard]] auto attachments() const -> std::span<const Attachment>;
 
     /**
      * Return the first color attachment, if any.

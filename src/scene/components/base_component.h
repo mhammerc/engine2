@@ -23,8 +23,8 @@ struct BaseComponent {
 
     Transform transform;
 
-    [[nodiscard]] auto world_matrix(entt::registry& registry) const -> mat4;
-    [[nodiscard]] auto world_transform(entt::registry& registry) const -> Transform;
+    [[nodiscard]] auto world_matrix(entt::registry const& registry) const -> mat4;
+    [[nodiscard]] auto world_transform(entt::registry const& registry) const -> Transform;
 };
 
 namespace reflection {

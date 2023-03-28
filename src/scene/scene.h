@@ -25,9 +25,6 @@ namespace engine {
 class Scene {
   public:
     Scene(entt::registry& registry);
-    auto draw(float delta_time) -> void;
-    auto draw_nodes() -> void;
-    auto draw_nodes_normals() -> void;
     auto draw_skybox() -> void;
 
     entt::registry& registry;
@@ -42,8 +39,6 @@ class Scene {
     bool blur = false;
     bool sharpen = false;
     bool edge_dectection = false;
-    bool show_normals = false;
-    float explosion = 0.F;
 };
 
 }  // namespace engine

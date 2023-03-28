@@ -2,8 +2,12 @@
 
 #include "../utils/glfw3.h"
 
+// glad generator: https://github.com/Dav1dde/glad
+
 auto load_opengl() -> bool {
-    return gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)) != 0;
+    int version = gladLoadGL(glfwGetProcAddress);
+
+    return version != 0;
 }
 
 auto list_extensions() -> void {

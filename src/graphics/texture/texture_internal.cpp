@@ -21,8 +21,11 @@ auto texture::OpenGLTextureProperties::from_texture_format(Texture::Format forma
     } else if (format == Texture::Format::RGBA16F) {
         properties.internalformat = GL_RGBA16F;
         properties.format = GL_RGBA;
-        // properties.type = GL_FLOAT;
-        properties.type = GL_HALF_FLOAT;
+        properties.type = GL_FLOAT;
+    } else if (format == Texture::Format::RGB16SNORM) {
+        properties.internalformat = GL_RGB16_SNORM;
+        properties.format = GL_RGB;
+        properties.type = GL_FLOAT;
     } else if (format == Texture::Format::RGBA32F) {
         properties.internalformat = GL_RGBA32F;
         properties.format = GL_RGBA;

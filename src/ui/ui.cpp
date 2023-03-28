@@ -66,7 +66,7 @@ auto engine::ui_draw(
     static entt::entity selected_entity = entt::null;
     static bool demo_window = false;
     static bool input_debugger = false;
-    static bool framebuffer_viewer = false;
+    static bool texture_viewer = true;
 
     if (ImGui::BeginMenu("Options")) {
         if (ImGui::BeginMenu("Colors")) {
@@ -94,7 +94,7 @@ auto engine::ui_draw(
         }
 
         if (ImGui::MenuItem("Texture Viewer")) {
-            framebuffer_viewer = true;
+            texture_viewer = true;
         }
 
         ImGui::EndMenu();
@@ -109,7 +109,7 @@ auto engine::ui_draw(
     }
 
     ui::internal::ui_draw_window_input_debugger(&input_debugger);
-    ui::internal::ui_draw_window_texture_viewer(&framebuffer_viewer);
+    ui::internal::ui_draw_window_texture_viewer(&texture_viewer);
 
     ui::internal::ui_draw_window_system(scene, delta_time, window);
     ui::internal::ui_draw_window_hierarchy(registry, selected_entity);

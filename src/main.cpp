@@ -4,6 +4,8 @@
 #include "core/input.hpp"
 #include "core/reflection.h"
 #include "entt/entity/fwd.hpp"
+#include "graphics/deferred_renderer.h"
+#include "graphics/deferred_renderer_cache.h"
 #include "graphics/framebuffer.h"
 #include "graphics/framebuffer_cache.h"
 #include "graphics/mesh_cache.h"
@@ -44,16 +46,11 @@ auto main() -> int {
     auto& shader_cache = entt::locator<engine::ShaderCache>::emplace();
     auto& mesh_cache = entt::locator<engine::MeshCache>::emplace();
     auto& framebuffer_cache = entt::locator<engine::FramebufferCache>::emplace();
+    auto& deferred_renderer_cache = entt::locator<engine::DeferredRendererCache>::emplace();
 
     auto& renderer_context = entt::locator<engine::RendererContext>::emplace();
 
     entt::locator<engine::Input>::emplace();
-
-    auto [diffuse_shader, _] = shader_cache.load("diffuse"_hs, ShaderProgram::from_name("diffuse"));
-    if (diffuse_shader->second.handle() == nullptr) {
-        spdlog::critical("could not create shader program.");
-        return 1;
-    }
 
     auto [light_source_shader, _2] = shader_cache.load("light"_hs, ShaderProgram::from_name("light"));
     if (light_source_shader->second.handle() == nullptr) {
@@ -69,12 +66,6 @@ auto main() -> int {
 
     auto [postprocess_shader, _4] = shader_cache.load("postprocess"_hs, ShaderProgram::from_name("postprocess"));
     if (postprocess_shader->second.handle() == nullptr) {
-        spdlog::critical("could not create shader program.");
-        return 1;
-    }
-
-    auto [normal_shader, _5] = shader_cache.load("normal"_hs, ShaderProgram::from_name("normal"));
-    if (normal_shader->second.handle() == nullptr) {
         spdlog::critical("could not create shader program.");
         return 1;
     }
@@ -102,6 +93,20 @@ auto main() -> int {
     auto [light_point_shadow_map_shader, _11] =
         shader_cache.load("light_point_shadow_map"_hs, ShaderProgram::from_name("light_point_shadow_map"));
     if (light_point_shadow_map_shader->second.handle() == nullptr) {
+        spdlog::critical("could not create shader program.");
+        return 1;
+    }
+
+    auto [dr_pass_gbuffers_shader, _12] =
+        shader_cache.load("dr_pass_gbuffers"_hs, ShaderProgram::from_name("deferred_rendering/dr_pass_gbuffers"));
+    if (dr_pass_gbuffers_shader->second.handle() == nullptr) {
+        spdlog::critical("could not create shader program.");
+        return 1;
+    }
+
+    auto [dr_pass_lighting_shader, _13] =
+        shader_cache.load("dr_pass_lighting"_hs, ShaderProgram::from_name("deferred_rendering/dr_pass_lighting"));
+    if (dr_pass_lighting_shader->second.handle() == nullptr) {
         spdlog::critical("could not create shader program.");
         return 1;
     }
@@ -142,6 +147,9 @@ auto main() -> int {
     mesh_cache.load("quad"_hs, Mesh::from_quad());
     mesh_cache.load("cube"_hs, Mesh::from_cube());
 
+    deferred_renderer_cache.load("renderer"_hs, DeferredRenderer::create("renderer"));
+    auto deferred_renderer = deferred_renderer_cache["renderer"_hs];
+
     engine::game_loop([&](float delta_time, bool& should_quit) {
         if (glfwWindowShouldClose(window) != 0) {
             should_quit = true;
@@ -180,15 +188,27 @@ auto main() -> int {
         // Render shadow maps
         systems::draw_shadow_maps(registry);
 
+        if (scene.wireframe) {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        }
+
+        deferred_renderer->draw(
+            {.framebuffer = &framebuffer, .position = {0, 0}, .size = size},
+            registry,
+            renderer_context.projection,
+            camera.view_matrix(camera_base),
+            camera_base.world_transform(registry).position
+        );
+
+        if (scene.wireframe) {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        }
+
         // Render scene
         {
             framebuffer.bind();
 
-            glClearColor(0.1F, 0.1F, 0.1F, 1.0F);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-            scene.draw(delta_time);
-
+            scene.draw_skybox();
             systems::draw_light_gizmo(registry);
 
             framebuffer.unbind();

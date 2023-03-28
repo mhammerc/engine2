@@ -5,6 +5,7 @@
 
 namespace engine::ui::internal {
 
+auto draw_deferred_renderer_viewer() -> void;
 auto draw_framebuffer_viewer() -> void;
 auto draw_texture_viewer() -> void;
 auto draw_cubemap_viewer() -> void;

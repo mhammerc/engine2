@@ -120,14 +120,12 @@ on_mesh(entt::entity entity, entt::registry& registry, aiMesh const* aimesh, aiS
     -> void {
     auto& material = registry.get<MaterialComponent>(entity);
 
-    auto& shader_cache = entt::locator<ShaderCache>::value();
     auto& mesh_cache = entt::locator<MeshCache>::value();
 
     auto _mesh = aimesh_to_mesh(aimesh, filename);
     auto [mesh, _] = mesh_cache.load(entt::hashed_string(filename.string().c_str()), std::move(_mesh));
 
     material.mesh = mesh->second.handle();
-    material.shader = shader_cache["diffuse"_hs].handle();
 
     if (aimesh->mMaterialIndex >= 0) {
         std::span<aiMaterial*> const raw_materials(scene->mMaterials, scene->mNumMaterials);

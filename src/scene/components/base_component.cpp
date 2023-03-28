@@ -9,7 +9,7 @@ using namespace engine;
 
 BaseComponent::BaseComponent(std::string_view const& name) : name(name) {}
 
-auto BaseComponent::world_matrix(entt::registry& registry) const -> mat4 {
+auto BaseComponent::world_matrix(entt::registry const& registry) const -> mat4 {
     mat4 matrix = transform.matrix();
 
     if (parent != entt::null) {
@@ -23,7 +23,7 @@ auto BaseComponent::world_matrix(entt::registry& registry) const -> mat4 {
     return matrix;
 }
 
-auto BaseComponent::world_transform(entt::registry& registry) const -> Transform {
+auto BaseComponent::world_transform(entt::registry const& registry) const -> Transform {
     mat4 matrix = world_matrix(registry);
 
     Transform world;

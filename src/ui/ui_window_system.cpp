@@ -34,8 +34,6 @@ auto ui::internal::ui_draw_window_system(Scene* scene, float delta_time, GLFWwin
 
     ImGui::SeparatorText("Shaders");
     ImGui::Checkbox("Wireframe", &scene->wireframe);
-    ImGui::Checkbox("Show Normals", &scene->show_normals);
-    ImGui::SliderFloat("Explosion", &scene->explosion, 0.F, 1.F);
 
     ImGui::SeparatorText("Post-Processing");
     ImGui::Checkbox("Inverse", &scene->inverse);

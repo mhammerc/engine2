@@ -51,7 +51,7 @@ auto Framebuffer::AttachmentDescription::is_color() const -> bool {
 auto Framebuffer::create_with_attachments(
     const std::string& name,
     vec2i size,
-    std::span<AttachmentDescription> attachment_descriptions
+    std::span<const AttachmentDescription> attachment_descriptions
 ) -> std::unique_ptr<Framebuffer> {
     GLuint handle = 0;
     glGenFramebuffers(1, &handle);
@@ -203,6 +203,10 @@ auto Framebuffer::size() const -> vec2i {
 
 auto Framebuffer::name() -> std::string& {
     return _name;
+}
+
+auto Framebuffer::attachments() const -> std::span<const Attachment> {
+    return _attachments;
 }
 
 auto Framebuffer::color() const -> Texture* {

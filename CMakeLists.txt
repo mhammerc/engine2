@@ -19,6 +19,10 @@ set(SOURCES
         src/core/reflection.h
         src/core/transform.cpp
         src/core/transform.h
+        src/graphics/deferred_renderer.cpp
+        src/graphics/deferred_renderer.h
+        src/graphics/deferred_renderer_cache.cpp
+        src/graphics/deferred_renderer_cache.h
         src/graphics/framebuffer.cpp
         src/graphics/framebuffer.h
         src/graphics/framebuffer_cache.cpp
@@ -78,6 +82,7 @@ set(SOURCES
         src/ui/ui_window_scene.cpp
         src/ui/ui_window_system.cpp
         src/ui/ui_window_texture_viewer/cubemap_viewer.cpp
+        src/ui/ui_window_texture_viewer/deferred_renderer_viewer.cpp
         src/ui/ui_window_texture_viewer/framebuffer_viewer.cpp
         src/ui/ui_window_texture_viewer/texture_viewer.cpp
         src/ui/ui_window_texture_viewer/ui_window_texture_viewer.cpp
@@ -159,6 +164,14 @@ set(STB_IMAGE_SOURCES
         )
 target_sources(opengl_engine PRIVATE ${STB_IMAGE_SOURCES})
 target_include_directories(opengl_engine PRIVATE vendors/stb_image)
+
+# stb_include
+set(STB_INCLUDE_SOURCES
+        vendors/stb_include/stb_include/stb_include.cpp
+        vendors/stb_include/stb_include/stb_include.h
+        )
+target_sources(opengl_engine PRIVATE ${STB_INCLUDE_SOURCES})
+target_include_directories(opengl_engine PRIVATE vendors/stb_include)
 
 # GLAD and OpenGL
 set(GLAD_SOURCES
