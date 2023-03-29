@@ -1,9 +1,8 @@
 #pragma once
 
-#include <entt/entt.hpp>
-
-#include "../../common.h"
+#include "../common.h"
 #include "base_component.h"
+#include "entt/entt.hpp"
 
 namespace engine {
 

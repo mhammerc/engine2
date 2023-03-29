@@ -1,5 +1,6 @@
 #include "entity_from_model.h"
 
+#include <assimp/material.h>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <spdlog/spdlog.h>
@@ -8,14 +9,12 @@
 #include <entt/entt.hpp>
 #include <span>
 
-#include "../common.h"
-#include "../graphics/mesh.h"
-#include "../graphics/mesh_cache.h"
-#include "../graphics/shader_cache.h"
-#include "../graphics/texture/texture.h"
-#include "../graphics/texture/texture_cache.h"
-#include "assimp/material.h"
+#include "common.h"
 #include "components/material_component.h"
+#include "graphics/mesh.h"
+#include "graphics/mesh_cache.h"
+#include "graphics/texture/texture.h"
+#include "graphics/texture/texture_cache.h"
 
 using namespace engine;
 

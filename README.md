@@ -4,11 +4,13 @@
 
 ## TODO
 
+- auto unbind through RAII
+- Texture rework into the material struct
+- Move shaders to the postprocess shader? (outline shader, and more)
 - Generize Shadows
 - Antialiasing
 - Refactor draw functions into systems
 - Gizmos (like unreal engine)
-- no more renderer context
 
 ## Development Environment
 

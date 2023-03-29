@@ -2,9 +2,9 @@
 #include <spdlog/fmt/fmt.h>
 #include <spdlog/spdlog.h>
 
-#include "../../scene/components/base_component.h"
-#include "../../scene/components/outline_component.h"
-#include "../../scene/components/skybox_component.h"
+#include "../../components/base_component.h"
+#include "../../components/outline_component.h"
+#include "../../components/skybox_component.h"
 #include "../ui_internal.h"
 #include "../utils.h"
 #include "entity_editor.h"

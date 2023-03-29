@@ -9,6 +9,19 @@ project(opengl_engine VERSION 0.1.0)
 add_executable(opengl_engine)
 
 set(SOURCES
+        src/load.h
+        src/load.cpp
+        src/components/base_component.cpp
+        src/components/base_component.h
+        src/components/camera_component.cpp
+        src/components/camera_component.h
+        src/components/light_component.cpp
+        src/components/light_component.h
+        src/components/material_component.cpp
+        src/components/material_component.h
+        src/components/outline_component.cpp
+        src/components/outline_component.h
+        src/components/skybox_component.cpp
         src/core/entity.cpp
         src/core/entity.h
         src/core/game_loop.cpp
@@ -19,6 +32,10 @@ set(SOURCES
         src/core/reflection.h
         src/core/transform.cpp
         src/core/transform.h
+        src/create_scene.cpp
+        src/create_scene.h
+        src/entity_from_model.cpp
+        src/entity_from_model.h
         src/graphics/deferred_renderer.cpp
         src/graphics/deferred_renderer.h
         src/graphics/deferred_renderer_cache.cpp
@@ -51,26 +68,11 @@ set(SOURCES
         src/platform/glfw.h
         src/platform/opengl.cpp
         src/platform/opengl.h
-        src/scene/components/base_component.cpp
-        src/scene/components/base_component.h
-        src/scene/components/camera_component.cpp
-        src/scene/components/camera_component.h
-        src/scene/components/light_component.cpp
-        src/scene/components/light_component.h
-        src/scene/components/material_component.cpp
-        src/scene/components/material_component.h
-        src/scene/components/outline_component.cpp
-        src/scene/components/outline_component.h
-        src/scene/components/skybox_component.cpp
-        src/scene/entity_from_model.cpp
-        src/scene/entity_from_model.h
-        src/scene/scene.cpp
-        src/scene/scene.h
         src/systems/camera_system.cpp
-        src/systems/draw_identify.cpp
         src/systems/draw_light_gizmo.cpp
         src/systems/draw_outline.cpp
         src/systems/draw_shadow_maps.cpp
+        src/systems/draw_skybox.cpp
         src/systems/should_close_system.cpp
         src/systems/systems.h
         src/ui/entity_editor/entity_property_editor.cpp
@@ -94,7 +96,7 @@ set(SOURCES
         src/utils/read_file_to_string.cpp
         src/utils/read_file_to_string.h
         src/utils/type_index.h
-        )
+)
 
 target_sources(opengl_engine PRIVATE ${SOURCES})
 

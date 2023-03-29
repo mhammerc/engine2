@@ -1,11 +1,11 @@
 #include "reflection.h"
 
-#include "../scene/components/base_component.h"
-#include "../scene/components/camera_component.h"
-#include "../scene/components/light_component.h"
-#include "../scene/components/material_component.h"
-#include "../scene/components/outline_component.h"
-#include "../scene/components/skybox_component.h"
+#include "../components/base_component.h"
+#include "../components/camera_component.h"
+#include "../components/light_component.h"
+#include "../components/material_component.h"
+#include "../components/outline_component.h"
+#include "../components/skybox_component.h"
 #include "transform.h"
 
 using namespace engine;

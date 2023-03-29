@@ -1,24 +1,16 @@
-#include "scene.h"
+#include "create_scene.h"
 
-#include <spdlog/fmt/fmt.h>
-#include <spdlog/spdlog.h>
-
-#include <entt/entt.hpp>
-
-#include "../core/entity.h"
-#include "../graphics/mesh_cache.h"
-#include "../graphics/renderer_context.h"
-#include "../graphics/shader_cache.h"
-#include "../graphics/texture/texture_cache.h"
 #include "components/base_component.h"
 #include "components/camera_component.h"
+#include "components/light_component.h"
 #include "components/outline_component.h"
 #include "components/skybox_component.h"
+#include "core/entity.h"
 #include "entity_from_model.h"
 
 using namespace engine;
 
-Scene::Scene(entt::registry& registry) : registry(registry) {
+auto engine::create_scene(entt::registry& registry, RendererContext& renderer_context) -> void {
     auto backpacks = entity_from_model("../assets/backpack/backpack.obj", registry);
     for (auto& backpack : backpacks) {
         auto& base = registry.emplace<BaseComponent>(backpack, "backpack 1");
@@ -44,13 +36,24 @@ Scene::Scene(entt::registry& registry) : registry(registry) {
         registry.emplace<SkyboxComponent>(skybox);
     }
 
-    camera = registry.create();
-    auto& base = registry.emplace<BaseComponent>(camera, "player");
-    auto& player = registry.emplace<CameraComponent>(camera);
+    renderer_context.camera = registry.create();
+    auto& base = registry.emplace<BaseComponent>(renderer_context.camera, "player");
+    auto& player = registry.emplace<CameraComponent>(renderer_context.camera);
     base.transform.position = vec3(-8.3F, 0.F, 2.3F);
     player.pitch = 0.F;
     player.yaw = 140.F;
     player.update_base_rotation(base);
+
+    auto light1 = registry.create();
+    auto& light1_base = registry.emplace<BaseComponent>(light1, "light1");
+    auto& light1_light = registry.emplace<LightComponent>(light1);
+    light1_base.transform.position = vec3(0.F, 0.F, -2.F);
+    light1_light.type = LightComponent::Point;
+    light1_light.linear = 0.09F;
+    light1_light.quadratic = 0.032F;
+    light1_light.ambient = glm::vec3(0.35F, 0.35F, 0.35F);
+    light1_light.diffuse = glm::vec3(0.8F, 0.8F, 0.8F);
+    light1_light.specular = glm::vec3(1.F, 1.F, 1.F);
 
     // auto& spotlight = registry.emplace<LightComponent>(camera);
     // spotlight.type = LightComponent::Spot;
@@ -62,48 +65,4 @@ Scene::Scene(entt::registry& registry) : registry(registry) {
     // spotlight.diffuse = glm::vec3(0.5F, 0.5F, 0.5F);
     // spotlight.specular = glm::vec3(0.0F, 0.0F, 0.0F);
     // spotlight.draw_gizmo = false;
-}
-
-auto Scene::camera_info() -> std::tuple<engine::BaseComponent&, engine::CameraComponent&> {
-    return registry.get<BaseComponent, CameraComponent>(camera);
-}
-
-auto Scene::draw_skybox() -> void {
-    auto [camera_base, camera_config] = camera_info();
-    glDepthFunc(GL_LEQUAL);
-
-    auto skyboxes = registry.view<BaseComponent, SkyboxComponent>();
-
-    auto const& renderer_context = entt::locator<RendererContext>::value();
-
-    auto cubemap = entt::locator<TextureCache>::value()["skybox"_hs];
-    auto shader = entt::locator<ShaderCache>::value()["skybox"_hs];
-    auto cube = entt::locator<MeshCache>::value()["cube"_hs];
-
-    cubemap->activate_as(0);
-    shader->set_uniform("skybox", 0);
-
-    auto view = camera_config.view_matrix(camera_base);
-    // Remove translation from the view matrix.
-    // For the skybox, only rotation is needed.
-    view = glm::mat4(glm::mat3(view));
-    shader->set_uniform("view", view);
-    shader->set_uniform("projection", renderer_context.projection);
-
-    shader->bind();
-    glCullFace(GL_FRONT);
-
-    for (auto [entity, name] : skyboxes.each()) {
-        if (!name.enabled) {
-            continue;
-        }
-
-        cube->draw();
-    }
-
-    glCullFace(GL_BACK);
-    shader->unbind();
-    cubemap->activate_as(0, true);
-
-    glDepthFunc(GL_LESS);
 }

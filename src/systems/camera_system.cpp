@@ -1,7 +1,7 @@
 #include "../common.h"
+#include "../components/base_component.h"
+#include "../components/camera_component.h"
 #include "../core/input.hpp"
-#include "../scene/components/base_component.h"
-#include "../scene/components/camera_component.h"
 #include "GLFW/glfw3.h"
 #include "systems.h"
 

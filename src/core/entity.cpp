@@ -1,6 +1,6 @@
 #include "entity.h"
 
-#include "../scene/components/base_component.h"
+#include "../components/base_component.h"
 
 using namespace engine;
 

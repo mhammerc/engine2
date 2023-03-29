@@ -1,18 +1,16 @@
+#include "../components/base_component.h"
+#include "../components/camera_component.h"
+#include "../components/light_component.h"
 #include "../graphics/mesh_cache.h"
-#include "../graphics/renderer_context.h"
 #include "../graphics/shader_cache.h"
-#include "../scene/components/base_component.h"
-#include "../scene/components/camera_component.h"
-#include "../scene/components/light_component.h"
 #include "glm/ext/matrix_transform.hpp"
 #include "systems.h"
 
 using namespace engine;
 
-auto systems::draw_light_gizmo(entt::registry& registry) -> void {
+auto systems::draw_light_gizmo(entt::registry& registry, RendererContext renderer_context) -> void {
     auto cube = entt::locator<MeshCache>::value()["cube"_hs];
     auto shader = entt::locator<ShaderCache>::value()["light"_hs];
-    auto const& renderer_context = entt::locator<RendererContext>::value();
 
     auto lights = registry.view<BaseComponent, LightComponent>();
 

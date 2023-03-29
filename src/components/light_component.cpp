@@ -1,6 +1,6 @@
 #include "light_component.h"
 
-#include <entt/entt.hpp>
+#include "entt/entt.hpp"
 
 using namespace engine;
 

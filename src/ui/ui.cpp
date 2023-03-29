@@ -5,7 +5,7 @@
 #include <imgui/imgui_impl_opengl3.h>
 #include <spdlog/spdlog.h>
 
-#include "../scene/components/outline_component.h"
+#include "../components/outline_component.h"
 #include "ui_internal.h"
 
 using namespace engine;
@@ -56,7 +56,7 @@ auto engine::ui_end_frame() -> void {
 
 auto engine::ui_draw(
     float delta_time,
-    Scene* scene,
+    RendererContext* renderer_context,
     GLFWwindow* window,
     entt::registry& registry,
     Framebuffer* scene_texture
@@ -111,7 +111,7 @@ auto engine::ui_draw(
     ui::internal::ui_draw_window_input_debugger(&input_debugger);
     ui::internal::ui_draw_window_texture_viewer(&texture_viewer);
 
-    ui::internal::ui_draw_window_system(scene, delta_time, window);
+    ui::internal::ui_draw_window_system(renderer_context, delta_time, window);
     ui::internal::ui_draw_window_hierarchy(registry, selected_entity);
 
     if (entt::entity new_selected_entity = ui::internal::ui_draw_window_scene(registry, scene_texture);

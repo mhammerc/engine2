@@ -1,9 +1,8 @@
 #include "base_component.h"
 
-#include <entt/entt.hpp>
-#include <glm/gtx/matrix_decompose.hpp>
-
-#include "../../common.h"
+#include "../common.h"
+#include "entt/entt.hpp"
+#include "glm/gtx/matrix_decompose.hpp"
 
 using namespace engine;
 

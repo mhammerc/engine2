@@ -2,8 +2,8 @@
 
 #include <entt/entt.hpp>
 
+#include "../components/base_component.h"
 #include "../core/entity.h"
-#include "../scene/components/base_component.h"
 #include "ui_internal.h"
 
 using namespace engine;

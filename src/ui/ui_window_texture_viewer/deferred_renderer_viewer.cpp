@@ -30,7 +30,7 @@ static auto draw_renderer_list(u32& current_index) -> void {
 
 static auto draw_texture_list(u32& texture_index) -> void {
     if (ImGui::BeginCombo("Texture", "select")) {
-        if (ImGui::Selectable("Albedo", texture_index == 2)) {
+        if (ImGui::Selectable("Albedo", texture_index == 0)) {
             texture_index = 0;
         }
 
@@ -38,12 +38,16 @@ static auto draw_texture_list(u32& texture_index) -> void {
             texture_index = 1;
         }
 
-        if (ImGui::Selectable("Specular", texture_index == 3)) {
+        if (ImGui::Selectable("Specular & Outline", texture_index == 2)) {
             texture_index = 2;
         }
 
-        if (ImGui::Selectable("Depth", texture_index == 4)) {
+        if (ImGui::Selectable("Identify", texture_index == 3)) {
             texture_index = 3;
+        }
+
+        if (ImGui::Selectable("Depth", texture_index == 4)) {
+            texture_index = 4;
         }
 
         ImGui::EndCombo();

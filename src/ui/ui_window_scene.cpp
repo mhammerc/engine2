@@ -1,8 +1,9 @@
 #include <tuple>
 
 #include "../common.h"
+#include "../components/outline_component.h"
+#include "../graphics/deferred_renderer_cache.h"
 #include "../graphics/framebuffer_cache.h"
-#include "../scene/components/outline_component.h"
 #include "imgui.h"
 #include "imgui/imgui.h"
 #include "ui_internal.h"
@@ -45,14 +46,14 @@ auto ui::internal::ui_draw_window_scene(entt::registry& registry, Framebuffer* s
     }
 
     // Get the identify framebuffer and identify which object it is
-    auto framebuffer_identify = entt::locator<FramebufferCache>::value()["identify"_hs];
+    auto deferred_renderer = entt::locator<engine::DeferredRendererCache>::value()["renderer"_hs];
 
     vec2 pixel_position = {mouse_over_scene.x, 1.F - mouse_over_scene.y};
-    pixel_position *= framebuffer_identify->size();
+    pixel_position *= deferred_renderer->size();
 
     vec4 pixel_color;
-    framebuffer_identify->bind();
-    glReadBuffer(GL_COLOR_ATTACHMENT0);
+    deferred_renderer->framebuffer()->bind();
+    glReadBuffer(GL_COLOR_ATTACHMENT3);
     glReadPixels(
         static_cast<int>(pixel_position.x),
         static_cast<int>(pixel_position.y),
@@ -62,15 +63,15 @@ auto ui::internal::ui_draw_window_scene(entt::registry& registry, Framebuffer* s
         GL_FLOAT,
         &pixel_color
     );
-    framebuffer_identify->unbind();
+    deferred_renderer->framebuffer()->unbind();
 
-    bool const is_over_object = pixel_color.b <= 0.1F;
-    if (!is_over_object) {
+    u32 const entity_id = static_cast<int>(pixel_color.r);
+
+    if (entity_id == 0) {
         return entt::null;
     }
 
-    u32 const entity_id = static_cast<int>(pixel_color.r * 255.F);
-    auto entity = static_cast<entt::entity>(entity_id);
+    auto entity = static_cast<entt::entity>(entity_id - 1);
 
     if (!registry.valid(entity)) {
         return entt::null;

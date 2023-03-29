@@ -1,10 +1,10 @@
 #pragma once
 
-#include <entt/entt.hpp>
 #include <string>
 #include <string_view>
 
-#include "../../core/transform.h"
+#include "../core/transform.h"
+#include "entt/entt.hpp"
 
 namespace engine {
 

@@ -3,11 +3,11 @@
 #include <array>
 
 #include "../common.h"
+#include "../components/base_component.h"
+#include "../components/light_component.h"
+#include "../components/material_component.h"
 #include "../graphics/framebuffer_cache.h"
 #include "../graphics/shader_cache.h"
-#include "../scene/components/base_component.h"
-#include "../scene/components/light_component.h"
-#include "../scene/components/material_component.h"
 #include "systems.h"
 
 using namespace engine;

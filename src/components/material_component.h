@@ -3,9 +3,9 @@
 #include <map>
 #include <memory>
 
-#include "../../common.h"
-#include "../../graphics/mesh.h"
-#include "../../graphics/texture/texture.h"
+#include "../common.h"
+#include "../graphics/mesh.h"
+#include "../graphics/texture/texture.h"
 
 namespace engine {
 

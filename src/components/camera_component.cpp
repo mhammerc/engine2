@@ -1,7 +1,8 @@
 #include "camera_component.h"
 
 #include <cmath>
-#include <entt/entt.hpp>
+
+#include "entt/entt.hpp"
 
 using namespace engine;
 

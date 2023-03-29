@@ -3,9 +3,10 @@
 #include <spdlog/fmt/fmt.h>
 
 #include "../common.h"
-#include "../scene/components/base_component.h"
-#include "../scene/components/light_component.h"
-#include "../scene/components/material_component.h"
+#include "../components/base_component.h"
+#include "../components/light_component.h"
+#include "../components/material_component.h"
+#include "../components/outline_component.h"
 #include "framebuffer_cache.h"
 #include "mesh_cache.h"
 #include "shader_cache.h"
@@ -15,7 +16,7 @@ using namespace engine;
 auto DeferredRenderer::create(std::string const& name) -> std::unique_ptr<DeferredRenderer> {
     using Attachment = Framebuffer::AttachmentDescription;
 
-    std::array<Framebuffer::AttachmentDescription, 4> const attachments = {{
+    std::array<Framebuffer::AttachmentDescription, 5> const attachments = {{
         // Albedo (RGB)
         {
             Attachment::Format::RGB,
@@ -28,11 +29,17 @@ auto DeferredRenderer::create(std::string const& name) -> std::unique_ptr<Deferr
             Attachment::Type::Texture2D,
             Attachment::TargetBuffer::Color1,
         },
-        // Specular (R)
+        // Specular (R), Is To-Be-Outlined (G), Unused (B)
         {
             Attachment::Format::RGB,
             Attachment::Type::Texture2D,
             Attachment::TargetBuffer::Color2,
+        },
+        // Identify (X), Unused (GBA)
+        {
+            Attachment::Format::RGBA16F,
+            Attachment::Type::Texture2D,
+            Attachment::TargetBuffer::Color3,
         },
         // Depth
         {
@@ -55,12 +62,10 @@ auto DeferredRenderer::create(std::string const& name) -> std::unique_ptr<Deferr
 auto DeferredRenderer::draw(
     DrawDestination draw_destination,
     entt::registry const& registry,
-    mat4 projection,
-    mat4 view,
-    vec3 camera_position
+    RendererContext renderer_context
 ) -> void {
-    pass_geometry(registry, draw_destination, projection, view);
-    pass_lighting(draw_destination, registry, projection, view, camera_position);
+    pass_geometry(draw_destination, registry, renderer_context);
+    pass_lighting(draw_destination, registry, renderer_context);
 
     // Copy the proper depth buffer to the destination framebuffer
     auto size = draw_destination.size;
@@ -72,17 +77,16 @@ auto DeferredRenderer::draw(
 }
 
 auto DeferredRenderer::pass_geometry(
-    entt::registry const& registry,
     DrawDestination destination,
-    mat4 projection,
-    mat4 view
+    entt::registry const& registry,
+    RendererContext renderer_context
 ) -> void {
     _gbuffers->resize(destination.size);
 
     auto shader = entt::locator<ShaderCache>::value()["dr_pass_gbuffers"_hs];
 
-    shader->set_uniform("projection", projection);
-    shader->set_uniform("view", view);
+    shader->set_uniform("projection", renderer_context.projection);
+    shader->set_uniform("view", renderer_context.view);
 
     _gbuffers->bind();
 
@@ -99,6 +103,12 @@ auto DeferredRenderer::pass_geometry(
 
         shader->set_uniform("model", model);
         shader->set_uniform("model_normal", model_normal);
+
+        // +1 because entity_id 0 will be entt::null.
+        auto const entity_id = static_cast<u16>(entity) + 1;
+        shader->set_uniform("identity", entity_id);
+
+        shader->set_uniform("is_outline", registry.all_of<OutlineComponent>(entity));
 
         // TODO: material textures must be rethink, this whole block
         {
@@ -130,9 +140,7 @@ auto DeferredRenderer::pass_geometry(
 auto DeferredRenderer::pass_lighting(
     DrawDestination draw_destination,
     entt::registry const& registry,
-    mat4 projection,
-    mat4 view,
-    vec3 camera_position
+    RendererContext renderer_context
 ) -> void {
     // At this point, we have all the geometry buffers in _gbuffers. Go ahead and render the lighting pass into a quad
     // in draw_destination.framebuffer.
@@ -151,10 +159,10 @@ auto DeferredRenderer::pass_lighting(
     depth_texture()->activate_as(3, false);
     shader->set_uniform("g_depth", 3);
 
-    shader->set_uniform("camera_position", camera_position);
+    shader->set_uniform("camera_position", renderer_context.camera_transform.position);
 
-    shader->set_uniform("projection_matrix_inverse", glm::inverse(projection));
-    shader->set_uniform("view_matrix_inverse", glm::inverse(view));
+    shader->set_uniform("projection_matrix_inverse", glm::inverse(renderer_context.projection));
+    shader->set_uniform("view_matrix_inverse", glm::inverse(renderer_context.view));
 
     auto* shadow_map = entt::locator<FramebufferCache>::value()["shadow_fb"_hs]->depth();
     shadow_map->activate_as(20);
@@ -208,6 +216,10 @@ auto DeferredRenderer::pass_lighting(
     albedo_texture()->activate_as(0, true);
 }
 
+auto DeferredRenderer::size() const -> vec2i {
+    return _gbuffers->size();
+}
+
 auto DeferredRenderer::name() -> std::string& {
     return _name;
 }
@@ -216,6 +228,7 @@ auto DeferredRenderer::framebuffer() const -> Framebuffer* {
     return _gbuffers.get();
 }
 
+// TODO: refactor the following : we also need the attachment id (0,1,2,...)
 auto DeferredRenderer::albedo_texture() const -> Texture* {
     return _gbuffers->attachments()[0].second.get();
 }
@@ -228,6 +241,10 @@ auto DeferredRenderer::specular_texture() const -> Texture* {
     return _gbuffers->attachments()[2].second.get();
 }
 
-auto DeferredRenderer::depth_texture() const -> Texture* {
+auto DeferredRenderer::identify_texture() const -> Texture* {
     return _gbuffers->attachments()[3].second.get();
+}
+
+auto DeferredRenderer::depth_texture() const -> Texture* {
+    return _gbuffers->attachments()[4].second.get();
 }

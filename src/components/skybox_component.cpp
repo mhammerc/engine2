@@ -1,8 +1,7 @@
 #include "skybox_component.h"
 
-#include <entt/entt.hpp>
-
-#include "../../common.h"
+#include "../common.h"
+#include "entt/entt.hpp"
 
 using namespace engine;
 

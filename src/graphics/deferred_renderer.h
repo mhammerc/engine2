@@ -5,6 +5,7 @@
 #include <string>
 
 #include "framebuffer.h"
+#include "renderer_context.h"
 
 namespace engine {
 
@@ -27,30 +28,25 @@ class DeferredRenderer {
      *
      * It will resize the buffers to the proper size.
      */
-    auto draw(
-        DrawDestination draw_destination,
-        entt::registry const& registry,
-        mat4 projection,
-        mat4 view,
-        vec3 camera_position
-    ) -> void;
+    auto draw(DrawDestination draw_destination, entt::registry const& registry, RendererContext renderer_context)
+        -> void;
 
+    [[nodiscard]] auto size() const -> vec2i;
     [[nodiscard]] auto framebuffer() const -> Framebuffer*;
     [[nodiscard]] auto name() -> std::string&;
     [[nodiscard]] auto albedo_texture() const -> Texture*;
     [[nodiscard]] auto normal_texture() const -> Texture*;
     [[nodiscard]] auto specular_texture() const -> Texture*;
+    [[nodiscard]] auto identify_texture() const -> Texture*;
     [[nodiscard]] auto depth_texture() const -> Texture*;
 
   private:
-    auto pass_geometry(entt::registry const& registry, DrawDestination destination, mat4 projection, mat4 view) -> void;
-    auto pass_lighting(
-        DrawDestination draw_destination,
-        entt::registry const& registry,
-        mat4 projection,
-        mat4 view,
-        vec3 camera_position
-    ) -> void;
+    auto
+    pass_geometry(DrawDestination draw_destination, entt::registry const& registry, RendererContext renderer_context)
+        -> void;
+    auto
+    pass_lighting(DrawDestination draw_destination, entt::registry const& registry, RendererContext renderer_context)
+        -> void;
 
   private:
     std::unique_ptr<Framebuffer> _gbuffers;
