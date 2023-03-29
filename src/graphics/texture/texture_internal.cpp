@@ -13,7 +13,7 @@ auto texture::OpenGLTextureProperties::from_texture_format(Texture::Format forma
     } else if (format == Texture::Format::RGBA) {
         properties.internalformat = GL_RGBA;
         properties.format = GL_RGBA;
-        properties.type = GL_UNSIGNED_BYTE;
+        properties.type = GL_FLOAT;
     } else if (format == Texture::Format::SRGB) {
         properties.internalformat = GL_SRGB;
         properties.format = GL_RGB;
