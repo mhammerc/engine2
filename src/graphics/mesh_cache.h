@@ -4,6 +4,7 @@
 #include <functional>
 #include <memory>
 
+#include "../core/noncopyable.h"
 #include "mesh.h"
 
 namespace engine {
@@ -19,6 +20,6 @@ struct MeshLoader {
     auto operator()(std::function<std::unique_ptr<Mesh>(void)> const& deferred_loading) const -> result_type;
 };
 
-using MeshCache = entt::resource_cache<Mesh, MeshLoader>;
+class MeshCache: public entt::resource_cache<Mesh, MeshLoader>, public noncopyable {};
 
 }  // namespace engine

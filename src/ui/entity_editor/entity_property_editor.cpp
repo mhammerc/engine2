@@ -18,6 +18,12 @@ static auto on_property_float(const char* name, float* value) -> bool {
     return edited;
 }
 
+static auto on_property_float2(const char* name, vec2* value) -> bool {
+    bool edited = ImGui::DragFloat2(name, &value->x, 0.25F);
+
+    return edited;
+}
+
 static auto on_property_float3(const char* name, vec3* value) -> bool {
     bool edited = ImGui::DragFloat3(name, &value->x, 0.25F);
 
@@ -55,7 +61,7 @@ auto ui::internal::on_property_quaternion(const char* name, glm::quat* value) ->
 
 static auto on_property_shader(const char* name, std::shared_ptr<ShaderProgram>* value)
     -> std::shared_ptr<ShaderProgram> {
-    auto shader_cache = entt::locator<ShaderCache>::value();
+    auto& shader_cache = entt::locator<ShaderCache>::value();
     std::shared_ptr<ShaderProgram> new_shader = nullptr;
 
     if (ImGui::BeginCombo(name, (*value)->name().data())) {
@@ -76,7 +82,7 @@ static auto on_property_shader(const char* name, std::shared_ptr<ShaderProgram>*
 }
 
 static auto on_property_mesh(const char* name, std::shared_ptr<Mesh>* value) -> std::shared_ptr<Mesh> {
-    auto mesh_cache = entt::locator<MeshCache>::value();
+    auto& mesh_cache = entt::locator<MeshCache>::value();
     std::shared_ptr<Mesh> new_mesh = nullptr;
 
     if (ImGui::BeginCombo(name, (*value)->name().data())) {
@@ -117,6 +123,12 @@ auto ui::internal::on_property(entt::meta_any& instance, entt::meta_data const& 
         }
     } else if (auto* value = any.try_cast<float>(); value) {
         bool edited = on_property_float(property_name, value);
+
+        if (edited) {
+            member.set(instance, *value);
+        }
+    } else if (auto* value = any.try_cast<vec2>(); value) {
+        bool edited = on_property_float2(property_name, value);
 
         if (edited) {
             member.set(instance, *value);

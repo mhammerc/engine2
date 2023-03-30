@@ -3,6 +3,7 @@
 #include <functional>
 #include <memory>
 
+#include "../../core/noncopyable.h"
 #include "entt/entt.hpp"
 #include "texture.h"
 
@@ -38,6 +39,6 @@ struct TextureLoader {
     auto operator()(std::function<std::unique_ptr<Texture>(void)> const& deferred_loading) const -> result_type;
 };
 
-using TextureCache = entt::resource_cache<Texture, TextureLoader>;
+class TextureCache: public entt::resource_cache<Texture, TextureLoader>, public noncopyable {};
 
 }  // namespace engine

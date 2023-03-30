@@ -1,11 +1,10 @@
 #include <entt/entt.hpp>
 
 #include "../graphics/framebuffer.h"
-#include "../graphics/renderer_context.h"
 #include "../utils/glfw3.h"
 
 namespace engine::ui::internal {
-auto ui_draw_window_system(RendererContext* renderer_context, float delta_time, GLFWwindow* window) -> void;
+auto ui_draw_window_system(float delta_time, GLFWwindow* window) -> void;
 
 auto ui_draw_window_scene(entt::registry& registry, Framebuffer* scene_texture) -> entt::entity;
 

@@ -54,13 +54,8 @@ auto engine::ui_end_frame() -> void {
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-auto engine::ui_draw(
-    float delta_time,
-    RendererContext* renderer_context,
-    GLFWwindow* window,
-    entt::registry& registry,
-    Framebuffer* scene_texture
-) -> void {
+auto engine::ui_draw(float delta_time, GLFWwindow* window, entt::registry& registry, Framebuffer* scene_texture)
+    -> void {
     ImGui::BeginMainMenuBar();
 
     static entt::entity selected_entity = entt::null;
@@ -111,7 +106,7 @@ auto engine::ui_draw(
     ui::internal::ui_draw_window_input_debugger(&input_debugger);
     ui::internal::ui_draw_window_texture_viewer(&texture_viewer);
 
-    ui::internal::ui_draw_window_system(renderer_context, delta_time, window);
+    ui::internal::ui_draw_window_system(delta_time, window);
     ui::internal::ui_draw_window_hierarchy(registry, selected_entity);
 
     if (entt::entity new_selected_entity = ui::internal::ui_draw_window_scene(registry, scene_texture);

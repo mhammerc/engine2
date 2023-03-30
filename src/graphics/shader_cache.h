@@ -4,6 +4,7 @@
 #include <functional>
 #include <memory>
 
+#include "../core/noncopyable.h"
 #include "shader_program.h"
 
 namespace engine {
@@ -19,6 +20,6 @@ struct ShaderProgramLoader {
     auto operator()(std::function<std::unique_ptr<ShaderProgram>(void)> const& deferred_loading) const -> result_type;
 };
 
-using ShaderCache = entt::resource_cache<ShaderProgram, ShaderProgramLoader>;
+class ShaderCache: public entt::resource_cache<ShaderProgram, ShaderProgramLoader>, public noncopyable {};
 
 }  // namespace engine

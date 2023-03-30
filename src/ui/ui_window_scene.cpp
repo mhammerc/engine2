@@ -2,8 +2,6 @@
 
 #include "../common.h"
 #include "../components/outline_component.h"
-#include "../graphics/deferred_renderer_cache.h"
-#include "../graphics/framebuffer_cache.h"
 #include "imgui.h"
 #include "imgui/imgui.h"
 #include "ui_internal.h"
@@ -24,7 +22,12 @@ static auto draw(Framebuffer* scene_texture) -> std::tuple<vec2, vec2> {
 
     scene_texture->resize({image_size.x * dpi_scale, image_size.y * dpi_scale});
 
-    ImGui::Image(reinterpret_cast<void*>(scene_texture->color()->handle()), {image_size}, ImVec2(0, 1), ImVec2(1, 0));
+    ImGui::Image(
+        reinterpret_cast<void*>(scene_texture->attachments()[0].second->handle()),
+        {image_size},
+        ImVec2(0, 1),
+        ImVec2(1, 0)
+    );
 
     ImGui::End();
 
@@ -45,15 +48,13 @@ auto ui::internal::ui_draw_window_scene(entt::registry& registry, Framebuffer* s
         return entt::null;
     }
 
-    // Get the identify framebuffer and identify which object it is
-    auto deferred_renderer = entt::locator<engine::DeferredRendererCache>::value()["renderer"_hs];
-
+    // Get the identify texture and identify which object it is
     vec2 pixel_position = {mouse_over_scene.x, 1.F - mouse_over_scene.y};
-    pixel_position *= deferred_renderer->size();
+    pixel_position *= scene_texture->size();
 
     vec4 pixel_color;
-    deferred_renderer->framebuffer()->bind();
-    glReadBuffer(GL_COLOR_ATTACHMENT3);
+    scene_texture->bind();
+    glReadBuffer(GL_COLOR_ATTACHMENT1);
     glReadPixels(
         static_cast<int>(pixel_position.x),
         static_cast<int>(pixel_position.y),
@@ -63,7 +64,7 @@ auto ui::internal::ui_draw_window_scene(entt::registry& registry, Framebuffer* s
         GL_FLOAT,
         &pixel_color
     );
-    deferred_renderer->framebuffer()->unbind();
+    scene_texture->unbind();
 
     u32 const entity_id = static_cast<int>(pixel_color.r);
 

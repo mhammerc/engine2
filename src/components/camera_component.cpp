@@ -30,6 +30,8 @@ auto reflection::register_camera_component() -> void {
     factory.data<&CameraComponent::fov>("fov"_hs).prop("name"_hs, "fov");
     factory.data<&CameraComponent::speed>("speed"_hs).prop("name"_hs, "speed");
     factory.data<&CameraComponent::cursor_sensivity>("cursor_sensivity"_hs).prop("name"_hs, "cursor_sensivity");
+    factory.data<&CameraComponent::zNear>("zNear"_hs).prop("name"_hs, "zNear");
+    factory.data<&CameraComponent::zFar>("zFar"_hs).prop("name"_hs, "zFar");
 
     factory.func<&CameraComponent::view_matrix>("view_matrix"_hs).prop("name"_hs, "view_matrix");
 }

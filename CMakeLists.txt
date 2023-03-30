@@ -1,20 +1,16 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.26)
 project(opengl_engine VERSION 0.1.0)
-
-# Tests
-# include(CTest)
-# enable_testing()
 
 # Executable and sources
 add_executable(opengl_engine)
 
 set(SOURCES
-        src/load.h
-        src/load.cpp
         src/components/base_component.cpp
         src/components/base_component.h
         src/components/camera_component.cpp
         src/components/camera_component.h
+        src/components/deferred_renderer_component.cpp
+        src/components/deferred_renderer_component.h
         src/components/light_component.cpp
         src/components/light_component.h
         src/components/material_component.cpp
@@ -28,6 +24,7 @@ set(SOURCES
         src/core/game_loop.h
         src/core/input.cpp
         src/core/input.hpp
+        src/core/noncopyable.h
         src/core/reflection.cpp
         src/core/reflection.h
         src/core/transform.cpp
@@ -36,10 +33,16 @@ set(SOURCES
         src/create_scene.h
         src/entity_from_model.cpp
         src/entity_from_model.h
-        src/graphics/deferred_renderer.cpp
-        src/graphics/deferred_renderer.h
-        src/graphics/deferred_renderer_cache.cpp
-        src/graphics/deferred_renderer_cache.h
+        src/graphics/deferred_renderer/deferred_renderer.cpp
+        src/graphics/deferred_renderer/deferred_renderer.h
+        src/graphics/deferred_renderer/deferred_renderer_cache.cpp
+        src/graphics/deferred_renderer/deferred_renderer_cache.h
+        src/graphics/deferred_renderer/deferred_renderer_pass_geometry.cpp
+        src/graphics/deferred_renderer/deferred_renderer_pass_gizmo.cpp
+        src/graphics/deferred_renderer/deferred_renderer_pass_opaque.cpp
+        src/graphics/deferred_renderer/deferred_renderer_pass_outline.cpp
+        src/graphics/deferred_renderer/deferred_renderer_pass_postprocess.cpp
+        src/graphics/deferred_renderer/deferred_renderer_pass_skybox.cpp
         src/graphics/framebuffer.cpp
         src/graphics/framebuffer.h
         src/graphics/framebuffer_cache.cpp
@@ -63,16 +66,16 @@ set(SOURCES
         src/graphics/texture/texture_image.cpp
         src/graphics/texture/texture_image.h
         src/graphics/texture/texture_internal.cpp
+        src/load.cpp
+        src/load.h
         src/main.cpp
         src/platform/glfw.cpp
         src/platform/glfw.h
         src/platform/opengl.cpp
         src/platform/opengl.h
         src/systems/camera_system.cpp
-        src/systems/draw_light_gizmo.cpp
-        src/systems/draw_outline.cpp
+        src/systems/deferred_rendering.cpp
         src/systems/draw_shadow_maps.cpp
-        src/systems/draw_skybox.cpp
         src/systems/should_close_system.cpp
         src/systems/systems.h
         src/ui/entity_editor/entity_property_editor.cpp
@@ -96,7 +99,7 @@ set(SOURCES
         src/utils/read_file_to_string.cpp
         src/utils/read_file_to_string.h
         src/utils/type_index.h
-)
+        )
 
 target_sources(opengl_engine PRIVATE ${SOURCES})
 

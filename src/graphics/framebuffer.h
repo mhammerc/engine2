@@ -78,6 +78,11 @@ class Framebuffer {
     auto bind() -> void;
     auto unbind() -> void;
 
+    /**
+     * Clear every attachments to rgba(0, 0, 0, 1)
+     */
+    auto clear() -> void;
+
     [[nodiscard]] auto handle() const -> GLuint;
     [[nodiscard]] auto size() const -> vec2i;
     [[nodiscard]] auto name() -> std::string&;

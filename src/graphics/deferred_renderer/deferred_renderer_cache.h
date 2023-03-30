@@ -1,10 +1,11 @@
 #pragma once
 
-#include <entt/entt.hpp>
 #include <functional>
 #include <memory>
 
+#include "../../core/noncopyable.h"
 #include "deferred_renderer.h"
+#include "entt/entt.hpp"
 
 namespace engine {
 
@@ -20,6 +21,8 @@ struct DeferredRendererLoader {
         -> result_type;
 };
 
-using DeferredRendererCache = entt::resource_cache<DeferredRenderer, DeferredRendererLoader>;
+class DeferredRendererCache:
+    public entt::resource_cache<DeferredRenderer, DeferredRendererLoader>,
+    public noncopyable {};
 
 }  // namespace engine

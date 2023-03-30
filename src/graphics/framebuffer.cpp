@@ -193,6 +193,13 @@ auto Framebuffer::unbind() -> void {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+auto Framebuffer::clear() -> void {
+    bind();
+    glClearColor(0.F, 0.F, 0.F, 1.F);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    unbind();
+}
+
 auto Framebuffer::handle() const -> GLuint {
     return _handle;
 }

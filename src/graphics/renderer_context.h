@@ -28,11 +28,11 @@ struct RendererContext {
         bool edge_dectection = false;
     };
 
-    mat4 projection;
-    mat4 view;
+    mat4 projection;  // TODO: will be removed (constructible from camera)
+    mat4 view;  // TODO: will be removed (constructible from camera)
 
-    entt::entity camera;
-    Transform camera_transform;
+    entt::entity camera;  // TODO: will be removed (camera in renderer)
+    Transform camera_transform;  // TODO: will be removed (camera in renderer)
 
     bool wireframe = false;
     PostProcessing post_process;

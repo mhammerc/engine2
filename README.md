@@ -4,12 +4,13 @@
 
 ## TODO
 
+- Generize Lights and Shadows
+- Better Texture viewer which works with the latest updates (Redo framebuffer viewer and deferredRenderer viewer)
+- Ability to better sort deferred renderer execution
 - auto unbind through RAII
 - Texture rework into the material struct
 - Move shaders to the postprocess shader? (outline shader, and more)
-- Generize Shadows
 - Antialiasing
-- Refactor draw functions into systems
 - Gizmos (like unreal engine)
 
 ## Development Environment

@@ -4,7 +4,7 @@
 
 #include <entt/entt.hpp>
 
-#include "graphics/deferred_renderer_cache.h"
+#include "graphics/deferred_renderer/deferred_renderer_cache.h"
 #include "graphics/framebuffer_cache.h"
 #include "graphics/mesh_cache.h"
 #include "graphics/shader_cache.h"
@@ -110,16 +110,26 @@ static auto load_textures() -> bool {
 static auto load_framebuffers() -> bool {
     auto& framebuffer_cache = entt::locator<engine::FramebufferCache>::value();
 
-    framebuffer_cache.load("color"_hs, Framebuffer::create_with_color_and_depth("color", vec2i {1, 1}));
-    framebuffer_cache.load("postprocess"_hs, Framebuffer::create_with_color("postprocess", vec2i {1, 1}));
+    using Attachment = Framebuffer::AttachmentDescription;
 
-    return true;
-}
+    std::array<Framebuffer::AttachmentDescription, 2> const attachments = {{
+        // Scene (RGB)
+        {
+            Attachment::Format::RGB,
+            Attachment::Type::Texture2D,
+            Attachment::TargetBuffer::Color0,
+        },
+        // Identify (X), Unused (GBA)
+        {
+            Attachment::Format::RGBA16F,
+            Attachment::Type::Texture2D,
+            Attachment::TargetBuffer::Color1,
+        },
+    }};
 
-static auto load_deferred_renderer() -> bool {
-    auto& deferred_renderer_cache = entt::locator<engine::DeferredRendererCache>::value();
-
-    deferred_renderer_cache.load("renderer"_hs, DeferredRenderer::create("renderer"));
+    framebuffer_cache.load("color"_hs, [&]() {
+        return Framebuffer::create_with_attachments("color", {1, 1}, attachments);
+    });
 
     return true;
 }
@@ -138,10 +148,6 @@ auto engine::load_resources() -> bool {
     }
 
     if (!load_framebuffers()) {
-        return false;
-    }
-
-    if (!load_deferred_renderer()) {
         return false;
     }
 

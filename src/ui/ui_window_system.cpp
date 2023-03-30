@@ -7,8 +7,7 @@
 
 using namespace engine;
 
-auto ui::internal::ui_draw_window_system(RendererContext* renderer_context, float delta_time, GLFWwindow* window)
-    -> void {
+auto ui::internal::ui_draw_window_system(float delta_time, GLFWwindow* window) -> void {
     ImGui::Begin("Engine");
 
     const auto sample_size = 120;
@@ -32,17 +31,6 @@ auto ui::internal::ui_draw_window_system(RendererContext* renderer_context, floa
 
     glfwGetFramebufferSize(window, &width, &height);
     ImGui::Text("Rendered Resolution: %dx%d", width, height);
-
-    ImGui::SeparatorText("Shaders");
-    ImGui::Checkbox("Wireframe", &renderer_context->wireframe);
-
-    ImGui::SeparatorText("Post-Processing");
-    ImGui::Checkbox("Inverse", &renderer_context->post_process.inverse);
-    ImGui::Checkbox("Grayscale", &renderer_context->post_process.black_and_white);
-    ImGui::Checkbox("Sepia", &renderer_context->post_process.sepia);
-    ImGui::Checkbox("Blur", &renderer_context->post_process.blur);
-    ImGui::Checkbox("Sharpen", &renderer_context->post_process.sharpen);
-    ImGui::Checkbox("Edge Detection", &renderer_context->post_process.edge_dectection);
 
     ImGui::End();
 }

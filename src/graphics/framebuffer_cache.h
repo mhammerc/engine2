@@ -4,6 +4,7 @@
 #include <functional>
 #include <memory>
 
+#include "../core/noncopyable.h"
 #include "framebuffer.h"
 
 namespace engine {
@@ -19,6 +20,6 @@ struct FramebufferLoader {
     auto operator()(std::function<std::unique_ptr<Framebuffer>(void)> const& deferred_loading) const -> result_type;
 };
 
-using FramebufferCache = entt::resource_cache<Framebuffer, FramebufferLoader>;
+class FramebufferCache: public entt::resource_cache<Framebuffer, FramebufferLoader>, public noncopyable {};
 
 }  // namespace engine

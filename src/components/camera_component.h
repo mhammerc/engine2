@@ -19,6 +19,9 @@ struct CameraComponent {
     float speed = 7.F;
     float cursor_sensivity = 0.1F;
 
+    float zNear = 0.1F;
+    float zFar = 100.F;
+
     auto update_base_rotation(BaseComponent& base) const -> void;
 };
 

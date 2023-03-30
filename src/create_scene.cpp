@@ -2,15 +2,17 @@
 
 #include "components/base_component.h"
 #include "components/camera_component.h"
+#include "components/deferred_renderer_component.h"
 #include "components/light_component.h"
 #include "components/outline_component.h"
 #include "components/skybox_component.h"
 #include "core/entity.h"
 #include "entity_from_model.h"
+#include "graphics/framebuffer_cache.h"
 
 using namespace engine;
 
-auto engine::create_scene(entt::registry& registry, RendererContext& renderer_context) -> void {
+auto engine::create_scene(entt::registry& registry) -> void {
     auto backpacks = entity_from_model("../assets/backpack/backpack.obj", registry);
     for (auto& backpack : backpacks) {
         auto& base = registry.emplace<BaseComponent>(backpack, "backpack 1");
@@ -36,9 +38,9 @@ auto engine::create_scene(entt::registry& registry, RendererContext& renderer_co
         registry.emplace<SkyboxComponent>(skybox);
     }
 
-    renderer_context.camera = registry.create();
-    auto& base = registry.emplace<BaseComponent>(renderer_context.camera, "player");
-    auto& player = registry.emplace<CameraComponent>(renderer_context.camera);
+    auto camera = registry.create();
+    auto& base = registry.emplace<BaseComponent>(camera, "player");
+    auto& player = registry.emplace<CameraComponent>(camera);
     base.transform.position = vec3(-8.3F, 0.F, 2.3F);
     player.pitch = 0.F;
     player.yaw = 140.F;
@@ -54,6 +56,13 @@ auto engine::create_scene(entt::registry& registry, RendererContext& renderer_co
     light1_light.ambient = glm::vec3(0.35F, 0.35F, 0.35F);
     light1_light.diffuse = glm::vec3(0.8F, 0.8F, 0.8F);
     light1_light.specular = glm::vec3(1.F, 1.F, 1.F);
+
+    auto& framebuffer_cache = entt::locator<FramebufferCache>::value();
+    auto renderer = registry.create();
+    registry.emplace<BaseComponent>(renderer, "Deferred Renderer");
+    auto& renderer_comp = registry.emplace<DeferredRendererComponent>(renderer);
+    renderer_comp.camera = camera;
+    renderer_comp.destination = framebuffer_cache["color"_hs].handle().get();
 
     // auto& spotlight = registry.emplace<LightComponent>(camera);
     // spotlight.type = LightComponent::Spot;
