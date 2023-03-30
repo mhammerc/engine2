@@ -72,7 +72,7 @@ auto DeferredRenderer::pass_geometry(entt::registry const& registry, RendererCon
     auto drawable_entities = registry.view<BaseComponent, MaterialComponent>();
     for (auto const& [entity, base, material] : drawable_entities.each()) {
         if (!base.enabled) {
-            return;
+            continue;
         }
 
         draw_entity(registry, shader.handle().get(), entity, base, material);
