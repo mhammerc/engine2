@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <array>
+#include <ranges>
 
 using namespace engine;
 
@@ -196,28 +197,12 @@ auto Framebuffer::bind() -> void {
 
     glViewport(0, 0, _size.x, _size.y);
 
-    // Get all the color attachments and bind them as draw buffers.
-    std::vector<GLenum> attachments_names;
-    attachments_names.reserve(_attachments.size());
+    auto _color_attachments = _attachments
+        | std::views::transform([](auto const& attachment) { return attachment.first; })
+        | std::views::filter(&Framebuffer::is_color) | std::views::transform(&Framebuffer::target_buffer_to_opengl);
+    auto color_attachments = std::vector(_color_attachments.begin(), _color_attachments.end());
 
-    std::transform(
-        _attachments.begin(),
-        _attachments.end(),
-        std::back_inserter(attachments_names),
-        [](Attachment const& attachment) {
-            if (Framebuffer::is_color(attachment.first)) {
-                return Framebuffer::target_buffer_to_opengl(attachment.first);
-            }
-
-            return static_cast<GLenum>(0);
-        }
-    );
-    attachments_names.erase(
-        std::remove_if(attachments_names.begin(), attachments_names.end(), [](GLenum name) { return name == 0; }),
-        attachments_names.end()
-    );
-
-    glDrawBuffers(static_cast<GLsizei>(attachments_names.size()), attachments_names.data());
+    glDrawBuffers(static_cast<GLsizei>(color_attachments.size()), color_attachments.data());
 }
 
 auto Framebuffer::unbind() -> void {

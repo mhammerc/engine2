@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.26)
+cmake_minimum_required(VERSION 3.25)
 project(opengl_engine VERSION 0.1.0)
 
 # Executable and sources
