@@ -3,11 +3,13 @@
 layout(location = 0) in vec3 _vertex_position;
 layout(location = 1) in vec3 vertex_normal;
 layout(location = 2) in vec2 vertex_uv;
+layout(location = 3) in vec3 vertex_tangent;
 
 out VS_OUT {
     vec2 fragment_uv;
     vec3 fragment_normal_world;
     vec3 fragment_position_world;
+    mat3 TBN;
 }
 vs_out;
 
@@ -26,4 +28,12 @@ void main() {
     vs_out.fragment_uv = vertex_uv;
 
     vs_out.fragment_normal_world = model_normal * vertex_normal;
+
+    vec3 N = normalize(model_normal * vertex_normal);
+    vec3 T = normalize(model_normal * vertex_tangent);
+    // re-orthogonalize T with respect to N
+    T = normalize(T - dot(T, N) * N);
+    // then retrieve perpendicular vector B with the cross product of T and N
+    vec3 B = cross(N, T);
+    vs_out.TBN = mat3(T, B, N);
 }

@@ -22,6 +22,7 @@ class Mesh {
         vec3 position;
         vec3 normal;
         vec2 tex_coords;
+        vec3 tangent = vec3(0, 0, 1);
     };
 
   public:

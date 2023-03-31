@@ -9,19 +9,25 @@ in VS_OUT {
     vec2 fragment_uv;
     vec3 fragment_normal_world;
     vec3 fragment_position_world;
+    mat3 TBN;
 }
 vs_out;
 
 uniform sampler2D texture_diffuse1;
 uniform sampler2D texture_specular1;
 uniform sampler2D texture_normal1;
+uniform bool have_texture_normal;
+
 uniform int identity;
 uniform bool is_outline;
 
 void main() {
     g_albedo = texture(texture_diffuse1, vs_out.fragment_uv).rgb;
 
-    g_normal = normalize(vs_out.fragment_normal_world);
+    g_normal = have_texture_normal ? texture(texture_normal1, vs_out.fragment_uv).rgb : vec3(0.5, 0.5, 1.);
+    g_normal = g_normal * 2. - 1.;
+    g_normal = normalize(vs_out.TBN * g_normal);
+    // g_normal = normalize(vs_out.fragment_normal_world);
 
     float specular = texture(texture_specular1, vs_out.fragment_uv).r;
     float outline = float(is_outline);

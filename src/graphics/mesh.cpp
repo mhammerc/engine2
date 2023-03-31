@@ -49,6 +49,10 @@ auto Mesh::upload_buffers() -> void {
         reinterpret_cast<void*>(offsetof(Vertex, tex_coords))
     );
 
+    // bind attribute 3 (tangent)
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, size_of_vertex, reinterpret_cast<void*>(offsetof(Vertex, tangent)));
+
     // NOLINTEND(performance-no-int-to-ptr, cppcoreguidelines-pro-type-reinterpret-cast)
 
     glBindVertexArray(0);

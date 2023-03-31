@@ -38,6 +38,9 @@ static auto draw_entity(
     if (material.normal) {
         material.normal->activate_as(3);
         shader->set_uniform("texture_normal1", 3);
+        shader->set_uniform("have_texture_normal", true);
+    } else {
+        shader->set_uniform("have_texture_normal", false);
     }
 
     material.mesh->draw();

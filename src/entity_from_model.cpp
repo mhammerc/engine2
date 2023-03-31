@@ -23,6 +23,8 @@ using path = std::filesystem::path;
 static auto aimesh_to_mesh(aiMesh const* mesh, path const& name) -> std::unique_ptr<Mesh> {
     std::span<aiVector3D> const raw_vertices(mesh->mVertices, mesh->mNumVertices);
     std::span<aiVector3D> const raw_normals(mesh->mNormals, mesh->mNumVertices);
+    std::span<aiVector3D> const raw_tangents(mesh->mTangents, mesh->mNumVertices);
+
     // We care only about texture coordinate 0 for now.
     std::span<aiVector3D> const raw_texture_coords(mesh->mTextureCoords[0], mesh->mNumVertices);
 
@@ -41,6 +43,11 @@ static auto aimesh_to_mesh(aiMesh const* mesh, path const& name) -> std::unique_
         vector.y = raw_normals[i].y;
         vector.z = raw_normals[i].z;
         vertex.normal = vector;
+
+        vector.x = raw_tangents[i].x;
+        vector.y = raw_tangents[i].y;
+        vector.z = raw_tangents[i].z;
+        vertex.tangent = vector;
 
         // does the mesh contain texture coordinates?
         if (mesh->mTextureCoords[0]) {
@@ -183,7 +190,7 @@ auto engine::entity_from_model(const path& path, entt::registry& registry) -> st
     aiScene const* scene = importer.ReadFile(
         path.string().c_str(),
         aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_SplitLargeMeshes | aiProcess_OptimizeMeshes
-            | aiProcess_OptimizeGraph
+            | aiProcess_OptimizeGraph | aiProcess_CalcTangentSpace
     );
 
     if (scene == nullptr || (scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) != 0U || scene->mRootNode == nullptr) {
