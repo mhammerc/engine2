@@ -14,7 +14,10 @@ struct MaterialComponent {
     float reflection = 0.F;
     float refraction = 0.F;
 
-    std::map<i32, std::shared_ptr<Texture>> textures;
+    std::shared_ptr<Texture> diffuse;
+    std::shared_ptr<Texture> specular;
+    std::shared_ptr<Texture> normal;
+
     std::shared_ptr<Mesh> mesh;
 };
 

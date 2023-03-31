@@ -25,23 +25,19 @@ static auto draw_entity(
 
     shader->set_uniform("is_outline", registry.all_of<OutlineComponent>(entity));
 
-    // TODO: material textures must be rethink, this whole block
-    {
-        if (material.textures.contains(1)) {
-            shader->set_uniform("texture_diffuse1", 1);
-        } else {
-            shader->set_uniform("texture_diffuse1", 0);
-        }
+    if (material.diffuse) {
+        material.diffuse->activate_as(1);
+        shader->set_uniform("texture_diffuse1", 1);
+    }
 
-        if (material.textures.contains(2)) {
-            shader->set_uniform("texture_specular1", 2);
-        } else {
-            shader->set_uniform("texture_specular1", 0);
-        }
+    if (material.specular) {
+        material.specular->activate_as(2);
+        shader->set_uniform("texture_specular1", 2);
+    }
 
-        for (auto const& texture : material.textures) {
-            texture.second->activate_as(texture.first, false);
-        }
+    if (material.normal) {
+        material.normal->activate_as(3);
+        shader->set_uniform("texture_normal1", 3);
     }
 
     material.mesh->draw();

@@ -72,21 +72,21 @@ static auto aimesh_to_mesh(aiMesh const* mesh, path const& name) -> std::unique_
     return _mesh;
 }
 
-static auto aimaterial_to_textures(aiMaterial const* mat, aiScene const* /*scene*/, path const& filename)
-    -> std::map<i32, std::shared_ptr<Texture>> {
+static auto aimaterial_to_textures(
+    MaterialComponent& material,
+    aiMaterial const* ai_mat,
+    aiScene const* /*scene*/,
+    path const& filename
+) -> void {
     auto working_directory = path(filename);
     working_directory.remove_filename();
 
     auto& texture_cache = entt::locator<TextureCache>::value();
 
-    // texture 1 is always diffuse.
-    // texture 2 is always specular.
-    std::map<i32, std::shared_ptr<Texture>> textures;
-
-    const auto have_diffuse_texture = mat->GetTextureCount(aiTextureType_DIFFUSE);
+    const auto have_diffuse_texture = ai_mat->GetTextureCount(aiTextureType_DIFFUSE);
     if (have_diffuse_texture > 0) {
         aiString filename;
-        mat->GetTexture(aiTextureType_DIFFUSE, 0, &filename);
+        ai_mat->GetTexture(aiTextureType_DIFFUSE, 0, &filename);
 
         auto texture_path = working_directory / filename.C_Str();
 
@@ -94,13 +94,14 @@ static auto aimaterial_to_textures(aiMaterial const* mat, aiScene const* /*scene
             entt::hashed_string(texture_path.string().c_str()),
             Texture::from_file_2d(texture_path, Texture::Format::SRGB)
         );
-        textures.insert({1, texture.first->second.handle()});
+
+        material.diffuse = texture.first->second.handle();
     }
 
-    const auto have_specular_texture = mat->GetTextureCount(aiTextureType_SPECULAR);
+    const auto have_specular_texture = ai_mat->GetTextureCount(aiTextureType_SPECULAR);
     if (have_specular_texture > 0) {
         aiString filename;
-        mat->GetTexture(aiTextureType_SPECULAR, 0, &filename);
+        ai_mat->GetTexture(aiTextureType_SPECULAR, 0, &filename);
 
         auto texture_path = working_directory / filename.C_Str();
 
@@ -108,10 +109,24 @@ static auto aimaterial_to_textures(aiMaterial const* mat, aiScene const* /*scene
             entt::hashed_string(texture_path.string().c_str()),
             Texture::from_file_2d(texture_path, Texture::Format::RGB)
         );
-        textures.insert({2, texture.first->second.handle()});
+
+        material.specular = texture.first->second.handle();
     }
 
-    return textures;
+    const auto have_normal_texture = ai_mat->GetTextureCount(aiTextureType_HEIGHT);
+    if (have_normal_texture > 0) {
+        aiString filename;
+        ai_mat->GetTexture(aiTextureType_HEIGHT, 0, &filename);
+
+        auto texture_path = working_directory / filename.C_Str();
+
+        auto texture = texture_cache.load(
+            entt::hashed_string(texture_path.string().c_str()),
+            Texture::from_file_2d(texture_path, Texture::Format::RGB)
+        );
+
+        material.normal = texture.first->second.handle();
+    }
 }
 
 static auto
@@ -128,7 +143,8 @@ on_mesh(entt::entity entity, entt::registry& registry, aiMesh const* aimesh, aiS
 
     if (aimesh->mMaterialIndex >= 0) {
         std::span<aiMaterial*> const raw_materials(scene->mMaterials, scene->mNumMaterials);
-        material.textures = aimaterial_to_textures(raw_materials[aimesh->mMaterialIndex], scene, filename);
+
+        aimaterial_to_textures(material, raw_materials[aimesh->mMaterialIndex], scene, filename);
     }
 }
 

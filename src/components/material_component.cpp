@@ -12,5 +12,7 @@ auto reflection::register_material_component() -> void {
     factory.data<&MaterialComponent::reflection>("reflection"_hs).prop("name"_hs, "reflection");
     factory.data<&MaterialComponent::refraction>("refraction"_hs).prop("name"_hs, "refraction");
     factory.data<&MaterialComponent::mesh>("mesh"_hs).prop("name"_hs, "mesh");
-    factory.data<&MaterialComponent::textures>("textures"_hs).prop("name"_hs, "textures");
+    factory.data<&MaterialComponent::diffuse>("diffuse"_hs).prop("name"_hs, "diffuse");
+    factory.data<&MaterialComponent::specular>("specular"_hs).prop("name"_hs, "specular");
+    factory.data<&MaterialComponent::normal>("normal"_hs).prop("name"_hs, "normal");
 }
