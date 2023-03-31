@@ -16,6 +16,9 @@ class Framebuffer {
     enum class TargetBuffer { Color0, Color1, Color2, Color3, Color4, Color5, Depth, Stencil, DepthStencil };
     using Attachment = std::pair<TargetBuffer, std::unique_ptr<Texture>>;
 
+    [[nodiscard]] static auto target_buffer_to_opengl(TargetBuffer target_buffer) -> GLenum;
+    [[nodiscard]] static auto is_color(TargetBuffer target_buffer) -> bool;
+
     /**
      * FramebufferAttachment represent one attachment that can be created/attached to
      * a framebuffer.

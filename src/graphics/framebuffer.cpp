@@ -7,7 +7,7 @@
 
 using namespace engine;
 
-auto Framebuffer::AttachmentDescription::target_buffer_to_opengl() const -> GLenum {
+auto Framebuffer::target_buffer_to_opengl(TargetBuffer target_buffer) -> GLenum {
     if (target_buffer == TargetBuffer::Color0) {
         return GL_COLOR_ATTACHMENT0;
     }
@@ -41,11 +41,19 @@ auto Framebuffer::AttachmentDescription::target_buffer_to_opengl() const -> GLen
     return GL_COLOR_ATTACHMENT0;
 }
 
-auto Framebuffer::AttachmentDescription::is_color() const -> bool {
+auto Framebuffer::is_color(TargetBuffer target_buffer) -> bool {
     return (
         target_buffer != TargetBuffer::Depth && target_buffer != TargetBuffer::Stencil
         && target_buffer != TargetBuffer::DepthStencil
     );
+}
+
+auto Framebuffer::AttachmentDescription::target_buffer_to_opengl() const -> GLenum {
+    return Framebuffer::target_buffer_to_opengl(target_buffer);
+}
+
+auto Framebuffer::AttachmentDescription::is_color() const -> bool {
+    return Framebuffer::is_color(target_buffer);
 }
 
 auto Framebuffer::create_with_attachments(
@@ -187,6 +195,29 @@ auto Framebuffer::bind() -> void {
     glBindFramebuffer(GL_FRAMEBUFFER, _handle);
 
     glViewport(0, 0, _size.x, _size.y);
+
+    // Get all the color attachments and bind them as draw buffers.
+    std::vector<GLenum> attachments_names;
+    attachments_names.reserve(_attachments.size());
+
+    std::transform(
+        _attachments.begin(),
+        _attachments.end(),
+        std::back_inserter(attachments_names),
+        [](Attachment const& attachment) {
+            if (Framebuffer::is_color(attachment.first)) {
+                return Framebuffer::target_buffer_to_opengl(attachment.first);
+            }
+
+            return static_cast<GLenum>(0);
+        }
+    );
+    attachments_names.erase(
+        std::remove_if(attachments_names.begin(), attachments_names.end(), [](GLenum name) { return name == 0; }),
+        attachments_names.end()
+    );
+
+    glDrawBuffers(static_cast<GLsizei>(attachments_names.size()), attachments_names.data());
 }
 
 auto Framebuffer::unbind() -> void {

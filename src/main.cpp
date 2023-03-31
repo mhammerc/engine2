@@ -59,13 +59,13 @@ auto main() -> int {
         registry.clear<OutlineComponent>();
 
         auto& framebuffer_cache = entt::locator<engine::FramebufferCache>::value();
-        Framebuffer& scene = framebuffer_cache["color"_hs];
+        Framebuffer& color = framebuffer_cache["color"_hs];
 
         ui_prepare_frame();
-        ui_draw(delta_time, window, registry, &scene);
+        ui_draw(delta_time, window, registry, &color);
         ui_end_frame();
 
-        scene.clear();
+        color.clear();
         systems::should_close_system();
         systems::camera_system(delta_time, registry);
         systems::draw_shadow_maps(registry);

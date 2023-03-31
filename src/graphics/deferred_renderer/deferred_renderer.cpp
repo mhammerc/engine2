@@ -130,6 +130,11 @@ auto DeferredRenderer::draw(
     DrawDestination draw_destination,
     RendererContext renderer_context
 ) -> void {
+    if (draw_destination.size.x <= 0 || draw_destination.size.y <= 0) {
+        // Nothing to render
+        return;
+    }
+
     _gbuffers->resize(draw_destination.size);
     _before_post_processing->resize(draw_destination.size);
     _after_post_processing->resize(draw_destination.size);
