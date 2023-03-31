@@ -32,12 +32,6 @@ auto ui::internal::ui_draw_window_texture_viewer(bool* is_open) -> void {
             ImGui::EndTabItem();
         }
 
-        if (ImGui::BeginTabItem("Cubemap")) {
-            draw_cubemap_viewer();
-
-            ImGui::EndTabItem();
-        }
-
         ImGui::EndTabBar();
     }
 

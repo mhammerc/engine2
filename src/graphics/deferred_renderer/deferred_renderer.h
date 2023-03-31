@@ -49,8 +49,11 @@ class DeferredRenderer: public noncopyable {
         -> void;
 
     [[nodiscard]] auto size() const -> vec2i;
-    [[nodiscard]] auto framebuffer() const -> Framebuffer*;  // TODO: review
     [[nodiscard]] auto name() -> std::string&;
+
+    [[nodiscard]] auto gbuffers() const -> Framebuffer*;
+    [[nodiscard]] auto before_post_processing() const -> Framebuffer*;
+    [[nodiscard]] auto after_post_processing() const -> Framebuffer*;
     [[nodiscard]] auto albedo_texture() const -> Texture*;
     [[nodiscard]] auto normal_texture() const -> Texture*;
     [[nodiscard]] auto specular_texture() const -> Texture*;

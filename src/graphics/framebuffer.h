@@ -31,6 +31,7 @@ class Framebuffer {
         Format format;
         Type type;
         TargetBuffer target_buffer;
+        std::string const name = "";
 
         [[nodiscard]] auto target_buffer_to_opengl() const -> GLenum;
         [[nodiscard]] auto is_color() const -> bool;

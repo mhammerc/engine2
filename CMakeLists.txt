@@ -86,8 +86,10 @@ set(SOURCES
         src/ui/ui_window_input_debugger.cpp
         src/ui/ui_window_scene.cpp
         src/ui/ui_window_system.cpp
-        src/ui/ui_window_texture_viewer/cubemap_viewer.cpp
         src/ui/ui_window_texture_viewer/deferred_renderer_viewer.cpp
+        src/ui/ui_window_texture_viewer/draw_framebuffer.cpp
+        src/ui/ui_window_texture_viewer/draw_texture.cpp
+        src/ui/ui_window_texture_viewer/draw_textures.cpp
         src/ui/ui_window_texture_viewer/framebuffer_viewer.cpp
         src/ui/ui_window_texture_viewer/texture_viewer.cpp
         src/ui/ui_window_texture_viewer/ui_window_texture_viewer.cpp

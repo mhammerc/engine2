@@ -19,30 +19,35 @@ auto DeferredRenderer::create(std::string const& name) -> std::unique_ptr<Deferr
                 Attachment::Format::RGB,
                 Attachment::Type::Texture2D,
                 Attachment::TargetBuffer::Color0,
+                "Albedo (RGB)",
             },
             // Normal World (XYZ)
             {
                 Attachment::Format::RGB16SNORM,
                 Attachment::Type::Texture2D,
                 Attachment::TargetBuffer::Color1,
+                "Normal World (XYZ)",
             },
             // Specular (R), Is To-Be-Outlined (G), Unused (B)
             {
                 Attachment::Format::RGB,
                 Attachment::Type::Texture2D,
                 Attachment::TargetBuffer::Color2,
+                "Specular (R), To-Be-Outlined (G), Unused (B)",
             },
             // Identify (X), Unused (GBA)
             {
                 Attachment::Format::RGBA16F,
                 Attachment::Type::Texture2D,
                 Attachment::TargetBuffer::Color3,
+                "Identify (X), Unused (GBA)",
             },
             // Depth
             {
                 Attachment::Format::Depth,
                 Attachment::Type::Texture2D,
                 Attachment::TargetBuffer::Depth,
+                "Depth",
             },
         }};
 
@@ -162,8 +167,16 @@ auto DeferredRenderer::name() -> std::string& {
     return _name;
 }
 
-auto DeferredRenderer::framebuffer() const -> Framebuffer* {
+auto DeferredRenderer::gbuffers() const -> Framebuffer* {
     return _gbuffers.get();
+}
+
+auto DeferredRenderer::before_post_processing() const -> Framebuffer* {
+    return _before_post_processing.get();
+}
+
+auto DeferredRenderer::after_post_processing() const -> Framebuffer* {
+    return _after_post_processing.get();
 }
 
 // TODO: refactor the following : we also need the attachment id (0,1,2,...)

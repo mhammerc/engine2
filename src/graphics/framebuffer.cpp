@@ -78,7 +78,7 @@ auto Framebuffer::create_with_attachments(
         attachment_descriptions.end(),
         std::back_inserter(textures),
         [&](AttachmentDescription const& attachment) {
-            auto texture_name = fmt::format("{}_att", name);
+            auto texture_name = attachment.name.empty() ? fmt::format("{}_att", name) : attachment.name;
 
             // Create the texture...
             auto texture = Texture::from_empty(texture_name, attachment.type, attachment.format, size);
@@ -132,8 +132,8 @@ auto Framebuffer::create_with_color_and_depth(std::string const& name, vec2i siz
     using TargetBuffer = AttachmentDescription::TargetBuffer;
 
     std::array<AttachmentDescription, 2> attachments_descriptions {{
-        {Format::RGB, Type::Texture2D, TargetBuffer::Color0},
-        {Format::Depth, Type::Texture2D, TargetBuffer::Depth},
+        {Format::RGB, Type::Texture2D, TargetBuffer::Color0, "Color"},
+        {Format::Depth, Type::Texture2D, TargetBuffer::Depth, "Depth"},
     }};
 
     auto framebuffer = Framebuffer::create_with_attachments(name, size, attachments_descriptions);
@@ -146,7 +146,7 @@ auto Framebuffer::create_with_color(std::string const& name, vec2i size) -> std:
     using TargetBuffer = AttachmentDescription::TargetBuffer;
 
     std::array<AttachmentDescription, 1> attachments_descriptions {{
-        {Format::RGB, Type::Texture2D, TargetBuffer::Color0},
+        {Format::RGB, Type::Texture2D, TargetBuffer::Color0, "Color"},
     }};
 
     auto framebuffer = Framebuffer::create_with_attachments(name, size, attachments_descriptions);
@@ -159,7 +159,7 @@ auto Framebuffer::create_with_depth(std::string const& name, vec2i size) -> std:
     using TargetBuffer = AttachmentDescription::TargetBuffer;
 
     std::array<AttachmentDescription, 1> attachments_descriptions {{
-        {Format::Depth, Type::Texture2D, TargetBuffer::Depth},
+        {Format::Depth, Type::Texture2D, TargetBuffer::Depth, "Depth"},
     }};
 
     auto framebuffer = Framebuffer::create_with_attachments(name, size, attachments_descriptions);
@@ -183,7 +183,9 @@ auto Framebuffer::resize(vec2i size) -> void {
             return Framebuffer::AttachmentDescription {
                 attachment.second->format(),
                 attachment.second->type(),
-                attachment.first};
+                attachment.first,
+                attachment.second->name(),
+            };
         }
     );
 

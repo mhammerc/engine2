@@ -118,12 +118,14 @@ static auto load_framebuffers() -> bool {
             Attachment::Format::RGB,
             Attachment::Type::Texture2D,
             Attachment::TargetBuffer::Color0,
+            "Color (RGB)",
         },
         // Identify (X), Unused (GBA)
         {
             Attachment::Format::RGBA16F,
             Attachment::Type::Texture2D,
             Attachment::TargetBuffer::Color1,
+            "Identify (X), Unused (GBA)",
         },
     }};
 

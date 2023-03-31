@@ -28,30 +28,50 @@ static auto draw_renderer_list(u32& current_index) -> void {
     }
 }
 
-static auto draw_texture_list(u32& texture_index) -> void {
-    if (ImGui::BeginCombo("Texture", "select")) {
-        if (ImGui::Selectable("Albedo", texture_index == 0)) {
-            texture_index = 0;
+static auto draw_framebuffer_list(DeferredRenderer* renderer) -> Framebuffer* {
+    enum class CurrentFramebuffer { Gbuffer, BeforePostProcessing, AfterPostProcessing };
+
+    static auto current_framebuffer = CurrentFramebuffer::Gbuffer;
+
+    char const* gbuffer_name = "G-Buffers";
+    char const* before_postprocess_name = "Before Post-Processing";
+    char const* after_postprocess_name = "After Post-Processing";
+
+    char const* current_name = gbuffer_name;
+    if (current_framebuffer == CurrentFramebuffer::BeforePostProcessing) {
+        current_name = before_postprocess_name;
+    }
+    if (current_framebuffer == CurrentFramebuffer::AfterPostProcessing) {
+        current_name = after_postprocess_name;
+    }
+
+    if (ImGui::BeginCombo("Framebuffer", current_name)) {
+        if (ImGui::Selectable(gbuffer_name)) {
+            current_framebuffer = CurrentFramebuffer::Gbuffer;
         }
 
-        if (ImGui::Selectable("World Normal", texture_index == 1)) {
-            texture_index = 1;
+        if (ImGui::Selectable(before_postprocess_name)) {
+            current_framebuffer = CurrentFramebuffer::BeforePostProcessing;
         }
 
-        if (ImGui::Selectable("Specular & Outline", texture_index == 2)) {
-            texture_index = 2;
-        }
-
-        if (ImGui::Selectable("Identify", texture_index == 3)) {
-            texture_index = 3;
-        }
-
-        if (ImGui::Selectable("Depth", texture_index == 4)) {
-            texture_index = 4;
+        if (ImGui::Selectable(after_postprocess_name)) {
+            current_framebuffer = CurrentFramebuffer::AfterPostProcessing;
         }
 
         ImGui::EndCombo();
     }
+
+    if (current_framebuffer == CurrentFramebuffer::Gbuffer) {
+        return renderer->gbuffers();
+    }
+    if (current_framebuffer == CurrentFramebuffer::BeforePostProcessing) {
+        return renderer->before_post_processing();
+    }
+    if (current_framebuffer == CurrentFramebuffer::AfterPostProcessing) {
+        return renderer->after_post_processing();
+    }
+
+    return renderer->gbuffers();
 }
 
 auto ui::internal::draw_deferred_renderer_viewer() -> void {
@@ -65,25 +85,8 @@ auto ui::internal::draw_deferred_renderer_viewer() -> void {
         return;
     }
 
-    static u32 texture_index = 0;
-    draw_texture_list(texture_index);
+    auto* framebuffer = draw_framebuffer_list(renderer.handle().get());
 
-    auto* texture = renderer->framebuffer()->attachments()[texture_index].second.get();
-
-    void* texture_handle = reinterpret_cast<void*>(texture->handle());
-
-    vec2 texture_size = texture->size();
-    auto window_size = ImGui::GetContentRegionAvail();
-    vec2 display_size;
-    if (window_size.x < (window_size.y + 70)) {
-        float ratio = texture_size.y / texture_size.x;
-
-        display_size = {window_size.x, window_size.x * ratio};
-    } else {
-        float ratio = texture_size.x / texture_size.y;
-
-        display_size = {window_size.y * ratio, window_size.y};
-    }
-
-    ImGui::Image(texture_handle, display_size, ImVec2(0, 1), ImVec2(1, 0));
+    static u32 texture_index = static_cast<u32>(-1);
+    draw_framebuffer(framebuffer, texture_index);
 }
