@@ -9,6 +9,7 @@
 #include "core/entity.h"
 #include "entity_from_model.h"
 #include "graphics/framebuffer_cache.h"
+#include "graphics/texture/texture_cache.h"
 
 using namespace engine;
 
@@ -35,7 +36,8 @@ auto engine::create_scene(entt::registry& registry) -> void {
     auto skybox = registry.create();
     {
         registry.emplace<BaseComponent>(skybox, "skybox");
-        registry.emplace<SkyboxComponent>(skybox);
+        auto& comp = registry.emplace<SkyboxComponent>(skybox);
+        comp.cubemap = entt::locator<TextureCache>::value()["skybox2"_hs].handle();
     }
 
     auto camera = registry.create();

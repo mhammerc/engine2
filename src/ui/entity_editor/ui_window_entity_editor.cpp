@@ -89,7 +89,6 @@ static auto empty_component(entt::registry& registry, entt::entity entity) -> vo
 }
 
 static auto iterate_empty_components(entt::registry& registry, entt::entity entity) -> void {
-    empty_component<SkyboxComponent>(registry, entity);
     empty_component<OutlineComponent>(registry, entity);
 }
 

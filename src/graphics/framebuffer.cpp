@@ -132,7 +132,7 @@ auto Framebuffer::create_with_color_and_depth(std::string const& name, vec2i siz
     using TargetBuffer = AttachmentDescription::TargetBuffer;
 
     std::array<AttachmentDescription, 2> attachments_descriptions {{
-        {Format::RGB, Type::Texture2D, TargetBuffer::Color0, "Color"},
+        {Format::RGBA16F, Type::Texture2D, TargetBuffer::Color0, "Color"},
         {Format::Depth, Type::Texture2D, TargetBuffer::Depth, "Depth"},
     }};
 

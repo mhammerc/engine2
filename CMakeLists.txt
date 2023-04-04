@@ -63,6 +63,7 @@ set(SOURCES
         src/graphics/texture/texture.h
         src/graphics/texture/texture_cache.cpp
         src/graphics/texture/texture_cache.h
+        src/graphics/texture/texture_from_file_cubemap.cpp
         src/graphics/texture/texture_image.cpp
         src/graphics/texture/texture_image.h
         src/graphics/texture/texture_internal.cpp

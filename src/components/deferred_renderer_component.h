@@ -4,6 +4,7 @@
 
 #include "../common.h"
 #include "../graphics/framebuffer.h"
+#include "../graphics/renderer_context.h"
 
 namespace engine {
 
@@ -36,6 +37,16 @@ struct DeferredRendererComponent {
      * Should render in wireframe?
      */
     bool wireframe = false;
+
+    /**
+     * Exposure of the camera. Higher value will show more details in dark areas.
+     */
+    float exposure = 1.F;
+
+    /**
+     * What tone mapping to use?
+     */
+    RendererContext::ToneMapping tone_mapping = RendererContext::ToneMapping::AcesApprox;
 };
 
 namespace reflection {

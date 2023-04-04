@@ -2,7 +2,6 @@
 #include "../../components/skybox_component.h"
 #include "../mesh_cache.h"
 #include "../shader_cache.h"
-#include "../texture/texture_cache.h"
 #include "deferred_renderer.h"
 
 using namespace engine;
@@ -10,12 +9,8 @@ using namespace engine;
 auto DeferredRenderer::pass_skybox(entt::registry const& registry, RendererContext renderer_context) -> void {
     auto skyboxes = registry.view<BaseComponent, SkyboxComponent>();
 
-    auto cubemap = entt::locator<TextureCache>::value()["skybox"_hs];
     auto shader = entt::locator<ShaderCache>::value()["skybox"_hs];
     auto cube = entt::locator<MeshCache>::value()["cube"_hs];
-
-    cubemap->activate_as(0);
-    shader->set_uniform("skybox", 0);
 
     // The skybox requires only rotation, not any translation.
     // Because the skybox looks infinitely far from the player,
@@ -32,20 +27,24 @@ auto DeferredRenderer::pass_skybox(entt::registry const& registry, RendererConte
     glCullFace(GL_FRONT);  // Invert culling to draw the inside of the mesh cube.
     glDepthFunc(GL_EQUAL);  // Draw the skybox only at max distance depth. The shader output vertices at max depth.
 
-    for (auto [entity, base] : skyboxes.each()) {
+    for (auto [entity, base, skybox] : skyboxes.each()) {
         if (!base.enabled) {
             continue;
         }
 
-        // TODO: draw only 1 skybox.
-        // TODO: have the skybox have its own cubemap reference as property. (it is hardcoded above currently)
+        skybox.cubemap->activate_as(0);
+        shader->set_uniform("skybox", 0);
+
         cube->draw();
+
+        skybox.cubemap->activate_as(0, true);
+
+        // We break because there is no sense to draw more than 1 skybox.
+        break;
     }
 
     glDepthFunc(GL_LESS);
     glCullFace(GL_BACK);
     shader->unbind();
     _before_post_processing->unbind();
-
-    cubemap->activate_as(0, true);
 }

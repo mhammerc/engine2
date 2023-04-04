@@ -33,6 +33,14 @@ class Texture {
         -> std::unique_ptr<Texture>;
 
     /**
+     * Create a CubeMap from a file which contain an equirectangular projection.
+     *
+     * The projection will be projected onto a complete CubeMap. Loading this way is expensive.
+     */
+    static auto from_file_cubemap(std::filesystem::path const& path, Format format, bool flip = true)
+        -> std::unique_ptr<Texture>;
+
+    /**
      * Create an empty texture of a given type.
      */
     static auto from_empty(std::string const& name, Type type, Format format, vec2i size) -> std::unique_ptr<Texture>;

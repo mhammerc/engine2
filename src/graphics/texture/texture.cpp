@@ -7,11 +7,13 @@ using namespace engine;
 using namespace engine::internal::texture;
 
 auto Texture::from_file_2d(const std::filesystem::path& path, Format format, bool flip) -> std::unique_ptr<Texture> {
-    if (format != Format::RGB && format != Format::SRGB) {
-        ENGINE_CODE_ERROR("only Format::RGB and Format::SRGB are supported for now.");
+    if (format != Format::RGB && format != Format::SRGB && format != Format::RGBA16F) {
+        ENGINE_CODE_ERROR("only Format::RGB, Format::SRGB and Format::RGBA16F are supported for now.");
     }
 
-    auto image = TextureImage::from_file(path, TextureImage::Channels::RGB, flip);
+    auto channels = format == Format::RGBA16F ? TextureImage::Channels::RGBA : TextureImage::Channels::RGB;
+
+    auto image = TextureImage::from_file(path, channels, flip);
 
     if (!image) {
         return nullptr;

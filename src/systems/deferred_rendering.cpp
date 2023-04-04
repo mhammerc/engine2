@@ -59,14 +59,18 @@ static auto perform_deferred_rendering(
     auto draw_destination = DeferredRenderer::DrawDestination {
         .framebuffer = renderer_component.destination,
         .position = position,
-        .size = size};
+        .size = size,
+    };
 
     auto renderer_context = RendererContext {
         .projection = projection,
         .view = view,
         .camera = renderer_component.camera,
         .camera_transform = camera_transform,
-        .wireframe = renderer_component.wireframe};
+        .wireframe = renderer_component.wireframe,
+        .exposure = renderer_component.exposure,
+        .tone_mapping = renderer_component.tone_mapping,
+    };
 
     renderer->draw(registry, draw_destination, renderer_context);
 }

@@ -9,5 +9,5 @@ in vec3 FragPos;
 uniform vec3 color;
 
 void main() {
-    FragColor = vec4(normalize(color) * 3, 1.);
+    FragColor = vec4(color * 3, 1.);
 }

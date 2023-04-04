@@ -74,6 +74,13 @@ static auto load_shaders() -> bool {
         return false;
     }
 
+    auto [equirectangular_to_cubemap, _14] =
+        shader_cache.load("equirectangular_to_cubemap"_hs, ShaderProgram::from_name("equirectangular_to_cubemap"));
+    if (equirectangular_to_cubemap->second.handle() == nullptr) {
+        spdlog::critical("could not create shader program.");
+        return false;
+    }
+
     return true;
 }
 
@@ -88,6 +95,8 @@ static auto load_meshes() -> bool {
 
 static auto load_textures() -> bool {
     auto& texture_cache = entt::locator<engine::TextureCache>::value();
+
+    texture_cache.load("skybox2"_hs, Texture::from_file_cubemap("../assets/skybox2.hdr", Texture::Format::RGBA16F));
 
     texture_cache.load(
         "skybox"_hs,

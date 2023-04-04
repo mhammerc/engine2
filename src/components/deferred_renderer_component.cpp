@@ -11,4 +11,6 @@ auto reflection::register_deferred_renderer_component() -> void {
     factory.data<&DeferredRendererComponent::size>("size"_hs).prop("name"_hs, "size");
     factory.data<&DeferredRendererComponent::camera>("camera"_hs).prop("name"_hs, "camera");
     factory.data<&DeferredRendererComponent::wireframe>("wireframe"_hs).prop("name"_hs, "wireframe");
+    factory.data<&DeferredRendererComponent::exposure>("exposure"_hs).prop("name"_hs, "exposure");
+    factory.data<&DeferredRendererComponent::tone_mapping>("tone_mapping"_hs).prop("name"_hs, "tone_mapping");
 }

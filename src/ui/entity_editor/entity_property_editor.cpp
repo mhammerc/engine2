@@ -4,9 +4,11 @@
 
 #include "../../graphics/mesh.h"
 #include "../../graphics/mesh_cache.h"
+#include "../../graphics/renderer_context.h"
 #include "../../graphics/shader_cache.h"
 #include "../../graphics/shader_program.h"
 #include "../../graphics/texture/texture.h"
+#include "../../graphics/texture/texture_cache.h"
 #include "entity_editor.h"
 #include "glm/gtc/quaternion.hpp"
 
@@ -64,7 +66,9 @@ static auto on_property_shader(const char* name, std::shared_ptr<ShaderProgram>*
     auto& shader_cache = entt::locator<ShaderCache>::value();
     std::shared_ptr<ShaderProgram> new_shader = nullptr;
 
-    if (ImGui::BeginCombo(name, (*value)->name().data())) {
+    const char* selected_name = *value ? (*value)->name().data() : "Please select";
+
+    if (ImGui::BeginCombo(name, selected_name)) {
         for (auto shader : shader_cache) {
             bool selected = ImGui::Selectable(
                 fmt::format("{}##{}", shader.second->name(), shader.first).c_str(),
@@ -85,7 +89,9 @@ static auto on_property_mesh(const char* name, std::shared_ptr<Mesh>* value) -> 
     auto& mesh_cache = entt::locator<MeshCache>::value();
     std::shared_ptr<Mesh> new_mesh = nullptr;
 
-    if (ImGui::BeginCombo(name, (*value)->name().data())) {
+    const char* selected_name = *value ? (*value)->name().data() : "Please select";
+
+    if (ImGui::BeginCombo(name, selected_name)) {
         for (auto mesh : mesh_cache) {
             bool selected = ImGui::Selectable(
                 fmt::format("{}##{}", mesh.second->name(), mesh.first).c_str(),
@@ -100,6 +106,65 @@ static auto on_property_mesh(const char* name, std::shared_ptr<Mesh>* value) -> 
     }
 
     return new_mesh;
+}
+
+static auto on_property_texture(const char* name, std::shared_ptr<Texture>* value) -> std::shared_ptr<Texture> {
+    auto& texture_cache = entt::locator<TextureCache>::value();
+    std::shared_ptr<Texture> new_texture = nullptr;
+
+    const char* selected_name = *value ? (*value)->name().data() : "Please select";
+
+    if (ImGui::BeginCombo(name, selected_name)) {
+        for (auto texture : texture_cache) {
+            bool selected = ImGui::Selectable(
+                fmt::format("{}##{}", texture.second->name(), texture.first).c_str(),
+                texture.second.handle().get() == value->get()
+            );
+
+            if (selected) {
+                new_texture = texture.second.handle();
+            }
+        }
+        ImGui::EndCombo();
+    }
+
+    return new_texture;
+}
+
+static auto on_property_tone_mapping(const char* name, RendererContext::ToneMapping* tone_mapping) -> bool {
+    using ToneMapping = RendererContext::ToneMapping;
+
+    auto tone_mapping_to_name = [](ToneMapping tone_mapping) -> char const* {
+        if (tone_mapping == ToneMapping::AcesApprox) {
+            return "Aces Approx";
+        }
+        if (tone_mapping == ToneMapping::AcesFitted) {
+            return "Aces Fitted";
+        }
+        if (tone_mapping == ToneMapping::None) {
+            return "No Tone Mapping (Disable HDR mapping)";
+        }
+        return "Missing case";
+    };
+
+    bool edited = false;
+
+    auto tone_mapping_selectable = [&](ToneMapping option) {
+        if (ImGui::Selectable(tone_mapping_to_name(option), *tone_mapping == option)) {
+            *tone_mapping = option;
+            edited = true;
+        }
+    };
+
+    if (ImGui::BeginCombo(name, tone_mapping_to_name(*tone_mapping))) {
+        tone_mapping_selectable(ToneMapping::AcesApprox);
+        tone_mapping_selectable(ToneMapping::AcesFitted);
+        tone_mapping_selectable(ToneMapping::None);
+
+        ImGui::EndCombo();
+    }
+
+    return edited;
 }
 
 auto ui::internal::on_property(entt::meta_any& instance, entt::meta_data const& member) -> void {
@@ -167,7 +232,21 @@ auto ui::internal::on_property(entt::meta_any& instance, entt::meta_data const& 
         if (new_mesh) {
             member.set(instance, new_mesh);
         }
-    } else if (auto* value = any.try_cast<std::map<i32, std::shared_ptr<Texture>>>(); value) {
+    } else if (auto* value = any.try_cast<std::shared_ptr<Texture>>(); value) {
+        auto new_texture = on_property_texture(property_name, value);
+
+        if (new_texture) {
+            member.set(instance, new_texture);
+        }
+    } else if (auto* value = any.try_cast<RendererContext::ToneMapping>(); value) {
+        auto new_tone_mapping = on_property_tone_mapping(property_name, value);
+
+        if (new_tone_mapping) {
+            member.set(instance, *value);
+        }
+    }
+
+    else if (auto* value = any.try_cast<std::map<i32, std::shared_ptr<Texture>>>(); value) {
         ImGui::Text("texture");
     }
 }

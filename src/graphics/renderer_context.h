@@ -36,6 +36,11 @@ struct RendererContext {
 
     bool wireframe = false;
     PostProcessing post_process;
+
+    float exposure;
+
+    enum class ToneMapping : i32 { None = 0x00, AcesFitted = 0x01, AcesApprox = 0x02 };
+    ToneMapping tone_mapping;
 };
 
 }  // namespace engine

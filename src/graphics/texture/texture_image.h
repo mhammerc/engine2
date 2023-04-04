@@ -31,18 +31,23 @@ class TextureImage {
   public:
     [[nodiscard]] auto size() const -> vec2i;
     [[nodiscard]] auto channels() const -> Channels;
-    [[nodiscard]] auto data() const -> u8 const*;
+    [[nodiscard]] auto data() const -> void const*;
+    [[nodiscard]] auto is_hdr() const -> bool;
 
   private:
-    TextureImage(vec2i size, Channels channels, u8 const* data);
+    TextureImage(vec2i size, Channels channels, bool is_hdr, void* data);
 
     auto release() -> void;
 
   private:
     vec2i _size;
     Channels _channels;
+    bool _is_hdr;
 
-    u8 const* _data;
+    /**
+     * May be `u8 const *` or `float const *`
+     */
+    void* _data;
 };
 
 }  // namespace engine
