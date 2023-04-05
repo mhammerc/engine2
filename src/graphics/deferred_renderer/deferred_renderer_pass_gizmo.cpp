@@ -33,7 +33,7 @@ auto DeferredRenderer::pass_gizmo(entt::registry const& registry, RendererContex
         shader->set_uniform("model", transform.matrix());
         shader->set_uniform("view", renderer_context.view);
         shader->set_uniform("projection", renderer_context.projection);
-        shader->set_uniform("color", light.ambient);
+        shader->set_uniform("color", light.diffuse);
 
         cube->draw();
     }

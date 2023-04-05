@@ -2,4 +2,6 @@
 # www.blender.org
 
 newmtl SceneRoot
-map_Kd wood.png
+map_Kd floor.jpg
+map_Bump normal.jpg
+map_Ks specular.jpg

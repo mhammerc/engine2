@@ -17,6 +17,7 @@ struct OpenGLTextureProperties {
     GLint internalformat = 0;
     GLenum format = 0;
     GLenum type = 0;
+    char const* name = "";
 };
 
 /**

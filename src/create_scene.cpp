@@ -51,12 +51,12 @@ auto engine::create_scene(entt::registry& registry) -> void {
     auto light1 = registry.create();
     auto& light1_base = registry.emplace<BaseComponent>(light1, "light1");
     auto& light1_light = registry.emplace<LightComponent>(light1);
-    light1_base.transform.position = vec3(0.F, 0.F, -2.F);
+    light1_base.transform.position = vec3(0.F, 7.F, 1.F);
     light1_light.type = LightComponent::Point;
-    light1_light.linear = 0.09F;
-    light1_light.quadratic = 0.032F;
+    light1_light.linear = 0.045F;
+    light1_light.quadratic = 0.0075F;
     light1_light.ambient = glm::vec3(0.35F, 0.35F, 0.35F);
-    light1_light.diffuse = glm::vec3(0.8F, 0.8F, 0.8F);
+    light1_light.diffuse = glm::vec3(2.F, 2.F, 2.F);
     light1_light.specular = glm::vec3(1.F, 1.F, 1.F);
 
     auto& framebuffer_cache = entt::locator<FramebufferCache>::value();

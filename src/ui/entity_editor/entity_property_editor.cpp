@@ -202,7 +202,8 @@ auto ui::internal::on_property(entt::meta_any& instance, entt::meta_data const& 
         bool edited = false;
         char const* type = prop<char const*>("type", member);
 
-        if (type && std::strcmp("color", type) == 0) {
+        if (type && std::strcmp("color", type) == 0 && false) {
+            // TODO: lights should have a power in lumen and a color.
             // color vec3
             edited = on_property_float3_color(property_name, value);
         } else {

@@ -10,34 +10,42 @@ auto texture::OpenGLTextureProperties::from_texture_format(Texture::Format forma
         properties.internalformat = GL_RGB;
         properties.format = GL_RGB;
         properties.type = GL_UNSIGNED_BYTE;
+        properties.name = "RGB (u8)";
     } else if (format == Texture::Format::RGBA) {
         properties.internalformat = GL_RGBA;
         properties.format = GL_RGBA;
         properties.type = GL_FLOAT;
+        properties.name = R"(RGBA (???))";
     } else if (format == Texture::Format::SRGB) {
         properties.internalformat = GL_SRGB;
         properties.format = GL_RGB;
         properties.type = GL_UNSIGNED_BYTE;
+        properties.name = "RGB (u8, SRGB)";
     } else if (format == Texture::Format::RGBA16F) {
         properties.internalformat = GL_RGBA16F;
         properties.format = GL_RGBA;
         properties.type = GL_FLOAT;
+        properties.name = "RGBA (16 bits float)";
     } else if (format == Texture::Format::RGB16SNORM) {
         properties.internalformat = GL_RGB16_SNORM;
         properties.format = GL_RGB;
         properties.type = GL_FLOAT;
+        properties.name = "RGB (16 bits float, signed normalized)";
     } else if (format == Texture::Format::RGBA32F) {
         properties.internalformat = GL_RGBA32F;
         properties.format = GL_RGBA;
         properties.type = GL_FLOAT;
+        properties.name = R"(RGBA (32 bits float????))";
     } else if (format == Texture::Format::DepthStencil) {
         properties.internalformat = GL_DEPTH24_STENCIL8;
         properties.format = GL_DEPTH_STENCIL;
         properties.type = GL_UNSIGNED_INT_24_8;
+        properties.name = "Depth + Stencil (Depth24, Stencil8, u32)";
     } else if (format == Texture::Format::Depth) {
         properties.internalformat = GL_DEPTH_COMPONENT;
         properties.format = GL_DEPTH_COMPONENT;
         properties.type = GL_FLOAT;
+        properties.name = R"(Depth (float ???))";
     } else {
         ENGINE_CODE_ERROR("missing case");
     }

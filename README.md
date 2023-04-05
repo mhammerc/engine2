@@ -4,6 +4,8 @@
 
 ## TODO
 
+- Displacement (parallax?) mapping
+- Bloom
 - Generize Lights and Shadows
 - Ability to better sort deferred renderers execution
 - auto unbind through RAII

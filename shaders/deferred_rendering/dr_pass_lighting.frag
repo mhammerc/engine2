@@ -70,8 +70,13 @@ float shadow_calculation(Light light) {
 
     float current_depth = length(light_to_fragment);
 
+    if (current_depth >= shadow_map_far_plane) {
+        // Too far away from the light caster
+        return 0.;
+    }
+
     float bias = 0.05;
-    float shadow = current_depth - bias > closest_depth ? 1.0 : 0.0;
+    float shadow = current_depth - bias > closest_depth ? 1. : 0.;
 
     return shadow;
 }
@@ -118,7 +123,7 @@ vec3 lightPoint(Light light) {
     // combine results
     vec3 ambient = light.ambient * albedo;
     vec3 diffuse = light.diffuse * diffuse_intensity * albedo;
-    vec3 specular = light.specular * specular_intensity * (specular / 2.);
+    vec3 specular = light.specular * specular_intensity * specular;
 
     ambient *= attenuation;
     diffuse *= attenuation;

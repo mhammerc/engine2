@@ -3,6 +3,7 @@
 #include "../../graphics/framebuffer_cache.h"
 #include "../../graphics/mesh_cache.h"
 #include "../../graphics/shader_cache.h"
+#include "../../graphics/texture/texture_internal.h"
 #include "../imgui.h"
 #include "ui_window_texture_viewer.h"
 
@@ -110,6 +111,11 @@ auto ui::internal::draw_texture(Texture* texture) -> void {
     if (!texture) {
         return;
     }
+
+    auto properties = ::engine::internal::texture::OpenGLTextureProperties::from_texture_format(texture->format());
+    auto info = fmt::format("Format: {}. Size: ({},{}).", properties.name, texture->size().x, texture->size().y);
+
+    ImGui::Text("%s", info.c_str());
 
     if (texture->type() == Texture::Type::Texture2D) {
         draw_texture_2d(texture);
