@@ -1,11 +1,11 @@
 # engine2
 
-![Screenshot of the editor](assets/screenshot.png)
+![Screenshot of the editor](screenshots/1_overview.png)
 
 ## TODO
 
+- Bloom documentation
 - Displacement (parallax?) mapping
-- Bloom
 - Generize Lights and Shadows
 - Ability to better sort deferred renderers execution
 - auto unbind through RAII

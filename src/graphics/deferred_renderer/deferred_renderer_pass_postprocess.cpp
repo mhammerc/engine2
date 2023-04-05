@@ -38,9 +38,16 @@ auto DeferredRenderer::pass_postprocess(RendererContext renderer_context) -> voi
     _before_post_processing->color()->activate_as(0);
     postprocess_shader->set_uniform("screen_texture", 0);
 
-    // postprocess_shader->set_uniform("post_process", post_process_uniform_value(renderer_context));
     postprocess_shader->set_uniform("exposure", renderer_context.exposure);
     postprocess_shader->set_uniform("tone_mapping", static_cast<i32>(renderer_context.tone_mapping));
+
+    postprocess_shader->set_uniform("bloom_enabled", renderer_context.bloom_enabled);
+    postprocess_shader->set_uniform("bloom_intensity", renderer_context.bloom_intensity);
+
+    if (renderer_context.bloom_enabled) {
+        _upsamples[0]->color()->activate_as(1);
+        postprocess_shader->set_uniform("bloom_texture", 1);
+    }
 
     glDisable(GL_DEPTH_TEST);
     _after_post_processing->bind();

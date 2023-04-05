@@ -41,6 +41,10 @@ struct RendererContext {
 
     enum class ToneMapping : i32 { None = 0x00, AcesFitted = 0x01, AcesApprox = 0x02 };
     ToneMapping tone_mapping;
+
+    bool bloom_enabled;
+    float bloom_radius;
+    float bloom_intensity;
 };
 
 }  // namespace engine

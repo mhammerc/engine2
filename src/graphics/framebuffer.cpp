@@ -126,6 +126,7 @@ auto Framebuffer::create_with_attachments(
     return framebuffer;
 }
 
+// TODO: explicit choice of the format
 auto Framebuffer::create_with_color_and_depth(std::string const& name, vec2i size) -> std::unique_ptr<Framebuffer> {
     using Format = AttachmentDescription::Format;
     using Type = AttachmentDescription::Type;

@@ -4,7 +4,6 @@
 
 #include <entt/entt.hpp>
 
-#include "graphics/deferred_renderer/deferred_renderer_cache.h"
 #include "graphics/framebuffer_cache.h"
 #include "graphics/mesh_cache.h"
 #include "graphics/shader_cache.h"
@@ -77,6 +76,24 @@ static auto load_shaders() -> bool {
     auto [equirectangular_to_cubemap, _14] =
         shader_cache.load("equirectangular_to_cubemap"_hs, ShaderProgram::from_name("equirectangular_to_cubemap"));
     if (equirectangular_to_cubemap->second.handle() == nullptr) {
+        spdlog::critical("could not create shader program.");
+        return false;
+    }
+
+    auto [dr_pass_bloom_downsample_by_half, _15] = shader_cache.load(
+        "dr_pass_bloom_downsample_by_half"_hs,
+        ShaderProgram::from_name("deferred_rendering/dr_pass_bloom_downsample_by_half")
+    );
+    if (dr_pass_bloom_downsample_by_half->second.handle() == nullptr) {
+        spdlog::critical("could not create shader program.");
+        return false;
+    }
+
+    auto [dr_pass_bloom_upsample_by_half, _16] = shader_cache.load(
+        "dr_pass_bloom_upsample_by_half"_hs,
+        ShaderProgram::from_name("deferred_rendering/dr_pass_bloom_upsample_by_half")
+    );
+    if (dr_pass_bloom_upsample_by_half->second.handle() == nullptr) {
         spdlog::critical("could not create shader program.");
         return false;
     }

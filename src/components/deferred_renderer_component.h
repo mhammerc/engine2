@@ -47,6 +47,21 @@ struct DeferredRendererComponent {
      * What tone mapping to use?
      */
     RendererContext::ToneMapping tone_mapping = RendererContext::ToneMapping::AcesApprox;
+
+    /**
+     * Enable bloom?
+     */
+    bool bloom_enabled = true;
+
+    /**
+     * How much the bloom is wide?
+     */
+    float bloom_radius = 0.2F;
+
+    /**
+     * Bloom intensity
+     */
+    float bloom_intensity = 0.1F;
 };
 
 namespace reflection {

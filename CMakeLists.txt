@@ -37,6 +37,7 @@ set(SOURCES
         src/graphics/deferred_renderer/deferred_renderer.h
         src/graphics/deferred_renderer/deferred_renderer_cache.cpp
         src/graphics/deferred_renderer/deferred_renderer_cache.h
+        src/graphics/deferred_renderer/deferred_renderer_pass_bloom.cpp
         src/graphics/deferred_renderer/deferred_renderer_pass_geometry.cpp
         src/graphics/deferred_renderer/deferred_renderer_pass_gizmo.cpp
         src/graphics/deferred_renderer/deferred_renderer_pass_opaque.cpp

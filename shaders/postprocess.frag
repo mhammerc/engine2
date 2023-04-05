@@ -10,6 +10,11 @@ uniform sampler2D screen_texture;
 
 uniform float exposure;
 uniform int tone_mapping;
+
+uniform bool bloom_enabled;
+uniform sampler2D bloom_texture;
+uniform float bloom_intensity;
+
 // uniform int post_process;
 
 // #define POST_PROCESS_INVERSE (1 << 0)
@@ -100,20 +105,24 @@ void main() {
 
     // float exposure = 1.0;
 
-    vec3 hdrColor = texture(screen_texture, TexCoords).rgb;
+    vec3 hdr_color = texture(screen_texture, TexCoords).rgb;
+
+    if (bloom_enabled) {
+        hdr_color += texture(bloom_texture, TexCoords).rgb * bloom_intensity;
+    }
 
     if (tone_mapping == 0x01) {
         // more precise but more expensive aces
 
-        FragColor.rgb = aces_fitted(hdrColor * exposure);
+        FragColor.rgb = aces_fitted(hdr_color * exposure);
     } else if (tone_mapping == 0x02) {
         // faster and more saturated aces
 
-        FragColor.rgb = aces_approx(hdrColor * exposure);
+        FragColor.rgb = aces_approx(hdr_color * exposure);
     } else {
         // No tone mapping
 
-        FragColor.rgb = hdrColor * exposure;
+        FragColor.rgb = hdr_color * exposure;
     }
 
     const float gamma = 2.2;

@@ -153,6 +153,7 @@ auto DeferredRenderer::draw(
     // pass_transparent(registry, renderer_context);
     pass_skybox(registry, renderer_context);
     pass_gizmo(registry, renderer_context);
+    pass_bloom(renderer_context);
     pass_postprocess(renderer_context);
     pass_outline();
 
@@ -177,6 +178,14 @@ auto DeferredRenderer::before_post_processing() const -> Framebuffer* {
 
 auto DeferredRenderer::after_post_processing() const -> Framebuffer* {
     return _after_post_processing.get();
+}
+
+auto DeferredRenderer::downsamples() const -> std::span<const std::unique_ptr<Framebuffer>> {
+    return _downsamples;
+}
+
+auto DeferredRenderer::upsamples() const -> std::span<const std::unique_ptr<Framebuffer>> {
+    return _upsamples;
 }
 
 // TODO: refactor the following : we also need the attachment id (0,1,2,...)

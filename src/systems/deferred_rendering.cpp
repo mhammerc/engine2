@@ -70,6 +70,9 @@ static auto perform_deferred_rendering(
         .wireframe = renderer_component.wireframe,
         .exposure = renderer_component.exposure,
         .tone_mapping = renderer_component.tone_mapping,
+        .bloom_enabled = renderer_component.bloom_enabled,
+        .bloom_radius = renderer_component.bloom_radius,
+        .bloom_intensity = renderer_component.bloom_intensity,
     };
 
     renderer->draw(registry, draw_destination, renderer_context);

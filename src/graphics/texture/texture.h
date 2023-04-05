@@ -62,6 +62,13 @@ class Texture {
     [[nodiscard]] auto type() const -> Type;
     [[nodiscard]] auto name() -> std::string&;
 
+    /**
+     * By default, textures use linear filtering.
+     * This function enable nearest filtering.
+     * TODO: save it accross resizes
+     */
+    auto filter_nearest() -> void;
+
   private:
     Texture() = default;
 

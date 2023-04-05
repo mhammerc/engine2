@@ -29,13 +29,15 @@ static auto draw_renderer_list(u32& current_index) -> void {
 }
 
 static auto draw_framebuffer_list(DeferredRenderer* renderer) -> Framebuffer* {
-    enum class CurrentFramebuffer { Gbuffer, BeforePostProcessing, AfterPostProcessing };
+    enum class CurrentFramebuffer { Gbuffer, BeforePostProcessing, AfterPostProcessing, Downsamples, Upsamples };
 
     static auto current_framebuffer = CurrentFramebuffer::Gbuffer;
 
     char const* gbuffer_name = "G-Buffers";
     char const* before_postprocess_name = "Before Post-Processing";
     char const* after_postprocess_name = "After Post-Processing";
+    char const* downsamples_name = "Bloom: Downsamples";
+    char const* upsamples_name = "Bloom: Upsamples";
 
     char const* current_name = gbuffer_name;
     if (current_framebuffer == CurrentFramebuffer::BeforePostProcessing) {
@@ -43,6 +45,12 @@ static auto draw_framebuffer_list(DeferredRenderer* renderer) -> Framebuffer* {
     }
     if (current_framebuffer == CurrentFramebuffer::AfterPostProcessing) {
         current_name = after_postprocess_name;
+    }
+    if (current_framebuffer == CurrentFramebuffer::Downsamples) {
+        current_name = downsamples_name;
+    }
+    if (current_framebuffer == CurrentFramebuffer::Upsamples) {
+        current_name = upsamples_name;
     }
 
     if (ImGui::BeginCombo("Framebuffer", current_name)) {
@@ -58,6 +66,14 @@ static auto draw_framebuffer_list(DeferredRenderer* renderer) -> Framebuffer* {
             current_framebuffer = CurrentFramebuffer::AfterPostProcessing;
         }
 
+        if (ImGui::Selectable(downsamples_name)) {
+            current_framebuffer = CurrentFramebuffer::Downsamples;
+        }
+
+        if (ImGui::Selectable(upsamples_name)) {
+            current_framebuffer = CurrentFramebuffer::Upsamples;
+        }
+
         ImGui::EndCombo();
     }
 
@@ -69,6 +85,54 @@ static auto draw_framebuffer_list(DeferredRenderer* renderer) -> Framebuffer* {
     }
     if (current_framebuffer == CurrentFramebuffer::AfterPostProcessing) {
         return renderer->after_post_processing();
+    }
+    if (current_framebuffer == CurrentFramebuffer::Downsamples) {
+        static u32 current_downsample_index = 0;
+        auto const& downsamples = renderer->downsamples();
+
+        if (current_downsample_index >= downsamples.size()) {
+            current_downsample_index = 0;
+        }
+
+        auto* current_downsample = downsamples[current_downsample_index].get();
+
+        if (ImGui::BeginCombo("Downsample", current_downsample->name().c_str())) {
+            for (u32 i = 0; i < downsamples.size(); ++i) {
+                auto* fb = downsamples[i].get();
+
+                if (ImGui::Selectable(fb->name().c_str())) {
+                    current_downsample_index = i;
+                }
+            }
+
+            ImGui::EndCombo();
+        }
+
+        return renderer->downsamples()[current_downsample_index].get();
+    }
+    if (current_framebuffer == CurrentFramebuffer::Upsamples) {
+        static u32 current_upsample_index = 0;
+        auto const& upsamples = renderer->upsamples();
+
+        if (current_upsample_index >= upsamples.size()) {
+            current_upsample_index = 0;
+        }
+
+        auto* current_upsample = upsamples[current_upsample_index].get();
+
+        if (ImGui::BeginCombo("Upsample", current_upsample->name().c_str())) {
+            for (u32 i = 0; i < upsamples.size(); ++i) {
+                auto* fb = upsamples[i].get();
+
+                if (ImGui::Selectable(fb->name().c_str())) {
+                    current_upsample_index = i;
+                }
+            }
+
+            ImGui::EndCombo();
+        }
+
+        return renderer->upsamples()[current_upsample_index].get();
     }
 
     return renderer->gbuffers();

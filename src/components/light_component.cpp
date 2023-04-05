@@ -12,7 +12,7 @@ auto reflection::register_light_component() -> void {
 
     factory.data<&LightComponent::ambient>("ambient"_hs).prop("name"_hs, "ambient").prop("type"_hs, "color");
     factory.data<&LightComponent::diffuse>("diffuse"_hs).prop("name"_hs, "diffuse").prop("type"_hs, "color");
-    factory.data<&LightComponent::specular>("diffuse"_hs).prop("name"_hs, "specular").prop("type"_hs, "color");
+    factory.data<&LightComponent::specular>("specular"_hs).prop("name"_hs, "specular").prop("type"_hs, "color");
 
     factory.data<&LightComponent::constant>("constant"_hs).prop("name"_hs, "constant");
     factory.data<&LightComponent::linear>("linear"_hs).prop("name"_hs, "linear");

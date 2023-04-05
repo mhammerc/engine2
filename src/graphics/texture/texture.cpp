@@ -196,3 +196,14 @@ auto Texture::type() const -> Type {
 auto Texture::name() -> std::string& {
     return _name;
 }
+
+auto Texture::filter_nearest() -> void {
+    auto const target = opengl_target_from_type(_type);
+
+    glBindTexture(target, _handle);
+
+    glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    glBindTexture(target, 0);
+}
