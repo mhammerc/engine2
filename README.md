@@ -1,4 +1,12 @@
-# engine2
+# OpenGL realtime renderer
+
+<p align="center">
+  This is a learning project.
+</p>
+
+<p align="center">
+  <a href="screenshots/">See more screenshots</a>
+</p>
 
 ![Screenshot of the editor](screenshots/1_overview.png)
 
