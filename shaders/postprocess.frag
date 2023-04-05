@@ -108,7 +108,8 @@ void main() {
     vec3 hdr_color = texture(screen_texture, TexCoords).rgb;
 
     if (bloom_enabled) {
-        hdr_color += texture(bloom_texture, TexCoords).rgb * bloom_intensity;
+        // hdr_color += texture(bloom_texture, TexCoords).rgb * bloom_intensity;  // additive
+        hdr_color = mix(hdr_color, texture(bloom_texture, TexCoords).rgb, bloom_intensity);  // mix
     }
 
     if (tone_mapping == 0x01) {

@@ -47,6 +47,6 @@ void main() {
     vec3 current_color = texture(tex_current, uv_coords).rgb;
     vec3 upsampled_color = upsample();
 
-    FragColor.rgb = mix(current_color, upsampled_color, radius);
+    FragColor.rgb = mix(upsampled_color, current_color, radius);
     FragColor.a = 1.;
 }

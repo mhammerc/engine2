@@ -56,7 +56,7 @@ struct DeferredRendererComponent {
     /**
      * How much the bloom is wide?
      */
-    float bloom_radius = 0.2F;
+    float bloom_radius = 0.85F;
 
     /**
      * Bloom intensity
