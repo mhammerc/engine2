@@ -11,6 +11,8 @@ using namespace engine;
  * When this pass runs, the geometry buffers are full of data and ready.
  */
 auto DeferredRenderer::pass_opaque(entt::registry const& registry, RendererContext renderer_context) -> void {
+    PROFILER_BLOCK("Opaque Pass");
+
     auto quad = entt::locator<MeshCache>::value()["quad"_hs];
     auto shader = entt::locator<ShaderCache>::value()["dr_pass_lighting"_hs];
 

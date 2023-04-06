@@ -25,6 +25,8 @@ set(SOURCES
         src/core/input.cpp
         src/core/input.hpp
         src/core/noncopyable.h
+        src/core/profiler.cpp
+        src/core/profiler.h
         src/core/reflection.cpp
         src/core/reflection.h
         src/core/transform.cpp
@@ -86,6 +88,7 @@ set(SOURCES
         src/ui/ui.h
         src/ui/ui_window_hierarchy.cpp
         src/ui/ui_window_input_debugger.cpp
+        src/ui/ui_window_profiler/ui_window_profiler.cpp
         src/ui/ui_window_scene.cpp
         src/ui/ui_window_system.cpp
         src/ui/ui_window_texture_viewer/deferred_renderer_viewer.cpp

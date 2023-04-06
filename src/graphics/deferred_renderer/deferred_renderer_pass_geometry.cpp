@@ -56,6 +56,8 @@ static auto draw_entity(
  * You can take a look at the shader, it's simple.
  */
 auto DeferredRenderer::pass_geometry(entt::registry const& registry, RendererContext renderer_context) -> void {
+    PROFILER_BLOCK("Geometry Pass");
+
     auto shader = entt::locator<ShaderCache>::value()["dr_pass_gbuffers"_hs];
 
     shader->set_uniform("projection", renderer_context.projection);

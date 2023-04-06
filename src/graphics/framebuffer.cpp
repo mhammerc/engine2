@@ -173,6 +173,8 @@ auto Framebuffer::resize(vec2i size) -> void {
         return;
     }
 
+    PROFILER_BLOCK("Framebuffer::resize ({})", _name);
+
     std::vector<AttachmentDescription> attachments_descriptions;
     attachments_descriptions.reserve(_attachments.size());
 
@@ -213,6 +215,8 @@ auto Framebuffer::unbind() -> void {
 }
 
 auto Framebuffer::clear() -> void {
+    PROFILER_BLOCK("Framebuffer::clear ({})", _name);
+
     bind();
     glClearColor(0.F, 0.F, 0.F, 1.F);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);

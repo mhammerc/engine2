@@ -29,6 +29,8 @@ using namespace engine;
 // }
 
 auto DeferredRenderer::pass_postprocess(RendererContext renderer_context) -> void {
+    PROFILER_BLOCK("Postprocess Pass");
+
     auto& mesh_cache = entt::locator<MeshCache>::value();
     auto& shader_cache = entt::locator<ShaderCache>::value();
 

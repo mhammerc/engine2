@@ -67,6 +67,8 @@ auto DeferredRenderer::create(std::string const& name) -> std::unique_ptr<Deferr
 };
 
 auto DeferredRenderer::copy_gbuffer_depth_to_before_post_processing() -> void {
+    PROFILER_BLOCK("Copy G-Buffer depth to _before_post_processing");
+
     glBindFramebuffer(GL_READ_FRAMEBUFFER, _gbuffers->handle());
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _before_post_processing->handle());
 
@@ -88,6 +90,8 @@ auto DeferredRenderer::copy_gbuffer_depth_to_before_post_processing() -> void {
 }
 
 auto DeferredRenderer::copy_color_and_outline_to_destination(DrawDestination destination) -> void {
+    PROFILER_BLOCK("Copy to Destination");
+
     glBindFramebuffer(GL_READ_FRAMEBUFFER, _after_post_processing->handle());
     glReadBuffer(GL_COLOR_ATTACHMENT0);
 
@@ -140,11 +144,15 @@ auto DeferredRenderer::draw(
         return;
     }
 
-    _gbuffers->resize(draw_destination.size);
-    _before_post_processing->resize(draw_destination.size);
-    _after_post_processing->resize(draw_destination.size);
+    PROFILER_BLOCK("DeferredRenderer::draw ({})", _name);
 
-    _gbuffers->clear();
+    {
+        PROFILER_BLOCK("Resize and clear");
+        _gbuffers->resize(draw_destination.size);
+        _before_post_processing->resize(draw_destination.size);
+        _after_post_processing->resize(draw_destination.size);
+        _gbuffers->clear();
+    }
 
     pass_geometry(registry, renderer_context);
     // pass_shadow(registry, renderer_context);

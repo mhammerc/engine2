@@ -62,6 +62,7 @@ auto engine::ui_draw(float delta_time, GLFWwindow* window, entt::registry& regis
     static bool demo_window = false;
     static bool input_debugger = false;
     static bool texture_viewer = true;
+    static bool profiler = false;
 
     if (ImGui::BeginMenu("Options")) {
         if (ImGui::BeginMenu("Colors")) {
@@ -92,6 +93,10 @@ auto engine::ui_draw(float delta_time, GLFWwindow* window, entt::registry& regis
             texture_viewer = true;
         }
 
+        if (ImGui::MenuItem("Profiler")) {
+            profiler = true;
+        }
+
         ImGui::EndMenu();
     }
 
@@ -105,6 +110,7 @@ auto engine::ui_draw(float delta_time, GLFWwindow* window, entt::registry& regis
 
     ui::internal::ui_draw_window_input_debugger(&input_debugger);
     ui::internal::ui_draw_window_texture_viewer(&texture_viewer);
+    ui::internal::ui_draw_window_profiler(&profiler);
 
     ui::internal::ui_draw_window_system(delta_time, window);
     ui::internal::ui_draw_window_hierarchy(registry, selected_entity);

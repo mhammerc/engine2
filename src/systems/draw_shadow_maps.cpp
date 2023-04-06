@@ -83,5 +83,7 @@ static auto draw_point_light_shadows(entt::registry& registry) -> void {
 }
 
 auto systems::draw_shadow_maps(entt::registry& registry) -> void {
+    PROFILER_BLOCK("systems::draw_shadow_maps");
+
     draw_point_light_shadows(registry);
 }

@@ -7,6 +7,8 @@
 using namespace engine;
 
 auto DeferredRenderer::pass_skybox(entt::registry const& registry, RendererContext renderer_context) -> void {
+    PROFILER_BLOCK("Skybox Pass");
+
     auto skyboxes = registry.view<BaseComponent, SkyboxComponent>();
 
     auto shader = entt::locator<ShaderCache>::value()["skybox"_hs];

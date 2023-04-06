@@ -10,6 +10,8 @@ using namespace engine;
  * This pass draw the various scene gizmos. For now we have one gizmo only: lights.
  */
 auto DeferredRenderer::pass_gizmo(entt::registry const& registry, RendererContext renderer_context) -> void {
+    PROFILER_BLOCK("Gizmos Pass");
+
     auto cube = entt::locator<MeshCache>::value()["cube"_hs];
     auto shader = entt::locator<ShaderCache>::value()["light"_hs];
 

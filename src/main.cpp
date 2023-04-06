@@ -44,6 +44,7 @@ auto main() -> int {
     entt::locator<engine::FramebufferCache>::emplace();
     entt::locator<engine::DeferredRendererCache>::emplace();
     entt::locator<engine::Input>::emplace();
+    entt::locator<engine::Profiler>::emplace();
 
     if (!load_resources()) {
         return 1;
@@ -61,15 +62,22 @@ auto main() -> int {
         auto& framebuffer_cache = entt::locator<engine::FramebufferCache>::value();
         Framebuffer& color = framebuffer_cache["color"_hs];
 
-        ui_prepare_frame();
-        ui_draw(delta_time, window, registry, &color);
-        ui_end_frame();
+        entt::locator<Profiler>::value().start_frame();
+
+        {
+            PROFILER_BLOCK("UI");
+            ui_prepare_frame();
+            ui_draw(delta_time, window, registry, &color);
+            ui_end_frame();
+        }
 
         color.clear();
         systems::should_close_system();
         systems::camera_system(delta_time, registry);
         systems::draw_shadow_maps(registry);
         systems::draw_render_deferred(registry);
+
+        entt::locator<Profiler>::value().end_frame();
 
         glfwPollEvents();
         glfwSwapBuffers(window);

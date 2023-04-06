@@ -32,6 +32,8 @@ using namespace engine;
  */
 
 static auto downsample_by_half(Framebuffer* to, Framebuffer* from) -> void {
+    PROFILER_BLOCK("downsample_{}x{}", to->size().x, to->size().y);
+
     auto shader = entt::locator<ShaderCache>::value()["dr_pass_bloom_downsample_by_half"_hs];
     auto quad = entt::locator<MeshCache>::value()["quad"_hs];
 
@@ -54,6 +56,8 @@ static auto downsample_by_half(Framebuffer* to, Framebuffer* from) -> void {
 
 static auto upsample_and_combine_by_half(Framebuffer* to, Framebuffer* current, Framebuffer* downsampled, float radius)
     -> void {
+    PROFILER_BLOCK("upsample_{}x{}", to->size().x, to->size().y);
+
     auto shader = entt::locator<ShaderCache>::value()["dr_pass_bloom_upsample_by_half"_hs];
     auto quad = entt::locator<MeshCache>::value()["quad"_hs];
 
@@ -84,6 +88,8 @@ auto DeferredRenderer::pass_bloom(RendererContext renderer_context) -> void {
     if (!renderer_context.bloom_enabled) {
         return;
     }
+
+    PROFILER_BLOCK("Bloom Pass");
 
     // We want to downsample our scene up to a width of ~8 pixels.
     // We downsample by half for each pass.

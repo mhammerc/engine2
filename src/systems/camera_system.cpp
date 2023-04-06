@@ -71,6 +71,8 @@ rotate_camera(Input const& input, BaseComponent& base, CameraComponent& camera, 
 }
 
 auto systems::camera_system(float delta_time, entt::registry& registry) -> void {
+    PROFILER_BLOCK("systems::camera_system");
+
     auto const& input = entt::locator<Input>::value();
     auto* window = entt::locator<GLFWwindow*>::value();
 

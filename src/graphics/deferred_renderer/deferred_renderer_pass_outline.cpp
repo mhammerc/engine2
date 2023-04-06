@@ -6,6 +6,8 @@
 using namespace engine;
 
 auto DeferredRenderer::pass_outline() -> void {
+    PROFILER_BLOCK("Outline Pass");
+
     auto& framebuffer_cache = entt::locator<FramebufferCache>::value();
     auto framebuffer_color = framebuffer_cache["postprocess"_hs];
 
