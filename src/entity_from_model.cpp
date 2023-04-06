@@ -183,15 +183,23 @@ static auto on_node(
 }
 
 auto engine::entity_from_model(const path& path, entt::registry& registry) -> std::vector<entt::entity> {
+    PROFILER_PERMANENT_BLOCK("entity_from_model ({})", path.string().c_str());
+
     std::vector<entt::entity> entities;
 
     Assimp::Importer importer;
 
-    aiScene const* scene = importer.ReadFile(
-        path.string().c_str(),
-        aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_SplitLargeMeshes | aiProcess_OptimizeMeshes
-            | aiProcess_OptimizeGraph | aiProcess_CalcTangentSpace
-    );
+    aiScene const* scene = nullptr;
+
+    {
+        PROFILER_PERMANENT_BLOCK("ASSIMP importer");
+
+        scene = importer.ReadFile(
+            path.string().c_str(),
+            aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_SplitLargeMeshes | aiProcess_OptimizeMeshes
+                | aiProcess_OptimizeGraph | aiProcess_CalcTangentSpace
+        );
+    }
 
     if (scene == nullptr || (scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) != 0U || scene->mRootNode == nullptr) {
         spdlog::error("Could not load model '{}'. Error: '{}'.", path.string().c_str(), importer.GetErrorString());

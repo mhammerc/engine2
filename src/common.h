@@ -20,7 +20,7 @@
 #include <span>
 
 #include "conf.h"
-#include "core/profiler.h"
+#include "core/profiler_macro.h"
 #include "utils/singular_span.h"
 
 namespace engine {

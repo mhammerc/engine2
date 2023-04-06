@@ -7,6 +7,8 @@ using namespace engine;
 
 auto TextureImage::from_file(const std::filesystem::path& path, std::optional<Channels> desired_channels, bool flip)
     -> std::unique_ptr<TextureImage> {
+    PROFILER_PERMANENT_BLOCK("TextureImage::from_file ({})", path.string().c_str());
+
     vec2i size(0);
     int number_of_channels = 0;
 

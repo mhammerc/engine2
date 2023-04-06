@@ -13,3 +13,6 @@
 [submodule "vendors/glm"]
 	path = vendors/glm
 	url = https://github.com/g-truc/glm.git
+[submodule "vendors/fmt"]
+	path = vendors/fmt
+	url = https://github.com/fmtlib/fmt.git

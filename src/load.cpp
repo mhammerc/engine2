@@ -12,6 +12,8 @@
 using namespace engine;
 
 static auto load_shaders() -> bool {
+    PROFILER_PERMANENT_BLOCK("load_shaders");
+
     auto& shader_cache = entt::locator<engine::ShaderCache>::emplace();
 
     auto [light_source_shader, _2] = shader_cache.load("light"_hs, ShaderProgram::from_name("light"));
@@ -102,6 +104,8 @@ static auto load_shaders() -> bool {
 }
 
 static auto load_meshes() -> bool {
+    PROFILER_PERMANENT_BLOCK("load_meshes");
+
     auto& mesh_cache = entt::locator<engine::MeshCache>::value();
 
     mesh_cache.load("quad"_hs, Mesh::from_quad());
@@ -111,6 +115,8 @@ static auto load_meshes() -> bool {
 }
 
 static auto load_textures() -> bool {
+    PROFILER_PERMANENT_BLOCK("load_textures");
+
     auto& texture_cache = entt::locator<engine::TextureCache>::value();
 
     texture_cache.load("skybox2"_hs, Texture::from_file_cubemap("../assets/skybox2.hdr", Texture::Format::RGBA16F));
@@ -134,6 +140,8 @@ static auto load_textures() -> bool {
 }
 
 static auto load_framebuffers() -> bool {
+    PROFILER_PERMANENT_BLOCK("load_framebuffers");
+
     auto& framebuffer_cache = entt::locator<engine::FramebufferCache>::value();
 
     using Attachment = Framebuffer::AttachmentDescription;
@@ -163,6 +171,8 @@ static auto load_framebuffers() -> bool {
 }
 
 auto engine::load_resources() -> bool {
+    PROFILER_PERMANENT_BLOCK("load_resources");
+
     if (!load_shaders()) {
         return false;
     }

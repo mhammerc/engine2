@@ -67,6 +67,8 @@ static auto render_cubemap(u32 framebuffer, vec2i render_size, Texture* cubemap,
 
 auto Texture::from_file_cubemap(const std::filesystem::path& path, Format format, bool flip)
     -> std::unique_ptr<Texture> {
+    PROFILER_PERMANENT_BLOCK("Texture::from_file_cubemap ({})", path.string().c_str());
+
     // Load the equirectangular projection as a regular OpenGL texture
     auto equirectangular_projection = Texture::from_file_2d(path, format, flip);
 

@@ -56,7 +56,7 @@ auto engine::create_scene(entt::registry& registry) -> void {
     light1_light.linear = 0.045F;
     light1_light.quadratic = 0.0075F;
     light1_light.ambient = glm::vec3(0.35F, 0.35F, 0.35F);
-    light1_light.diffuse = glm::vec3(5.F, 5.F, 5.F);
+    light1_light.diffuse = glm::vec3(4.F, 4.F, 4.F);
     light1_light.specular = glm::vec3(1.F, 1.F, 1.F);
 
     auto& framebuffer_cache = entt::locator<FramebufferCache>::value();

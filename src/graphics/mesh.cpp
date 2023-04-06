@@ -61,6 +61,8 @@ auto Mesh::upload_buffers() -> void {
 }
 
 auto Mesh::draw() const -> void {
+    PROFILER_BLOCK("Mesh::draw ({})", _name);
+
     auto const number_of_indices = static_cast<GLsizei>(_indices.size());
 
     glBindVertexArray(_vao);

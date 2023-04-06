@@ -1,5 +1,7 @@
 #include "profiler.h"
 
+#include "../conf.h"
+
 using namespace engine;
 
 Profiler::CallbackOnDestruction::~CallbackOnDestruction() noexcept {
@@ -58,6 +60,12 @@ auto Profiler::end_frame() -> void {
 }
 
 auto Profiler::block(std::string const& name) -> CallbackOnDestruction {
+    if constexpr (!ENGINE_DEBUG) {
+        // TODO: because this is constexpr we could optimize better by using a function specialization
+        // or something that will entirely disable everything.
+        return CallbackOnDestruction {};
+    }
+
     if (!_current_block || !_is_enabled) {
         return CallbackOnDestruction {};
     }

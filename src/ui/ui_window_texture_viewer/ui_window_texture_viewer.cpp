@@ -13,7 +13,7 @@ auto ui::internal::ui_draw_window_texture_viewer(bool* is_open) -> void {
 
     ImGui::Begin("Texture Viewer", is_open);
 
-    if (ImGui::BeginTabBar("FramebufferViewerTabbar")) {
+    if (ImGui::BeginTabBar("FramebufferViewerTabBar")) {
         if (ImGui::BeginTabItem("Deferred Renderer")) {
             draw_deferred_renderer_viewer();
 

@@ -120,7 +120,12 @@ else ()
     target_compile_options(opengl_engine BEFORE PRIVATE -Wall -Wextra -Wpedantic -Werror -Wno-error=unused-variable -Wno-error=unused-parameter)
 endif ()
 
+# fmt
+add_subdirectory(vendors/fmt EXCLUDE_FROM_ALL)
+target_link_libraries(opengl_engine PUBLIC fmt)
+
 # spdlog
+set(SPDLOG_FMT_EXTERNAL ON)
 add_subdirectory(vendors/spdlog EXCLUDE_FROM_ALL)
 target_link_libraries(opengl_engine PUBLIC spdlog)
 

@@ -1,5 +1,5 @@
+#include <fmt/core.h>
 #include <imgui/imgui.h>
-#include <spdlog/fmt/fmt.h>
 
 #include <numeric>
 

@@ -44,7 +44,11 @@ auto main() -> int {
     entt::locator<engine::FramebufferCache>::emplace();
     entt::locator<engine::DeferredRendererCache>::emplace();
     entt::locator<engine::Input>::emplace();
-    entt::locator<engine::Profiler>::emplace();
+    entt::locator<engine::ProfilerFrame>::emplace();
+    auto& permanent_profiler = entt::locator<engine::ProfilerPermanent>::emplace();
+
+    permanent_profiler.enable_for_next_frame();
+    permanent_profiler.start_frame();
 
     if (!load_resources()) {
         return 1;
@@ -62,7 +66,7 @@ auto main() -> int {
         auto& framebuffer_cache = entt::locator<engine::FramebufferCache>::value();
         Framebuffer& color = framebuffer_cache["color"_hs];
 
-        entt::locator<Profiler>::value().start_frame();
+        entt::locator<ProfilerFrame>::value().start_frame();
 
         {
             PROFILER_BLOCK("UI");
@@ -77,7 +81,7 @@ auto main() -> int {
         systems::draw_shadow_maps(registry);
         systems::draw_render_deferred(registry);
 
-        entt::locator<Profiler>::value().end_frame();
+        entt::locator<ProfilerFrame>::value().end_frame();
 
         glfwPollEvents();
         glfwSwapBuffers(window);

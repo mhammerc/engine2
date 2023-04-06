@@ -1,6 +1,6 @@
 #pragma once
 
-#include <spdlog/fmt/fmt.h>
+#include <fmt/core.h>
 
 #include <chrono>
 #include <entt/locator/locator.hpp>
@@ -92,13 +92,5 @@ class Profiler: public noncopyable {
 
     static auto _now() -> time_point;
 };
-
-/**
- * Use this macro whenever you want to create and measure a new block.
- * Ex:
- * PROFILE_BLOCK("DeferredRenderer::draw()");
- */
-#define PROFILER_BLOCK(...) \
-    [[maybe_unused]] auto&& scope = entt::locator<Profiler>::value().block(fmt::format(__VA_ARGS__));
 
 }  // namespace engine

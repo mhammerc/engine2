@@ -1,6 +1,6 @@
 #include "platform_info.h"
 
-#include <spdlog/fmt/bundled/core.h>
+#include <fmt/core.h>
 
 #include "../platform/opengl.h"
 

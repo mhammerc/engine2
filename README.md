@@ -12,7 +12,6 @@
 
 ## TODO
 
-- Measure time of each render pass
 - Displacement (parallax?) mapping
 - Generize Lights and Shadows
 - Ability to better sort deferred renderers execution
