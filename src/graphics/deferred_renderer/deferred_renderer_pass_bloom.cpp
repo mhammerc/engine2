@@ -9,7 +9,27 @@
 
 using namespace engine;
 
-// TODO: documentation about how the bloom works.
+/**
+ * The bloom rendering pass comes from “Froyok” Léna Piquet:
+ * https://www.froyok.fr/blog/2021-12-ue4-custom-bloom/
+ *
+ * 1) Downsample the scene multiple times until it reach a width of ~8 pixels. Each downsample is half the size.
+ *    The downsampling algorithm is a custom bilinear filtering. See the downsampling shader.
+ *
+ * 2) Then we upsample back to the full scene size following this algorithm:
+ *    a) We have downsamples A, B, C, D, etc. Each is half the size of the previous.
+ *    b) C' is the first upsample.
+ *    c) C' = mix(C, upsample(D))
+ *    d) B' = mix(B, upsample(C'))
+ *       A' = mix(A, upsample(B'))
+ *       etc
+ *
+ *   There is a custom upsample algorithm you can find in the shader.
+ *
+ * 3) Mix the latest upsample to the color scene before the tone mapping.
+ *    hdr_color = mix(scene, latest_upsample)
+ *
+ */
 
 static auto downsample_by_half(Framebuffer* to, Framebuffer* from) -> void {
     auto shader = entt::locator<ShaderCache>::value()["dr_pass_bloom_downsample_by_half"_hs];

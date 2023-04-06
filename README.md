@@ -12,7 +12,6 @@
 
 ## TODO
 
-- Bloom documentation
 - Measure time of each render pass
 - Displacement (parallax?) mapping
 - Generize Lights and Shadows

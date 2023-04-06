@@ -11,7 +11,7 @@ uniform vec2 tex_current_size;
 uniform float radius;
 
 /**
- * This upsample method comes from Léna Piquet:
+ * This upsample method comes from “Froyok” Léna Piquet:
  * https://www.froyok.fr/blog/2021-12-ue4-custom-bloom/
  *
  * It is simple: 9 weighted samples compute the upsampled pixels.

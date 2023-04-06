@@ -7,7 +7,7 @@ uniform sampler2D tex_to_downsample;
 uniform vec2 tex_to_downsample_size;  // TODO: check wording with code
 
 /**
- * This downsample method comes from Léna Piquet:
+ * This downsample method comes from “Froyok” Léna Piquet:
  * https://www.froyok.fr/blog/2021-12-ue4-custom-bloom/
  *
  * It is simple: 13 weighted samples compute the downsampled pixel.
