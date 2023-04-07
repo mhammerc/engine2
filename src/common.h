@@ -28,7 +28,7 @@ namespace engine {
 #ifdef _MSC_VER
     #define MSVC_WARNING(x) __pragma(warning(x))
 #else
-    #define MSVC_WARNING(x) (void)x;
+    #define MSVC_WARNING(x)
 #endif
 
 #define ENGINE_CODE_ERROR(message) SPDLOG_ERROR(message);
