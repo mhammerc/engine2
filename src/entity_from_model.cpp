@@ -148,11 +148,8 @@ on_mesh(entt::entity entity, entt::registry& registry, aiMesh const* aimesh, aiS
 
     material.mesh = mesh->second.handle();
 
-    if (aimesh->mMaterialIndex >= 0) {
-        std::span<aiMaterial*> const raw_materials(scene->mMaterials, scene->mNumMaterials);
-
-        aimaterial_to_textures(material, raw_materials[aimesh->mMaterialIndex], scene, filename);
-    }
+    std::span<aiMaterial*> const raw_materials(scene->mMaterials, scene->mNumMaterials);
+    aimaterial_to_textures(material, raw_materials[aimesh->mMaterialIndex], scene, filename);
 }
 
 // Each node is a game object.

@@ -61,7 +61,7 @@ auto DeferredRenderer::pass_opaque(entt::registry const& registry, RendererConte
         shader->set_uniform(fmt::format("lights[{}].specular", light_index), light.specular);
         light_index += 1;
     }
-    while (light_index < 10) {
+    while (light_index < 1 /*10*/) {
         shader->set_uniform(fmt::format("lights[{}].type", light_index), static_cast<int>(LightComponent::Unset));
         ++light_index;
     }
