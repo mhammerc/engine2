@@ -181,7 +181,7 @@ auto ui::internal::on_property(entt::meta_any& instance, entt::meta_data const& 
         return;
     }
 
-    MSVC_WARNING("disable : 4456")
+    MSVC_WARNING(disable : 4456)
 
     if (auto* value = any.try_cast<bool>(); value) {
         bool edited = on_property_boolean(property_name, value);
@@ -252,5 +252,5 @@ auto ui::internal::on_property(entt::meta_any& instance, entt::meta_data const& 
         ImGui::Text("texture");
     }
 
-    MSVC_WARNING("default : 4456");
+    MSVC_WARNING(default : 4456);
 }
