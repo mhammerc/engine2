@@ -10,7 +10,7 @@
 auto engine::read_file_to_string(const std::filesystem::path& filename) -> std::optional<std::string> {
     std::ifstream ifs(filename.c_str(), std::ios::in | std::ios::binary | std::ios::ate);
 
-    std::ifstream::pos_type fileSize = ifs.tellg();
+    size_t const fileSize = static_cast<size_t>(ifs.tellg());
     ifs.seekg(0, std::ios::beg);
 
     if (fileSize == -1) {

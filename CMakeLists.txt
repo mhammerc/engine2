@@ -141,7 +141,11 @@ target_link_libraries(opengl_engine PUBLIC glfw)
 set(ASSIMP_BUILD_TESTS OFF)
 set(ASSIMP_INSTALL OFF)
 add_subdirectory(vendors/assimp EXCLUDE_FROM_ALL)
-target_compile_options(assimp PRIVATE -Wno-error)
+if (MSVC)
+    target_compile_options(assimp PRIVATE /w)
+else()
+    target_compile_options(assimp PRIVATE -Wno-error)
+endif()
 target_link_libraries(opengl_engine PUBLIC assimp)
 
 # EnTT
@@ -150,6 +154,7 @@ target_link_libraries(opengl_engine PUBLIC EnTT)
 
 # GLM
 add_subdirectory(vendors/glm)
+target_compile_definitions(glm INTERFACE GLM_FORCE_SILENT_WARNINGS)
 target_link_libraries(opengl_engine PUBLIC glm::glm)
 
 # ImGUI

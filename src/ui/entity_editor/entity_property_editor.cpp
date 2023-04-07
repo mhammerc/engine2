@@ -180,6 +180,8 @@ auto ui::internal::on_property(entt::meta_any& instance, entt::meta_data const& 
         return;
     }
 
+#pragma warning(disable: 4456)
+
     if (auto* value = any.try_cast<bool>(); value) {
         bool edited = on_property_boolean(property_name, value);
 
@@ -245,9 +247,9 @@ auto ui::internal::on_property(entt::meta_any& instance, entt::meta_data const& 
         if (new_tone_mapping) {
             member.set(instance, *value);
         }
-    }
-
-    else if (auto* value = any.try_cast<std::map<i32, std::shared_ptr<Texture>>>(); value) {
+    } else if (auto* value = any.try_cast<std::map<i32, std::shared_ptr<Texture>>>(); value) {
         ImGui::Text("texture");
     }
+
+#pragma warning(default: 4456)
 }

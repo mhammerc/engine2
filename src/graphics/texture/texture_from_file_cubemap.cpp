@@ -80,7 +80,7 @@ auto Texture::from_file_cubemap(const std::filesystem::path& path, Format format
     auto size = vec2i(equirectangular_projection->size().x / 4);
 
     // Create an empty cubemap
-    auto cubemap = Texture::from_empty(path, Type::CubeMap, format, size);
+    auto cubemap = Texture::from_empty(path.string(), Type::CubeMap, format, size);
 
     // Create a framebuffer to render the cubemap on
     u32 framebuffer = 0;

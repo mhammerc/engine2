@@ -92,10 +92,10 @@ static auto aimaterial_to_textures(
 
     const auto have_diffuse_texture = ai_mat->GetTextureCount(aiTextureType_DIFFUSE);
     if (have_diffuse_texture > 0) {
-        aiString filename;
-        ai_mat->GetTexture(aiTextureType_DIFFUSE, 0, &filename);
+        aiString texture_filename;
+        ai_mat->GetTexture(aiTextureType_DIFFUSE, 0, &texture_filename);
 
-        auto texture_path = working_directory / filename.C_Str();
+        auto texture_path = working_directory / texture_filename.C_Str();
 
         auto texture = texture_cache.load(
             entt::hashed_string(texture_path.string().c_str()),
@@ -107,10 +107,10 @@ static auto aimaterial_to_textures(
 
     const auto have_specular_texture = ai_mat->GetTextureCount(aiTextureType_SPECULAR);
     if (have_specular_texture > 0) {
-        aiString filename;
-        ai_mat->GetTexture(aiTextureType_SPECULAR, 0, &filename);
+        aiString texture_filename;
+        ai_mat->GetTexture(aiTextureType_SPECULAR, 0, &texture_filename);
 
-        auto texture_path = working_directory / filename.C_Str();
+        auto texture_path = working_directory / texture_filename.C_Str();
 
         auto texture = texture_cache.load(
             entt::hashed_string(texture_path.string().c_str()),
@@ -122,10 +122,10 @@ static auto aimaterial_to_textures(
 
     const auto have_normal_texture = ai_mat->GetTextureCount(aiTextureType_HEIGHT);
     if (have_normal_texture > 0) {
-        aiString filename;
-        ai_mat->GetTexture(aiTextureType_HEIGHT, 0, &filename);
+        aiString texture_filename;
+        ai_mat->GetTexture(aiTextureType_HEIGHT, 0, &texture_filename);
 
-        auto texture_path = working_directory / filename.C_Str();
+        auto texture_path = working_directory / texture_filename.C_Str();
 
         auto texture = texture_cache.load(
             entt::hashed_string(texture_path.string().c_str()),

@@ -34,6 +34,8 @@
 // Fixes:
 //  Michal Klos
 
+#pragma warning(push, 1)
+
 #ifndef STB_INCLUDE_STB_INCLUDE_H
 #define STB_INCLUDE_STB_INCLUDE_H
 

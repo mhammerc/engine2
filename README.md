@@ -12,6 +12,7 @@
 
 ## TODO
 
+- Create a CMakeLists.txt for each local dependency (glad, stb, ...) so we can easily configure their compilation properties (ignore warnings, etc)
 - Displacement (parallax?) mapping
 - Generize Lights and Shadows
 - Ability to better sort deferred renderers execution
@@ -42,11 +43,23 @@ We package every dependency as git-submodules. Therefore, after a clone you must
 
 `git submodule update --init`
 
+### MacOS
+
+Once Xcode and Xcode developer tools are installed, compilation should work as-is with the provided clang.
+
+The engine is mainly developed on MacOS. Therefore, best support is on MacOS.
+
 ### Windows
 
-Does not compile yet.
+Compiles out-of-the-box using Visual Studio 2022 version 17.3.4 toolchain.
+
+Does not compile using MinGW.
+
+There are OpenGL errors when exiting the application I didn't  investigated yet. But the entire engine still works.
 
 ### Linux
+
+Last tested on GCC 12.2.0.
 
 We need X11 or Wayland development packages installed for libGLFW. To that end:
 
@@ -61,7 +74,3 @@ sudo apt install libwayland-dev libxkbcommon-dev wayland-protocols extra-cmake-m
 sudo dnf install wayland-devel libxkbcommon-devel wayland-protocols-devel extra-cmake-modules # Fedora and derivatives
 pkg install wayland libxkbcommon wayland-protocols kf5-extra-cmake-modules # FreeBSD
 ```
-
-### MacOS
-
-Once Xcode and Xcode developer tools are installed, compilation should work as-is.

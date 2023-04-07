@@ -27,7 +27,7 @@ auto ui::internal::draw_textures(std::span<Texture*> const& textures, u32& curre
     }
 
     if (current_index != static_cast<u32>(-1) && current_index >= textures.size()) {
-        current_index = -1;
+        current_index = static_cast<u32>(-1);
     }
 
     draw_texture_list(textures, current_index);

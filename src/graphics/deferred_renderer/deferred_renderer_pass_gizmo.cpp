@@ -29,7 +29,7 @@ auto DeferredRenderer::pass_gizmo(entt::registry const& registry, RendererContex
         }
 
         Transform transform = base.world_transform(registry);
-        transform.scale = vec3(0.2);
+        transform.scale = vec3(0.2F);
         transform.rotation = glm::identity<glm::quat>();
 
         shader->set_uniform("model", transform.matrix());

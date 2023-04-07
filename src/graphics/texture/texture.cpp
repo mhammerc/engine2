@@ -57,7 +57,7 @@ auto Texture::from_files_cubemap(std::string const& name, std::array<std::filesy
     glGenTextures(1, &handle);
     glBindTexture(GL_TEXTURE_CUBE_MAP, handle);
 
-    vec2i last_size;
+    vec2i last_size {};
 
     for (::engine::size i = 0; i < files.size(); ++i) {
         const auto& file = files.at(i);

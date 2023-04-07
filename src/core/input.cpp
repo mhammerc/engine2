@@ -47,7 +47,7 @@ auto engine::Input::get_key_name(int key) -> char const* {
             // case GLFW_MOUSE_BUTTON_2:
             //     return "Mouse Button 2";
             // case GLFW_MOUSE_BUTTON_3:
-            return "Mouse Button 3";
+            // return "Mouse Button 3";
         case GLFW_MOUSE_BUTTON_4:
             return "Mouse Button 4";
         case GLFW_MOUSE_BUTTON_5:

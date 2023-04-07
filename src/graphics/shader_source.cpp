@@ -65,7 +65,7 @@ auto ShaderSource::from_file(Type type, const std::filesystem::path& path) -> st
     auto file = read_glsl_file_to_string(path);
 
     if (!file.has_value()) {
-        spdlog::error("Could not read file {}", path.c_str());
+        spdlog::error("Could not read file {}", path.string().c_str());
         return nullptr;
     }
 
