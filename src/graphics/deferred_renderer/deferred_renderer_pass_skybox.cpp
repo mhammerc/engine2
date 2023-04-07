@@ -27,7 +27,7 @@ auto DeferredRenderer::pass_skybox(entt::registry const& registry, RendererConte
     _before_post_processing->bind();
     shader->bind();
     glCullFace(GL_FRONT);  // Invert culling to draw the inside of the mesh cube.
-    glDepthFunc(GL_EQUAL);  // Draw the skybox only at max distance depth. The shader output vertices at max depth.
+    glDepthFunc(GL_LEQUAL);  // Draw the skybox only at max distance depth. The shader output vertices at max depth.
 
     for (auto [entity, base, skybox] : skyboxes.each()) {
         if (!base.enabled) {
