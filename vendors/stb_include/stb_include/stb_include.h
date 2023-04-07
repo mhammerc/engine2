@@ -34,7 +34,9 @@
 // Fixes:
 //  Michal Klos
 
+#ifdef _MSC_VER
 #pragma warning(push, 1)
+#endif
 
 #ifndef STB_INCLUDE_STB_INCLUDE_H
 #define STB_INCLUDE_STB_INCLUDE_H

@@ -2,6 +2,7 @@
 #include <imgui/imgui.h>
 #include <spdlog/spdlog.h>
 
+#include "../../common.h"
 #include "../../graphics/mesh.h"
 #include "../../graphics/mesh_cache.h"
 #include "../../graphics/renderer_context.h"
@@ -180,7 +181,7 @@ auto ui::internal::on_property(entt::meta_any& instance, entt::meta_data const& 
         return;
     }
 
-#pragma warning(disable: 4456)
+    MSVC_WARNING("disable : 4456")
 
     if (auto* value = any.try_cast<bool>(); value) {
         bool edited = on_property_boolean(property_name, value);
@@ -251,5 +252,5 @@ auto ui::internal::on_property(entt::meta_any& instance, entt::meta_data const& 
         ImGui::Text("texture");
     }
 
-#pragma warning(default: 4456)
+    MSVC_WARNING("default : 4456");
 }

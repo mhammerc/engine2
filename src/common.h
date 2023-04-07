@@ -25,6 +25,12 @@
 
 namespace engine {
 
+#ifdef _MSC_VER
+    #define MSVC_WARNING(x) __pragma(warning(x))
+#else
+    #define MSVC_WARNING(x) (void)x;
+#endif
+
 #define ENGINE_CODE_ERROR(message) SPDLOG_ERROR(message);
 
 using i8 = std::int8_t;
