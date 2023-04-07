@@ -16,7 +16,7 @@
 - Generize Lights and Shadows
 - Ability to better sort deferred renderers execution
 - auto unbind through RAII
-- Move shaders to the postprocess shader? (outline shader, and more)
+- Move shaders to the post-process shader? (outline shader, and more)
 - Antialiasing
 - Gizmos (like unreal engine)
 

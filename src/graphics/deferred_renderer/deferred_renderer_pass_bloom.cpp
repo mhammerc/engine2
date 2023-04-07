@@ -96,14 +96,14 @@ auto DeferredRenderer::pass_bloom(RendererContext renderer_context) -> void {
     // How much downsample pass to perform?
     u32 number_of_downsample = 0;
     auto* start_texture = _before_post_processing->color();
-    int start_width = _before_post_processing->color()->size().x;
+    int const start_width = _before_post_processing->color()->size().x;
     for (int width = start_width; width > 8; width /= 2) {
         number_of_downsample += 1;
     }
 
     // The upsample algorithm use two downsampled buffers to upsample one time.
     // We will then upsample one less time than we downsample.
-    u32 number_of_upsample = number_of_downsample - 1;
+    u32 const number_of_upsample = number_of_downsample - 1;
 
     // We know that we want to perform the downsampling `number_of_downsamples` times.
     // The width of the last downsample is `start_width / 2^number_of_downsamples`.

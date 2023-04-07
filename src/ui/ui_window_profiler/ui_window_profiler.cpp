@@ -33,7 +33,8 @@ static auto draw_profiler_block(Profiler::Block* block) -> void {
         flags |= tree_leaf_flags;
     }
 
-    bool is_open = ImGui::TreeNodeEx(block->name.c_str(), flags);
+    auto tree_name = fmt::format("{}##{}", block->name.c_str(), fmt::ptr(block));
+    bool is_open = ImGui::TreeNodeEx(tree_name.c_str(), flags);
 
     if (block->end_time.time_since_epoch().count() != 0) {
         auto duration = format_duration(block->end_time - block->start_time);
