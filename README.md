@@ -1,4 +1,4 @@
-# OpenGL realtime renderer
+<h1 align="center">OpenGL Graphic Engine</h1>
 
 <p align="center">
   This is a learning project.
