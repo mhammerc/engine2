@@ -15,7 +15,6 @@
 #include "load.h"
 #include "platform/glfw.h"
 #include "spdlog/spdlog.h"
-#include "stb_image/stb_image.h"
 #include "systems/systems.h"
 #include "ui/ui.h"
 

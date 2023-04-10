@@ -1,7 +1,7 @@
 #include "texture_image.h"
 
-#include "spdlog/spdlog.h"
-#include "stb_image/stb_image.h"
+#include <spdlog/spdlog.h>
+#include <stb_image/stb_image.h>
 
 using namespace engine;
 

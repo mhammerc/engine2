@@ -13,7 +13,6 @@
 ## TODO
 
 - SSAO
-- Create a CMakeLists.txt for each local dependency (glad, stb, ...) so we can easily configure their compilation properties (ignore warnings, etc)
 - Displacement (parallax?) mapping
 - Generize Lights and Shadows
 - Ability to better sort deferred renderers execution

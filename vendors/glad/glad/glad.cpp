@@ -7,11 +7,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef _MSC_VER
-#pragma warning(push, 1)
-#pragma warning(disable: 4551)
-#endif
-
 #ifndef GLAD_IMPL_UTIL_C_
     #define GLAD_IMPL_UTIL_C_
 

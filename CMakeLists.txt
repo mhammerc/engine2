@@ -113,7 +113,7 @@ target_sources(opengl_engine PRIVATE ${SOURCES})
 # C++23
 set_property(TARGET opengl_engine PROPERTY CXX_STANDARD 23)
 
-# Enable warnings, and warnings as errors
+# Enable warnings, and enable warnings as errors
 if (MSVC)
     target_compile_options(opengl_engine PRIVATE /W4 /WX)
 else ()
@@ -137,15 +137,19 @@ set(GLFW_BUILD_DOCS OFF)
 add_subdirectory(vendors/glfw EXCLUDE_FROM_ALL)
 target_link_libraries(opengl_engine PUBLIC glfw)
 
-# Open Asset Import Library (assimp)
-set(ASSIMP_BUILD_TESTS OFF)
-set(ASSIMP_INSTALL OFF)
+# Open Asset Import Library (ASSIMP)
+# set(ASSIMP_BUILD_TESTS OFF) # It generate a CMake warning
+# set(ASSIMP_INSTALL OFF) # It generate a CMake warning
+# Disable ASSIMP M3D and PBRT support because they mess up with stb_image
+set(ASSIMP_BUILD_M3D_IMPORTER OFF)
+set(ASSIMP_BUILD_M3D_EXPORTER OFF)
+set(ASSIMP_BUILD_PBRT_EXPORTER OFF)
 add_subdirectory(vendors/assimp EXCLUDE_FROM_ALL)
 if (MSVC)
     target_compile_options(assimp PRIVATE /w)
-else()
+else ()
     target_compile_options(assimp PRIVATE -Wno-error)
-endif()
+endif ()
 target_link_libraries(opengl_engine PUBLIC assimp)
 
 # EnTT
@@ -157,49 +161,18 @@ add_subdirectory(vendors/glm)
 target_compile_definitions(glm INTERFACE GLM_FORCE_SILENT_WARNINGS)
 target_link_libraries(opengl_engine PUBLIC glm::glm)
 
-# ImGUI
-set(IMGUI_SOURCES
-        vendors/imgui/imgui/imgui.cpp
-        vendors/imgui/imgui/imgui.h
-        vendors/imgui/imgui/imgui_internal.h
-        vendors/imgui/imgui/imgui_impl_glfw.cpp
-        vendors/imgui/imgui/imgui_impl_glfw.h
-        vendors/imgui/imgui/imgui_impl_opengl3.cpp
-        vendors/imgui/imgui/imgui_impl_opengl3.h
-        vendors/imgui/imgui/imgui_impl_opengl3_loader.h
-        vendors/imgui/imgui/imconfig.h
-        vendors/imgui/imgui/imgui_demo.cpp
-        vendors/imgui/imgui/imgui_draw.cpp
-        vendors/imgui/imgui/imgui_tables.cpp
-        vendors/imgui/imgui/imgui_widgets.cpp
-        vendors/imgui/imgui/imstb_rectpack.h
-        vendors/imgui/imgui/imstb_textedit.h
-        vendors/imgui/imgui/imstb_truetype.h
-        )
-target_sources(opengl_engine PRIVATE ${IMGUI_SOURCES})
-target_include_directories(opengl_engine PRIVATE vendors/imgui)
+# ImGUI (must be included after GLFW because ImGUI requires it)
+add_subdirectory(vendors/imgui)
+target_link_libraries(opengl_engine PUBLIC imgui)
 
 # stb_image
-set(STB_IMAGE_SOURCES
-        vendors/stb_image/stb_image/stb_image.cpp
-        vendors/stb_image/stb_image/stb_image.h
-        )
-target_sources(opengl_engine PRIVATE ${STB_IMAGE_SOURCES})
-target_include_directories(opengl_engine PRIVATE vendors/stb_image)
+add_subdirectory(vendors/stb_image)
+target_link_libraries(opengl_engine PUBLIC stb_image)
 
 # stb_include
-set(STB_INCLUDE_SOURCES
-        vendors/stb_include/stb_include/stb_include.cpp
-        vendors/stb_include/stb_include/stb_include.h
-        )
-target_sources(opengl_engine PRIVATE ${STB_INCLUDE_SOURCES})
-target_include_directories(opengl_engine PRIVATE vendors/stb_include)
+add_subdirectory(vendors/stb_include)
+target_link_libraries(opengl_engine PUBLIC stb_include)
 
 # GLAD and OpenGL
-set(GLAD_SOURCES
-        vendors/glad/glad/glad.cpp
-        vendors/glad/glad/glad.h
-        vendors/glad/glad/khrplatform.h
-        )
-target_sources(opengl_engine PRIVATE ${GLAD_SOURCES})
-target_include_directories(opengl_engine PRIVATE vendors/glad)
+add_subdirectory(vendors/glad)
+target_link_libraries(opengl_engine PUBLIC glad)
