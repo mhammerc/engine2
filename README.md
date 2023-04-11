@@ -53,7 +53,10 @@ The engine is mainly developed on MacOS. Therefore, best support is on MacOS.
 
 ### Windows
 
-Compiles out-of-the-box using `Visual Studio 2022 17.3.4` toolchain.
+Compiles out-of-the-box using `Visual Studio 2022 17.3.4 x64` toolchain with the C++ module installed.
+
+It also compiles using `Visual Studio 2022 17.3.4` using `Windows 11 ARM` but the app can not create the OpenGL
+context on my VM.
 
 Does not compile using `MinGW`.
 
@@ -62,6 +65,8 @@ There are OpenGL errors when exiting the application I didn't investigated yet. 
 ### Linux
 
 Last tested on `GCC 12.2.0`.
+
+It compiles in both `x86` and `arm64`, but on `arm64` the app can not create the OpenGL context on my VM.
 
 We need `X11` or `Wayland` development packages installed to compile `libGLFW`. To that end:
 
