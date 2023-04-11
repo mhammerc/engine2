@@ -2,6 +2,7 @@
 
 #include "../common.h"
 #include "../components/outline_component.h"
+#include "../utils/opengl_handle_to_pointer.h"
 #include "imgui.h"
 #include "imgui/imgui.h"
 #include "ui_internal.h"
@@ -23,7 +24,7 @@ static auto draw(Framebuffer* scene_texture) -> std::tuple<vec2, vec2> {
     scene_texture->resize({image_size.x * dpi_scale, image_size.y * dpi_scale});
 
     ImGui::Image(
-        reinterpret_cast<void*>(scene_texture->attachments()[0].second->handle()),
+        opengl_handle_to_pointer(scene_texture->attachments()[0].second->handle()),
         {image_size},
         ImVec2(0, 1),
         ImVec2(1, 0)

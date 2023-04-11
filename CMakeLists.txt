@@ -101,6 +101,8 @@ set(SOURCES
         src/ui/ui_window_texture_viewer/ui_window_texture_viewer.h
         src/ui/utils.cpp
         src/ui/utils.h
+        src/utils/opengl_handle_to_pointer.cpp
+        src/utils/opengl_handle_to_pointer.h
         src/utils/platform_info.cpp
         src/utils/platform_info.h
         src/utils/read_file_to_string.cpp

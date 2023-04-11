@@ -4,6 +4,7 @@
 #include "../../graphics/mesh_cache.h"
 #include "../../graphics/shader_cache.h"
 #include "../../graphics/texture/texture_internal.h"
+#include "../../utils/opengl_handle_to_pointer.h"
 #include "../imgui.h"
 #include "ui_window_texture_viewer.h"
 
@@ -32,7 +33,7 @@ static auto texture_size_to_be_drawn(Texture* texture) -> vec2 {
 
 static auto draw_texture_2d(Texture* texture, bool reverse_y = true) {
     auto display_size = texture_size_to_be_drawn(texture);
-    void* texture_handle = reinterpret_cast<void*>(texture->handle());
+    void* texture_handle = opengl_handle_to_pointer(texture->handle());
 
     if (!reverse_y) {
         ImGui::Image(texture_handle, display_size, ImVec2(0, 0), ImVec2(1, 1));

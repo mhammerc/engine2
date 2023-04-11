@@ -59,7 +59,7 @@ auto Texture::from_files_cubemap(std::string const& name, std::array<std::filesy
 
     vec2i last_size {};
 
-    for (::engine::size i = 0; i < files.size(); ++i) {
+    for (int i = 0; i < files.size(); ++i) {
         const auto& file = files.at(i);
         auto image = TextureImage::from_file(file, TextureImage::Channels::RGB, false);
 
