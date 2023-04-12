@@ -3,6 +3,7 @@
 #include <spdlog/spdlog.h>
 
 #include "../../components/base_component.h"
+#include "../../components/editor_selected_component.h"
 #include "../../components/outline_component.h"
 #include "../../components/skybox_component.h"
 #include "../ui_internal.h"
@@ -90,6 +91,7 @@ static auto empty_component(entt::registry& registry, entt::entity entity) -> vo
 
 static auto iterate_empty_components(entt::registry& registry, entt::entity entity) -> void {
     empty_component<OutlineComponent>(registry, entity);
+    empty_component<EditorSelectedComponent>(registry, entity);
 }
 
 auto ui::internal::ui_draw_window_entity_editor(entt::registry& registry, entt::entity entity) -> void {

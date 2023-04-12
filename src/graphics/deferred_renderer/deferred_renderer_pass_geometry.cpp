@@ -1,4 +1,5 @@
 #include "../../components/base_component.h"
+#include "../../components/editor_selected_component.h"
 #include "../../components/material_component.h"
 #include "../../components/outline_component.h"
 #include "../shader_cache.h"
@@ -23,7 +24,7 @@ static auto draw_entity(
     auto const entity_id = static_cast<u16>(entity) + 1;
     shader->set_uniform("identity", entity_id);
 
-    shader->set_uniform("is_outline", registry.all_of<OutlineComponent>(entity));
+    shader->set_uniform("is_outline", registry.any_of<OutlineComponent, EditorSelectedComponent>(entity));
 
     if (material.diffuse) {
         material.diffuse->activate_as(1);

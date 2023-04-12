@@ -3,6 +3,7 @@
 #include "../components/camera_component.h"
 #include "../core/input.hpp"
 #include "GLFW/glfw3.h"
+#include "imgui/imgui.h"
 #include "systems.h"
 
 using namespace engine;
@@ -86,17 +87,13 @@ auto systems::camera_system(float delta_time, entt::registry& registry) -> void 
         static bool mouse_captured = false;
         static bool first_frame_mouse_captured = false;
 
-        if (input.keys[GLFW_KEY_R]) {
-            mouse_captured = true;
-            first_frame_mouse_captured = true;
+        if (ImGui::IsKeyPressed(ImGuiKey_Q)) {
+            mouse_captured = !mouse_captured;
+            if (mouse_captured) {
+                first_frame_mouse_captured = true;
+            }
 
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-        }
-
-        if (input.keys[GLFW_KEY_T]) {
-            mouse_captured = false;
-
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            glfwSetInputMode(window, GLFW_CURSOR, mouse_captured ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
         }
 
         if (mouse_captured) {

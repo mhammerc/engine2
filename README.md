@@ -5,6 +5,10 @@
 </p>
 
 <p align="center">
+  OpenGL 4.1
+</p>
+
+<p align="center">
   <a href="screenshots/">See more screenshots</a>
 </p>
 
@@ -19,7 +23,20 @@
 - auto unbind through RAII
 - Move shaders to the post-process shader? (outline shader, and more)
 - Antialiasing
-- Gizmos (like unreal engine)
+
+## Features
+
+- Deferred Rendering
+- Shadows
+- Bloom
+- ECS: data-first entity component system using `EnTT`
+- Nice and complete UI using `ImGui`
+- Gizmos from `ImGuizmo`
+- A viewer of all the textures/framebuffer loaded/created in the engine. Allow for easy debugging and more.
+- An embedded profiler.
+- Tested on MacOS, Linux and Windows.
+- Support multiple rendering viewports
+- And more, <a href="screenshots/">take a look at screenshots</a>.
 
 ## Development Environment
 

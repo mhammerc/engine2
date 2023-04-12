@@ -1,9 +1,12 @@
 cmake_minimum_required(VERSION 3.25)
 project(imgui)
 
+# This project is both ImGui and ImGuizmo.
+
 add_library(imgui STATIC)
 
 set(SOURCES
+        # ImGui
         imgui/imgui.cpp
         imgui/imgui.h
         imgui/imgui_internal.h
@@ -20,6 +23,19 @@ set(SOURCES
         imgui/imstb_rectpack.h
         imgui/imstb_textedit.h
         imgui/imstb_truetype.h
+
+        # ImGuizmo
+        imgui/GraphEditor.cpp
+        imgui/GraphEditor.h
+        imgui/ImCurveEdit.cpp
+        imgui/ImCurveEdit.h
+        imgui/ImGradient.h
+        imgui/ImGradient.cpp
+        imgui/ImGuizmo.cpp
+        imgui/ImGuizmo.h
+        imgui/ImSequencer.h
+        imgui/ImSequencer.cpp
+        imgui/ImZoomSlider.h
         )
 
 target_sources(imgui PRIVATE ${SOURCES})

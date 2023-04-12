@@ -11,6 +11,8 @@ set(SOURCES
         src/components/camera_component.h
         src/components/deferred_renderer_component.cpp
         src/components/deferred_renderer_component.h
+        src/components/editor_selected_component.cpp
+        src/components/editor_selected_component.h
         src/components/light_component.cpp
         src/components/light_component.h
         src/components/material_component.cpp
@@ -18,6 +20,8 @@ set(SOURCES
         src/components/outline_component.cpp
         src/components/outline_component.h
         src/components/skybox_component.cpp
+        src/core/editor_selected_entity.cpp
+        src/core/editor_selected_entity.h
         src/core/entity.cpp
         src/core/entity.h
         src/core/game_loop.cpp
@@ -86,6 +90,8 @@ set(SOURCES
         src/ui/entity_editor/ui_window_entity_editor.cpp
         src/ui/ui.cpp
         src/ui/ui.h
+        src/ui/ui_draw_widget_transform.cpp
+        src/ui/ui_gizmo_manipulate_3d_object.cpp
         src/ui/ui_window_hierarchy.cpp
         src/ui/ui_window_input_debugger.cpp
         src/ui/ui_window_profiler/ui_window_profiler.cpp

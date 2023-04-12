@@ -3,6 +3,7 @@
 #include <entt/entt.hpp>
 
 #include "../components/base_component.h"
+#include "../core/editor_selected_entity.h"
 #include "../core/entity.h"
 #include "ui_internal.h"
 
@@ -12,7 +13,7 @@ static auto hierarchy_item(
     entt::registry& registry,
     entt::entity entity,
     BaseComponent const& base,
-    entt::entity& currently_selected
+    entt::entity currently_selected
 ) -> void {
     ImGuiTreeNodeFlags const tree_base_flags =
         ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
@@ -35,14 +36,14 @@ static auto hierarchy_item(
 
     if (ImGui::BeginPopupContextItem()) {
         if (ImGui::Selectable("Duplicate")) {
-            currently_selected = duplicate_entity(registry, entity);
+            set_editor_selected_entity(registry, duplicate_entity(registry, entity));
         }
 
         ImGui::EndPopup();
     }
 
     if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) {
-        currently_selected = entity;
+        set_editor_selected_entity(registry, entity);
     }
 
     if (is_open && !is_leaf) {
@@ -60,7 +61,7 @@ static auto hierarchy_item(
     }
 }
 
-auto ui::internal::ui_draw_window_hierarchy(entt::registry& registry, entt::entity& currently_selected) -> void {
+auto ui::internal::ui_draw_window_hierarchy(entt::registry& registry, entt::entity currently_selected) -> void {
     ImGui::Begin("Hierarchy");
 
     auto view = registry.view<BaseComponent>();

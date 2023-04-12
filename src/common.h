@@ -20,6 +20,7 @@
 #include <span>
 
 #include "conf.h"
+#include "core/fmt_vec.hpp"
 #include "core/profiler_macro.h"
 #include "utils/singular_span.h"
 

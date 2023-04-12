@@ -3,6 +3,7 @@
 #include "../components/base_component.h"
 #include "../components/camera_component.h"
 #include "../components/deferred_renderer_component.h"
+#include "../components/editor_selected_component.h"
 #include "../components/light_component.h"
 #include "../components/material_component.h"
 #include "../components/outline_component.h"
@@ -15,6 +16,7 @@ auto reflection::register_all() -> void {
     reflection::register_base_component();
     reflection::register_camera_component();
     reflection::register_deferred_renderer_component();
+    reflection::register_editor_selected_component();
     reflection::register_light_component();
     reflection::register_material_component();
     reflection::register_outline_component();

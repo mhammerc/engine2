@@ -1,11 +1,10 @@
 #include "ui.h"
 
-#include <imgui/imgui.h>
-#include <imgui/imgui_impl_glfw.h>
-#include <imgui/imgui_impl_opengl3.h>
 #include <spdlog/spdlog.h>
 
-#include "../components/outline_component.h"
+#include "../components/editor_selected_component.h"
+#include "../core/editor_selected_entity.h"
+#include "imgui.h"
 #include "ui_internal.h"
 
 using namespace engine;
@@ -47,6 +46,7 @@ auto engine::ui_prepare_frame() -> void {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+    ImGuizmo::BeginFrame();
 }
 
 auto engine::ui_end_frame() -> void {
@@ -58,7 +58,7 @@ auto engine::ui_draw(float delta_time, GLFWwindow* window, entt::registry& regis
     -> void {
     ImGui::BeginMainMenuBar();
 
-    static entt::entity selected_entity = entt::null;
+    entt::entity selected_entity = get_editor_selected_entity(registry);
     static bool demo_window = false;
     static bool input_debugger = false;
     static bool texture_viewer = true;
@@ -115,14 +115,7 @@ auto engine::ui_draw(float delta_time, GLFWwindow* window, entt::registry& regis
     ui::internal::ui_draw_window_system(delta_time, window);
     ui::internal::ui_draw_window_hierarchy(registry, selected_entity);
 
-    if (entt::entity new_selected_entity = ui::internal::ui_draw_window_scene(registry, scene_texture);
-        new_selected_entity != entt::null) {
-        selected_entity = new_selected_entity;
-    }
+    ui::internal::ui_draw_window_scene(registry, scene_texture, selected_entity);
 
     ui::internal::ui_draw_window_entity_editor(registry, selected_entity);
-
-    if (selected_entity != entt::null) {
-        registry.get_or_emplace<OutlineComponent>(selected_entity);
-    }
 }
