@@ -48,6 +48,11 @@ class ShaderProgram {
     auto bind() -> void;
     auto unbind() -> void;
 
+    /**
+     * Return `true` if the shader successfully recompile and relink.
+     */
+    auto reload() -> bool;
+
     [[nodiscard]] auto name() const -> const std::string_view;
 
   private:

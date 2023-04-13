@@ -304,3 +304,15 @@ auto ShaderProgram::unbind() -> void {
 auto ShaderProgram::name() const -> const std::string_view {
     return _name;
 }
+
+auto ShaderProgram::reload() -> bool {
+    auto new_shader = ShaderProgram::from_name(_name);
+
+    if (!new_shader) {
+        return false;
+    }
+
+    std::swap(*this, *new_shader);
+
+    return true;
+}

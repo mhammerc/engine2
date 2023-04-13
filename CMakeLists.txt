@@ -96,6 +96,8 @@ set(SOURCES
         src/ui/ui_window_input_debugger.cpp
         src/ui/ui_window_profiler/ui_window_profiler.cpp
         src/ui/ui_window_scene.cpp
+        src/ui/ui_window_shader_viewer/ui_window_shader_viewer.cpp
+        src/ui/ui_window_shader_viewer/ui_window_shader_viewer.h
         src/ui/ui_window_system.cpp
         src/ui/ui_window_texture_viewer/deferred_renderer_viewer.cpp
         src/ui/ui_window_texture_viewer/draw_framebuffer.cpp
