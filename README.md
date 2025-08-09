@@ -38,6 +38,8 @@
 - Support multiple rendering viewports
 - And more, <a href="screenshots/">take a look at screenshots</a>.
 
+Tip: inside the scene, press `Q` to enable FPS-like camera controls. `WASD` to move and the mouse to rotate. Press `Q` again to leave.
+
 ## Development Environment
 
 As of 2023 March, we use the following tools.
@@ -64,9 +66,19 @@ We package every dependency as git-submodules. Therefore, after a clone you must
 
 Once `Xcode` and Xcode developer tools are installed, compilation should work as-is with the provided clang.
 
-Last tested using `Xcode 14.3`
+Last tested using `Xcode 16.4`
 
 The engine is mainly developed on MacOS. Therefore, best support is on MacOS.
+
+How to build in release mode and launch the project:
+
+```sh
+git submodule update --init --recursive
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -S . -B build
+cmake --build build
+cd build
+./opengl_engine
+```
 
 ### Windows
 
